@@ -913,7 +913,3 @@ a.panel:hover {
 .concept-arch-hero::before {
   display: none;
 }
-.hero-copy > p strong {
-  color: var(--ll-ink);
-  font-weight: 650;
-}
