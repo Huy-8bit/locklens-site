@@ -64,3 +64,23 @@ test.describe('documentation', () => {
     await expect(page.getByRole('link', { name: 'Documentation' }).last()).toBeVisible();
   });
 });
+
+test('reference tables share the reading width and retain readable file links', async ({ page }) => {
+  await page.goto('/docs/getting-started/configuration/');
+  await expect(page.locator('article h1')).toHaveText('Configuration');
+  const links = await page.locator('.prose a').allTextContents();
+  expect(links.filter((label) => /\.md(?:#\S+)?$/.test(label.trim()))).toEqual([]);
+  await expect(page.locator('.prose').getByRole('link', { name: 'CLI', exact: true }).first()).toHaveAttribute('href', '/docs/reference/cli/');
+  const article = await page.locator('.prose').boundingBox();
+  for (const table of await page.locator('.table-wrap').all()) {
+    const box = await table.boundingBox();
+    expect(Math.abs(box!.width - article!.width)).toBeLessThan(2);
+  }
+  await page.setViewportSize({ width: 375, height: 812 });
+  const table = page.locator('.table-wrap').nth(1);
+  await table.scrollIntoViewIfNeeded();
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+  await table.focus();
+  await page.keyboard.press('ArrowRight');
+  await expect.poll(() => table.evaluate((el) => el.scrollLeft)).toBeGreaterThan(0);
+});

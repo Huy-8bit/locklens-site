@@ -41,7 +41,7 @@ const jsonLd = [
 ];
 ---
 <DocsLayout title={entry.title} description={entry.description} slug={slug} toc={rendered.toc} jsonLd={jsonLd}>
-  <article class="mx-auto max-w-[76ch]">
+  <article class="docs-article">
     <nav aria-label="Breadcrumb" class="text-xs text-fg-subtle">
       <ol class="flex flex-wrap items-center gap-1.5">
         <li><a href={url('/docs/')} class="hover:text-fg-muted">Docs</a></li>
@@ -53,20 +53,12 @@ const jsonLd = [
     </nav>
 
     <div data-pagefind-body>
-      <header class="prose mt-4">
+      <header class="docs-article-header">
+        <p class="docs-category">{entry.group}</p>
         <h1 data-pagefind-meta="title">{entry.title}</h1>
+        <p class="docs-intro">{entry.description}</p>
         <span hidden data-pagefind-meta="section">{entry.group}</span>
       </header>
-
-      <div class="mt-4 flex flex-wrap items-center gap-2 text-xs text-fg-subtle" data-pagefind-ignore>
-        {entry.origin === 'repo' ? (
-          <span class="chip"><span class="font-mono">{entry.source.replace('repo:', '')}</span></span>
-        ) : (
-          <span class="chip" title="Written for this website from the repository documentation it links to">Site guide · summarises repository docs</span>
-        )}
-        {entry.editUrl && <a class="chip hover:text-fg" href={entry.editUrl} rel="noopener noreferrer">Edit on GitHub ↗</a>}
-        <a class="chip hover:text-fg" href={issueUrl} rel="noopener noreferrer">Report an issue ↗</a>
-      </div>
 
       {interactive && (
         <a href={url(interactive.href)} data-pagefind-ignore class="group mt-6 flex items-center gap-3 rounded-xl border border-accent/25 bg-accent/[0.06] px-4 py-3 text-sm text-fg transition-colors hover:border-accent/50">
@@ -81,16 +73,15 @@ const jsonLd = [
       <div class="prose mt-8" set:html={rendered.html} />
     </div>
 
+    <div class="docs-article-tools" data-pagefind-ignore>
+      {entry.editUrl && <a href={entry.editUrl} rel="noopener noreferrer">Edit on GitHub ↗</a>}
+      <a href={issueUrl} rel="noopener noreferrer">Report an issue ↗</a>
+    </div>
     {rendered.sourceRefs.length > 0 && (
-      <section class="mt-14 rounded-xl border border-line p-5" aria-labelledby="source-refs">
-        <h2 id="source-refs" class="text-sm font-semibold text-fg">Source references</h2>
-        <p class="mt-1 text-xs text-fg-subtle">Repository files this page links to.</p>
-        <ul class="mt-3 flex flex-wrap gap-2">
-          {rendered.sourceRefs.map((r) => (
-            <li><a class="chip font-mono hover:text-fg" href={r.href} rel="noopener noreferrer">{r.label}</a></li>
-          ))}
-        </ul>
-      </section>
+      <details class="docs-source-details">
+        <summary>Implementation references</summary>
+        <ul>{rendered.sourceRefs.map((r) => <li><a href={r.href} rel="noopener noreferrer">{r.label}</a></li>)}</ul>
+      </details>
     )}
 
     {related.length > 0 && (

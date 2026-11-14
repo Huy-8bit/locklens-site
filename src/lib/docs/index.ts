@@ -21,6 +21,7 @@ import type { Element, ElementContent, Root as HastRoot } from 'hast';
 import { createHighlighter, type Highlighter } from 'shiki';
 import { renderMermaidSVG } from 'beautiful-mermaid';
 import { resolveRepoRoot, githubUrl } from '../source.mjs';
+import { DOC_INTROS } from './editorial';
 import { ANCHOR_ALIASES, DOCS_MANIFEST, type ManifestGroup } from './manifest';
 
 const SITE_GUIDES_DIR = path.resolve(process.cwd(), 'content', 'guides');
@@ -132,9 +133,9 @@ export function getAllDocs(): DocEntry[] {
       origin,
       virtualPath: origin === 'repo' ? rel : `docs/${rel}`,
       absPath,
-      title,
+      title: label ?? title,
       label: label ?? title,
-      description,
+      description: DOC_INTROS[slug] ?? description,
       group: group.title,
       groupCollapsed: Boolean(group.collapsed),
       editUrl: origin === 'repo' ? githubUrl(rel, { edit: true }) : undefined,
@@ -239,7 +240,7 @@ export async function renderDoc(entry: DocEntry, resolveImage: ImageResolver): P
   const baseDir = path.posix.dirname(entry.virtualPath);
   const sitePrefix = (import.meta.env.BASE_URL ?? '/').replace(/\/$/, '');
 
-  const resolveHref = (href: string): { href: string; external: boolean; repoRef?: string } => {
+  const resolveHref = (href: string): { href: string; external: boolean; repoRef?: string; title?: string } => {
     if (/^(https?:|mailto:)/i.test(href)) return { href, external: /^https?:/i.test(href) };
     const alias = (file: string, f?: string) => (f ? (ANCHOR_ALIASES[`${file}#${f}`] ?? f) : f);
     if (href.startsWith('#')) return { href: `#${alias(entry.virtualPath, href.slice(1))}`, external: false };
@@ -247,14 +248,20 @@ export async function renderDoc(entry: DocEntry, resolveImage: ImageResolver): P
     const resolved = path.posix.normalize(path.posix.join(baseDir, decodeURI(rawPath)));
     const frag = alias(resolved, rawFrag);
     const target = byPath.get(resolved);
-    if (target) return { href: `${sitePrefix}/docs/${target.slug}/${frag ? '#' + frag : ''}`, external: false };
+    if (target) return { href: `${sitePrefix}/docs/${target.slug}/${frag ? '#' + frag : ''}`, external: false, title: target.label };
     if (resolved.startsWith('..')) return { href, external: false };
     const gh = githubUrl(resolved.replace(/\/$/, '')) + (frag ? '#' + frag : '');
-    return { href: gh, external: true, repoRef: resolved };
+    const sourcePath = path.join(resolveRepoRoot(), resolved);
+    const title = /\.md$/i.test(resolved) && existsSync(sourcePath)
+      ? readTitleAndDescription(readFileSync(sourcePath, 'utf8'), path.posix.basename(resolved, '.md').replace(/[-_]/g, ' ')).title
+      : undefined;
+    return { href: gh, external: true, repoRef: resolved, title };
   };
 
   const rehypeLocklens = () => (tree: HastRoot) => {
     const slugger = new GithubSlugger();
+    let currentHeading = entry.title;
+    let tableIndex = 0;
     visit(tree, 'element', (node, index, parent) => {
       // Drop the H1: the layout renders the title with breadcrumbs.
       if (node.tagName === 'h1' && parent && typeof index === 'number') {
@@ -264,6 +271,7 @@ export async function renderDoc(entry: DocEntry, resolveImage: ImageResolver): P
       if (/^h[2-6]$/.test(node.tagName)) {
         const text = hastToString(node).trim();
         const id = slugger.slug(text);
+        currentHeading = text;
         node.properties = { ...node.properties, id };
         node.children.push(el('a', { className: ['heading-anchor'], href: `#${id}`, ariaLabel: `Link to “${text}”`, dataPagefindIgnore: '' }, [{ type: 'text', value: '#' }]));
         if (node.tagName === 'h2' || node.tagName === 'h3') toc.push({ depth: node.tagName === 'h2' ? 2 : 3, id, text });
@@ -272,6 +280,13 @@ export async function renderDoc(entry: DocEntry, resolveImage: ImageResolver): P
       if (node.tagName === 'a' && typeof node.properties?.href === 'string') {
         const r = resolveHref(node.properties.href);
         node.properties.href = r.href;
+        // Replace file-shaped link labels, including labels wrapped in inline code.
+        // Preserve authored descriptive labels and actual code examples.
+        const label = hastToString(node).trim();
+        if (/^(?:[^\s]*\/)?[^\s/]+\.md(?:#[^\s]+)?$/i.test(label)) {
+          const title = r.title ?? path.posix.basename(label.split('#')[0], '.md').replace(/[-_]/g, ' ');
+          node.children = [{ type: 'text', value: title.charAt(0).toUpperCase() + title.slice(1) }];
+        }
         if (r.external) {
           node.properties.className = ['external'];
           node.properties.rel = ['noopener', 'noreferrer'];
@@ -304,7 +319,16 @@ export async function renderDoc(entry: DocEntry, resolveImage: ImageResolver): P
         return;
       }
       if (node.tagName === 'table' && parent && typeof index === 'number' && !(parent.type === 'element' && (parent as Element).properties?.className?.toString().includes('table-wrap'))) {
-        parent.children[index] = el('div', { className: ['table-wrap'] }, [node]);
+        const head = node.children.find((c): c is Element => c.type === 'element' && c.tagName === 'thead');
+        const row = head?.children.find((c): c is Element => c.type === 'element' && c.tagName === 'tr');
+        const columns = row?.children.filter((c) => c.type === 'element').length ?? 2;
+        node.properties = { ...node.properties, className: [`cols-${columns}`] };
+        if (row) for (const cell of row.children) if (cell.type === 'element') cell.properties.scope = 'col';
+        tableIndex++;
+        parent.children[index] = el('div', {
+          className: ['table-wrap'], tabIndex: 0, role: 'region',
+          ariaLabel: `${currentHeading} — table ${tableIndex}`,
+        }, [node]);
         return index; // revisit: descend into the wrapper so links inside the table are rewritten
       }
       if (node.tagName === 'pre' && parent && typeof index === 'number') {

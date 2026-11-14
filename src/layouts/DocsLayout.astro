@@ -1,4 +1,5 @@
 ---
+import '../styles/docs.css';
 import BaseLayout from './BaseLayout.astro';
 import { getNavigation, type TocItem } from '../lib/docs';
 import { url } from '../lib/site';
@@ -15,8 +16,8 @@ const nav = getNavigation();
 const activeGroup = nav.find((g) => g.items.some((i) => i.slug === slug))?.title;
 ---
 <BaseLayout title={title} description={description} current="docs" ogType={slug ? 'article' : 'website'} jsonLd={jsonLd}>
-  <div class="relative">
-    <div class="pointer-events-none absolute inset-x-0 top-0 h-[420px] bg-grid mask-radial opacity-60" aria-hidden="true"></div>
+  <div class="docs-shell">
+
 
     <!-- Mobile docs bar -->
     <div class="sticky top-[var(--header-h)] z-40 flex items-center gap-2 border-b border-line bg-ink-950/85 px-4 py-2 backdrop-blur-xl lg:hidden">
@@ -27,7 +28,7 @@ const activeGroup = nav.find((g) => g.items.some((i) => i.slug === slug))?.title
       <span class="truncate text-xs text-fg-subtle">{activeGroup ? `${activeGroup} / ${title}` : 'Documentation'}</span>
     </div>
 
-    <div class="relative mx-auto grid max-w-[1440px] grid-cols-1 lg:grid-cols-[268px_minmax(0,1fr)] xl:grid-cols-[268px_minmax(0,1fr)_232px]">
+    <div class="docs-grid">
       <!-- Left sidebar -->
       <aside id="docs-sidebar" data-docs-sidebar class="docs-sidebar fixed inset-y-0 left-0 z-[60] w-[300px] max-w-[85vw] -translate-x-full overflow-y-auto border-r border-line bg-ink-950 px-4 pb-10 pt-5 transition-[translate] duration-300 lg:sticky lg:top-[var(--header-h)] lg:z-auto lg:h-[calc(100dvh-var(--header-h))] lg:w-auto lg:max-w-none lg:translate-x-0 lg:bg-transparent lg:pt-8" aria-label="Documentation">
         <div class="mb-4 flex items-center justify-between lg:hidden">
@@ -59,12 +60,12 @@ const activeGroup = nav.find((g) => g.items.some((i) => i.slug === slug))?.title
       <div data-docs-backdrop hidden class="fixed inset-0 z-[55] bg-black/60 lg:hidden"></div>
 
       <!-- Main -->
-      <main id="main" class="min-w-0 px-4 pb-24 pt-8 sm:px-8 lg:px-12 lg:pt-10">
+      <main id="main" class="docs-main">
         <slot />
       </main>
 
       <!-- Right: on this page -->
-      <aside class="hidden xl:block" aria-label="On this page">
+      <aside class="docs-toc hidden xl:block" aria-label="On this page">
         {toc.length > 0 && (
           <div class="sticky top-[calc(var(--header-h)+2.5rem)] max-h-[calc(100dvh-var(--header-h)-4rem)] overflow-y-auto pb-10 pr-4">
             <p class="text-[0.7rem] font-semibold uppercase tracking-[0.14em] text-fg-subtle">On this page</p>
