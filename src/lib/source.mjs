@@ -26,12 +26,13 @@ export function resolveRepoRoot() {
     return dir;
   }
   // 1. The site lives in <repo>/site.  2. The site sits next to a "locklens" checkout.
-  for (const candidate of ['..', '../locklens']) {
+  // 3. The site sits one folder deeper (e.g. <workspace>/locklens) next to that checkout.
+  for (const candidate of ['..', '../locklens', '../../locklens']) {
     const dir = path.resolve(SITE_ROOT, candidate);
     if (looksLikeRepo(dir)) return dir;
   }
   throw new Error(
-    'Could not find the LockLens repository. Place this site in <repo>/site, clone the repository to ../locklens, or set LOCKLENS_REPO.',
+    'Could not find the LockLens repository. Place this site in <repo>/site, clone the repository to ../locklens (or ../../locklens), or set LOCKLENS_REPO.',
   );
 }
 

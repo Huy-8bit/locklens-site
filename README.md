@@ -13,7 +13,7 @@ The official LockLens website: landing page, interactive architecture explorer, 
 ## Requirements
 
 - Node.js ≥ 22.23.4 (Astro 7) and npm
-- A checkout of the [LockLens repository](https://github.com/Huy-8bit/locklens). The site looks for it, in order, at `$LOCKLENS_REPO`, at `..` (when this site lives in `<repo>/site`), and at `../locklens`.
+- A checkout of the [LockLens repository](https://github.com/Huy-8bit/locklens). The site looks for it, in order, at `$LOCKLENS_REPO`, at `..` (when this site lives in `<repo>/site`), at `../locklens`, and at `../../locklens`.
 
 ## Commands
 
