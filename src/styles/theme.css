@@ -1,0 +1,744 @@
+/* ==================================================================
+ * LockLens Blue — the site-wide visual system.
+ *
+ * Loaded after every other stylesheet. One light, cool tone for every
+ * page; a bright "tech" blue for actions and emphasis; a blueprint frame
+ * (guide rails, + markers, dashed and hatched lines) for structure.
+ * There are no dark surfaces: `.surface-dark` is kept as a hook but is
+ * rendered in the same light tone.
+ * ================================================================== */
+
+:root {
+  --ll-bg: #eff4fb;
+  --ll-bg-2: #e6eef9;
+  --ll-surface: #ffffff;
+  --ll-surface-2: #f7faff;
+  --ll-line: #d3deee;
+  --ll-line-strong: #afc3e0;
+  --ll-dash: #9fb6d8;
+  --ll-marker: #6f8cba;
+  --ll-ink: #0a1631;
+  --ll-ink-2: #22324f;
+  --ll-muted: #46587a;
+  --ll-subtle: #56688a;
+  --ll-blue: #155ef5;
+  --ll-blue-hover: #0b4bd6;
+  --ll-blue-bright: #3d8bff;
+  --ll-blue-neon: #59b2ff;
+  --ll-blue-soft: #dbe7ff;
+  --ll-blue-tint: #ebf2ff;
+  --ll-frame: 1360px;
+  --ll-rail: max(24px, calc((100% - var(--ll-frame)) / 2));
+  --ll-hatch: repeating-linear-gradient(135deg, rgb(111 140 186 / 0.22) 0 1px, transparent 1px 9px);
+  --ll-dots: radial-gradient(rgb(111 140 186 / 0.32) 1px, transparent 1.2px);
+
+  /* Tailwind theme tokens, re-pointed at the system. */
+  --color-ink-950: var(--ll-bg);
+  --color-ink-900: var(--ll-surface-2);
+  --color-ink-850: #eaf0f9;
+  --color-ink-800: #e3ebf7;
+  --color-ink-700: #dae4f3;
+  --color-ink-600: #cbd8ec;
+  --color-line: var(--ll-line);
+  --color-line-strong: var(--ll-line-strong);
+  --color-fg: var(--ll-ink);
+  --color-fg-muted: var(--ll-muted);
+  --color-fg-subtle: var(--ll-subtle);
+  --color-accent: var(--ll-blue);
+  --color-accent-blue: var(--ll-blue-bright);
+  --color-wait: #b04e10; /* 4.8:1 on the page tone */
+}
+
+html {
+  background: var(--ll-bg);
+}
+body {
+  background: transparent;
+  color: var(--ll-ink);
+}
+::selection {
+  background: var(--ll-blue-soft);
+  color: var(--ll-ink);
+}
+
+/* ------------------------------------------------------------------
+ * Blueprint frame: two guide rails, a hatched gutter, a gutter label.
+ * Sits behind the content (z-index -1); sections are transparent.
+ * ------------------------------------------------------------------ */
+.frame-rails {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+}
+.frame-rails::before,
+.frame-rails::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: var(--ll-rail);
+  background: var(--ll-hatch);
+}
+.frame-rails::before {
+  left: 0;
+  border-right: 1px solid var(--ll-line-strong);
+}
+.frame-rails::after {
+  right: 0;
+  border-left: 1px solid var(--ll-line-strong);
+}
+.frame-label {
+  position: absolute;
+  top: 50%;
+  left: calc(var(--ll-rail) / 2);
+  transform: translate(-50%, -50%) rotate(-90deg);
+  white-space: nowrap;
+  font: 600 10px/1 var(--font-mono);
+  letter-spacing: 0.32em;
+  color: var(--ll-subtle);
+  display: none;
+}
+.frame-label b {
+  color: var(--ll-blue);
+  font-weight: 600;
+}
+@media (min-width: 1500px) {
+  .frame-label {
+    display: block;
+  }
+}
+@media (max-width: 767px) {
+  .frame-rails {
+    display: none;
+  }
+}
+
+/* Section dividers: a line plus "+" markers where it crosses the rails. */
+.premium-home.premium-home > :is(section, div),
+.architecture-page.architecture-page > section,
+.site-footer.site-footer {
+  --mk: var(--ll-marker);
+  background-color: transparent;
+  background-image:
+    linear-gradient(var(--mk), var(--mk)),
+    linear-gradient(var(--mk), var(--mk)),
+    linear-gradient(var(--mk), var(--mk)),
+    linear-gradient(var(--mk), var(--mk)),
+    linear-gradient(var(--ll-line-strong), var(--ll-line-strong));
+  background-size:
+    1px 11px,
+    11px 1px,
+    1px 11px,
+    11px 1px,
+    100% 1px;
+  background-position:
+    left max(24px, calc((100% - var(--ll-frame)) / 2)) top 0,
+    left max(19px, calc((100% - var(--ll-frame)) / 2)) top 5px,
+    right max(24px, calc((100% - var(--ll-frame)) / 2)) top 0,
+    right max(19px, calc((100% - var(--ll-frame)) / 2)) top 5px,
+    0 5px;
+  background-repeat: no-repeat;
+  border-top: 0;
+}
+@media (max-width: 767px) {
+  .premium-home.premium-home > :is(section, div),
+  .architecture-page.architecture-page > section,
+  .site-footer.site-footer {
+    background-image: linear-gradient(var(--ll-line-strong), var(--ll-line-strong));
+    background-size: 100% 1px;
+    background-position: 0 0;
+  }
+}
+/* The first band under the header needs no divider. */
+.premium-home.premium-home > section:first-child,
+.architecture-page.architecture-page > section:first-child {
+  background-image: none;
+}
+
+/* ------------------------------------------------------------------
+ * No dark surfaces: the legacy hook renders in the shared light tone.
+ * Diagram colour variables are reset so islands use their light defaults.
+ * ------------------------------------------------------------------ */
+.surface-dark {
+  color-scheme: light;
+  --color-ink-950: var(--ll-bg);
+  --color-ink-900: var(--ll-surface-2);
+  --color-ink-850: #eaf0f9;
+  --color-ink-800: #e3ebf7;
+  --color-ink-700: #dae4f3;
+  --color-ink-600: #cbd8ec;
+  --color-fg: var(--ll-ink);
+  --color-fg-muted: var(--ll-muted);
+  --color-fg-subtle: var(--ll-subtle);
+  --color-line: var(--ll-line);
+  --color-line-strong: var(--ll-line-strong);
+  --color-accent: var(--ll-blue);
+  --color-accent-blue: var(--ll-blue-bright);
+  --diagram-text: #172b45;
+  --diagram-muted: #56688a;
+  --diagram-node: #ffffff;
+  --diagram-node-bottom: #f7faff;
+  --diagram-group: #f3f7fd;
+  --diagram-group-bottom: #fafcff;
+  --diagram-border: #c9d6e8;
+  --diagram-cyan: initial;
+  --diagram-blue: initial;
+  --diagram-emerald: initial;
+  --diagram-violet: initial;
+  --diagram-slate: initial;
+  --diagram-amber: initial;
+  --diagram-rose: initial;
+  --diagram-orange: initial;
+  --flow-app: initial;
+  --flow-monitor: initial;
+  --flow-store: initial;
+  --flow-api: initial;
+  --flow-repl: initial;
+  --flow-alert: initial;
+  color: var(--ll-ink);
+  background: transparent;
+}
+.surface-dark .panel,
+.surface-dark :is(.ctrl, .chip, .kbd, .btn-ghost) {
+  background: var(--ll-surface);
+}
+.surface-dark .ctrl[aria-pressed='true'],
+.surface-dark .ctrl.is-active {
+  background: var(--ll-blue-tint);
+  border-color: var(--ll-blue-bright);
+}
+
+/* ------------------------------------------------------------------
+ * Buttons, controls, links
+ * ------------------------------------------------------------------ */
+.btn,
+.hero-actions .btn,
+.site-header .btn-primary {
+  border-radius: 999px;
+}
+.btn-primary,
+.surface-dark .btn-primary {
+  background: var(--ll-blue);
+  border-color: var(--ll-blue);
+  color: #fff;
+}
+.btn-primary:hover,
+.surface-dark .btn-primary:hover {
+  background: var(--ll-blue-hover);
+  color: #fff;
+  box-shadow: 0 10px 26px -12px rgb(21 94 245 / 0.65);
+}
+.btn-ghost,
+.hero-actions .btn-ghost,
+.surface-dark .btn-ghost {
+  background: var(--ll-surface);
+  border: 1px solid var(--ll-line-strong);
+  color: var(--ll-ink);
+}
+.btn-ghost:hover,
+.surface-dark .btn-ghost:hover {
+  border-color: var(--ll-blue);
+  color: var(--ll-blue);
+  background: var(--ll-surface);
+}
+.ctrl {
+  background: var(--ll-surface);
+  border-color: var(--ll-line);
+}
+.ctrl[aria-pressed='true'],
+.ctrl.is-active {
+  color: var(--ll-blue);
+  border-color: var(--ll-blue-bright);
+  background: var(--ll-blue-tint);
+}
+.chip,
+.kbd {
+  background: var(--ll-surface-2);
+}
+.premium-link,
+.surface-dark .premium-link {
+  color: var(--ll-ink);
+  border-bottom: 1px dashed var(--ll-blue-bright);
+}
+.premium-link:hover {
+  color: var(--ll-blue);
+}
+.status-dot {
+  background: var(--ll-blue);
+  box-shadow: 0 0 0 4px rgb(21 94 245 / 0.14);
+}
+:is(button, a, input, select):focus-visible {
+  outline-color: var(--ll-blue);
+}
+
+/* ------------------------------------------------------------------
+ * Header and section navigation
+ * ------------------------------------------------------------------ */
+.site-header,
+.site-header.surface-dark {
+  background: rgb(239 244 251 / 0.86);
+  border-color: var(--ll-line-strong);
+  backdrop-filter: saturate(1.3) blur(14px);
+  -webkit-backdrop-filter: saturate(1.3) blur(14px);
+}
+.site-header nav > ul a {
+  color: var(--ll-ink-2);
+}
+.site-header nav > ul a::after,
+.scroll-progress {
+  background: var(--ll-blue);
+}
+.site-header a[aria-current='page'] {
+  color: var(--ll-blue);
+}
+.arch-section-nav {
+  background: rgb(239 244 251 / 0.9);
+  border-color: var(--ll-line-strong);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+/* ------------------------------------------------------------------
+ * Editorial details: numbered chips, dashed rules, blue emphasis
+ * ------------------------------------------------------------------ */
+.premium-home,
+.architecture-page {
+  background: transparent;
+  color: var(--ll-ink);
+}
+.premium-home h2,
+.premium-home h3,
+.architecture-page h1,
+.architecture-page h2 {
+  color: var(--ll-ink);
+}
+.premium-home h2 em,
+.premium-home h3 em,
+.premium-home .surface-dark h2 em,
+.hero-copy h1 em,
+.arch-hero h1 span {
+  color: var(--ll-blue);
+}
+.section-index,
+.surface-dark .section-index {
+  align-items: center;
+  padding-bottom: 14px;
+  border-bottom: 1px dashed var(--ll-dash);
+  color: var(--ll-subtle);
+}
+.section-index > span:first-child,
+.surface-dark .section-index > span:first-child {
+  padding: 5px 9px 4px;
+  background: var(--ll-blue);
+  color: #fff;
+  font-weight: 600;
+}
+.section-index > span:first-child::before {
+  display: none;
+}
+.split-heading p,
+.surface-dark .split-heading p,
+.premium-home p {
+  color: var(--ll-muted);
+}
+.micro-label {
+  color: var(--ll-blue);
+  font-weight: 600;
+}
+.open-source-label > span:first-child,
+.hero-facts span::before,
+.arch-principles li::before {
+  color: var(--ll-blue);
+}
+.open-source-label > span:first-child {
+  background: var(--ll-blue);
+}
+.eyebrow {
+  color: var(--ll-blue);
+}
+
+/* Panels and product frames: white on the tinted page, hairline borders. */
+.panel {
+  background: var(--ll-surface);
+  border-color: var(--ll-line);
+}
+a.panel:hover {
+  border-color: var(--ll-blue-bright);
+  box-shadow: 0 16px 34px -22px rgb(21 94 245 / 0.45);
+}
+
+/* ------------------------------------------------------------------
+ * Hero
+ * ------------------------------------------------------------------ */
+.platform-hero {
+  background: transparent;
+}
+.platform-hero::before {
+  background:
+    radial-gradient(ellipse at 78% 58%, rgb(89 178 255 / 0.28), transparent 55%),
+    radial-gradient(ellipse at 10% 0%, rgb(21 94 245 / 0.08), transparent 45%);
+}
+.hero-copy h1 {
+  color: var(--ll-ink);
+}
+.hero-copy > p {
+  color: var(--ll-muted);
+}
+.platform-stack,
+.tech-band {
+  background: transparent;
+  border-color: var(--ll-line-strong);
+}
+
+/* ------------------------------------------------------------------
+ * Former dark sections — now white panels on the shared tone
+ * ------------------------------------------------------------------ */
+.premium-home .investigation-section,
+.premium-home .architecture-teaser,
+.premium-home .comparison-section,
+.premium-home .feature-stories,
+.premium-home .start-section,
+.real-product-section {
+  background-color: transparent;
+}
+.investigation-experience,
+.experience-evidence,
+.evidence-query,
+.architecture-mini,
+.start-terminal,
+.product-window-screen,
+.pipeline-overview,
+.pipeline-overview-svg {
+  background: var(--ll-surface);
+  color: var(--ll-ink);
+  border-color: var(--ll-line);
+}
+.investigation-experience,
+.architecture-mini,
+.start-terminal,
+.pipeline-overview {
+  border: 1px solid var(--ll-line-strong);
+  box-shadow: 0 30px 60px -44px rgb(10 22 49 / 0.35);
+}
+.experience-evidence,
+.evidence-query {
+  background: var(--ll-surface-2);
+}
+.architecture-mini,
+.start-terminal {
+  background:
+    var(--ll-dots) 0 0 / 14px 14px,
+    var(--ll-surface);
+}
+.architecture-mini span,
+.mini-locklens {
+  background: var(--ll-surface);
+  border-color: var(--ll-line-strong);
+  color: var(--ll-ink);
+}
+.mini-locklens {
+  border: 1px solid var(--ll-blue-bright);
+  box-shadow: 0 0 0 4px var(--ll-blue-tint);
+}
+
+/* Code: light everywhere (Shiki github-light). */
+.code-card,
+.docs-shell .prose .code-block,
+.prose .code-block {
+  background: var(--ll-surface); /* Shiki github-light colours need white for 4.5:1 */
+  border: 1px solid var(--ll-line);
+}
+.code-card > div:first-child {
+  border-color: var(--ll-line);
+  border-bottom-style: dashed;
+}
+
+/* ------------------------------------------------------------------
+ * Footer with an oversized wordmark
+ * ------------------------------------------------------------------ */
+.site-footer,
+.site-footer.surface-dark {
+  color: var(--ll-ink);
+  overflow: hidden;
+}
+.site-footer .border-t {
+  border-top-style: dashed;
+  border-color: var(--ll-dash);
+}
+.footer-wordmark {
+  display: block;
+  max-width: var(--ll-frame);
+  margin: 0 auto -0.24em;
+  padding-inline: 24px;
+  font-size: clamp(5rem, 19vw, 17rem);
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.06em;
+  text-align: center;
+  background: linear-gradient(180deg, var(--ll-blue-bright) 0%, rgb(89 178 255 / 0.55) 55%, rgb(89 178 255 / 0) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  user-select: none;
+  pointer-events: none;
+}
+
+/* ------------------------------------------------------------------
+ * Documentation
+ * ------------------------------------------------------------------ */
+.prose a {
+  color: var(--ll-blue);
+  text-decoration-color: rgb(21 94 245 / 0.35);
+}
+.prose blockquote,
+.prose .callout {
+  border-color: var(--ll-blue-bright);
+  background: var(--ll-blue-tint);
+}
+.prose .callout-title {
+  color: var(--ll-blue);
+}
+
+/* ------------------------------------------------------------------
+ * Re-ink text that was written for the former dark panels.
+ * ------------------------------------------------------------------ */
+:is(.investigation-section, .architecture-teaser, .start-terminal, .pipeline-overview)
+  :is(p, span, small, time, li, label, div, button, a, code, dt, dd):not(.btn, .btn *, .section-index *, .code-card *) {
+  color: var(--ll-muted);
+}
+:is(.investigation-section, .architecture-teaser, .start-terminal, .pipeline-overview)
+  :is(strong, h3, h4, b, .experience-time) {
+  color: var(--ll-ink);
+}
+:is(.investigation-section, .architecture-teaser, .start-terminal) :is(code, .evidence-query *) {
+  color: #1c4fbf;
+}
+:is(.investigation-section, .start-terminal, .architecture-teaser) a:not(.btn) {
+  color: var(--ll-blue);
+}
+.investigation-section .evidence-status.recorded,
+.investigation-section [class*='preserved'],
+.investigation-section .evidence-preserved {
+  color: #0f7a5c;
+}
+.investigation-section [aria-selected='true'],
+.investigation-section [aria-current='step'],
+.investigation-section .is-active {
+  color: var(--ll-blue);
+}
+.pipeline-overview-svg text {
+  fill: var(--ll-ink-2);
+}
+.pipeline-overview-svg text.mono,
+.pipeline-overview-svg .dg-group-label text {
+  fill: var(--ll-subtle);
+}
+
+/* Small editorial labels: one readable "subtle" ink everywhere. */
+:is(
+    .hero-bottom span,
+    .platform-stack span,
+    .sculpture-caption,
+    .sculpture-caption i,
+    .micro-label.micro-label:not(p),
+    .visual-eyebrow,
+    .visual-foot span,
+    .baseline-explanation span,
+    .evidence-document-header span,
+    .document-timeline time,
+    .document-timeline small,
+    .visual-caption,
+    .project-note,
+    .arch-system-label,
+    .arch-system-node small,
+    .arch-system-outcomes span,
+    .signal-comparison button,
+    .comparison-section span:not(.section-index *),
+    .topology-guide button,
+    .pipeline-levels + p,
+    .pipeline-levels button:not([aria-pressed='true'])
+  ) {
+  color: var(--ll-subtle);
+}
+.arch-system .arch-system-observer :is(strong, small, span),
+.arch-system .arch-system-status {
+  color: #fff;
+}
+.premium-home .start-section p:not(.micro-label),
+.premium-home .start-terminal :is(.visual-caption, .project-note) {
+  color: var(--ll-muted) !important; /* landing.css sets these with !important */
+}
+.topology-guide button span,
+.pipeline-explorer > div > p {
+  color: var(--ll-subtle);
+}
+.premium-home .start-terminal .project-note a {
+  color: var(--ll-blue);
+}
+.architecture-mini i {
+  color: var(--ll-subtle);
+}
+.skip-link {
+  color: #fff;
+  background: var(--ll-blue);
+}
+.pipeline-levels p {
+  color: var(--ll-subtle);
+}
+.pipeline-levels > div {
+  background: var(--ll-surface);
+  border-color: var(--ll-line-strong);
+  border-radius: 999px;
+}
+.pipeline-levels button {
+  border-radius: 999px;
+}
+.pipeline-levels button[aria-pressed='true'] {
+  background: var(--ll-blue);
+  color: #fff;
+}
+
+/* ------------------------------------------------------------------
+ * Investigation story island: light nodes, blue signal line.
+ * (Colours below are SVG presentation attributes; CSS overrides them.)
+ * ------------------------------------------------------------------ */
+.investigation-section [fill='#101c2f'] {
+  fill: var(--ll-surface);
+}
+.investigation-section [stroke='#2b3b55'],
+.investigation-section [stroke='#25334a'] {
+  stroke: var(--ll-line-strong);
+}
+.investigation-section [stroke='#69513a'] {
+  stroke: #e0a35a;
+}
+.investigation-section [stroke='#00c8f8'] {
+  stroke: var(--ll-blue);
+}
+.investigation-section stop[stop-color='#00c8f8'] {
+  stop-color: var(--ll-blue-neon);
+}
+.experience-graph {
+  border-top: 1px dashed var(--ll-dash);
+}
+.experience-graph text {
+  fill: var(--ll-subtle);
+}
+.experience-graph .node-title {
+  fill: var(--ll-ink);
+}
+.journey-progress span {
+  background: var(--ll-line-strong);
+}
+.journey-mobile-tabs button[aria-pressed='true'] {
+  background: var(--ll-blue);
+  border-color: var(--ll-blue);
+  color: #fff;
+}
+.investigation-experience[data-scene='4'] .experience-evidence {
+  background: var(--ll-blue-tint);
+}
+.product-window-screen {
+  background: var(--ll-surface-2);
+}
+
+/* "At home in your stack": a row of cells with dashed separators. */
+.platform-stack ul {
+  gap: 0;
+}
+.platform-stack li {
+  flex: 1;
+  text-align: center;
+  border-left: 1px dashed var(--ll-dash);
+}
+
+/* Architecture: pipeline overview canvas on a dotted blueprint ground. */
+.pipeline-overview.pipeline-overview {
+  border-color: var(--ll-line-strong);
+  box-shadow: 0 30px 60px -44px rgb(10 22 49 / 0.35);
+}
+.pipeline-overview.pipeline-overview .diagram-svg {
+  background:
+    var(--ll-dots) 0 0 / 16px 16px,
+    var(--ll-surface-2);
+}
+.architecture-page .pipeline-overview aside[aria-label$='details'] {
+  background: var(--ll-surface);
+  border-color: var(--ll-line);
+}
+.architecture-page .pipeline-overview .dg-node:hover .dg-box {
+  fill: var(--ll-blue-tint);
+  stroke: var(--ll-blue-bright);
+}
+.pipeline-overview-mobile button {
+  background: var(--ll-surface);
+  border-color: var(--ll-line-strong);
+}
+.pipeline-overview-mobile button[aria-pressed='true'] {
+  background: var(--ll-blue-tint);
+  border-color: var(--ll-blue);
+}
+.pipeline-overview-mobile small {
+  color: var(--ll-subtle);
+}
+.pipeline-overview-mobile svg {
+  color: var(--ll-blue);
+}
+
+/* Docs code blocks: a labelled header bar above the code, light copy button. */
+.docs-shell .prose .code-block .code-lang {
+  position: static;
+  display: block;
+  height: 38px;
+  padding: 9px 16px;
+  line-height: 20px;
+  border-bottom: 1px dashed var(--ll-dash);
+  font-size: 10px;
+  color: var(--ll-subtle);
+  background: var(--ll-surface);
+}
+.docs-shell .prose .code-block pre {
+  background: transparent !important;
+}
+.docs-shell .prose .copy-btn,
+.copy-btn {
+  background: var(--ll-surface);
+  color: var(--ll-muted);
+  border-color: var(--ll-line-strong);
+}
+.docs-shell .prose .copy-btn:hover,
+.copy-btn:hover {
+  color: var(--ll-blue);
+  border-color: var(--ll-blue);
+}
+
+/* Grid children default to min-width:auto; long code lines must not widen the page. */
+:is(.start-grid, .split-heading, .architecture-teaser-grid, .hero-grid, .feature-story) > * {
+  min-width: 0;
+}
+.start-terminal,
+.code-card {
+  max-width: 100%;
+}
+
+/* Incident story: muted labels readable on the light tone. */
+.architecture-page [fill='#73867f'] {
+  fill: var(--ll-subtle);
+}
+.architecture-page span.size-4 {
+  color: var(--ll-muted);
+}
+
+.start-terminal .code-card {
+  border-color: var(--ll-line-strong);
+}
+.start-terminal .code-card .copy-btn {
+  background: var(--ll-surface);
+  color: var(--ll-muted);
+  border-color: var(--ll-line-strong);
+}
+.investigation-section .journey-mobile-tabs button[aria-pressed='true'],
+.investigation-section .journey-mobile-tabs button[aria-pressed='true'] * {
+  color: #fff;
+}

@@ -5,6 +5,7 @@ The supplied UI concepts guide the current visual direction: a light editorial h
 ## Shared foundations
 
 - `src/styles/global.css`: semantic colors, light/dark surface scopes, typography, radius and motion tokens, controls and focus states.
+- `src/styles/theme.css` (loaded last): the "LockLens Blue" system. One light tone on every page (`#eff4fb` page, white panels), a bright blue for actions (`#155ef5`, 4.8:1 on the page and 5.3:1 under white text), and a blueprint frame: fixed guide rails with hatched gutters (`.frame-rails` in `BaseLayout`), section dividers with `+` markers at the rails, dashed rules, numbered blue chips and dotted panels. There are no dark surfaces: the `.surface-dark` hook renders in the same light tone, and code is highlighted with Shiki `github-light`.
 - `src/styles/landing.css`: hero, signal comparison, investigation workspace, editorial product sections and screenshot showcase.
 - `src/styles/architecture.css`: architecture navigation, topology workbench and pipeline overview.
 - `src/styles/docs.css`: reading measure, sidebar, tables, syntax blocks and responsive navigation. Search and Markdown generation remain intact.

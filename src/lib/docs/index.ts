@@ -190,7 +190,7 @@ export function getRelated(slug: string, limit = 3) {
 let highlighterPromise: Promise<Highlighter> | undefined;
 const LANGS = ['bash', 'sh', 'shell', 'sql', 'json', 'yaml', 'go', 'ts', 'js', 'dotenv', 'ini', 'html', 'nginx', 'dockerfile', 'diff', 'make'];
 function highlighter() {
-  highlighterPromise ??= createHighlighter({ themes: ['github-dark'], langs: LANGS });
+  highlighterPromise ??= createHighlighter({ themes: ['github-light'], langs: LANGS });
   return highlighterPromise;
 }
 
@@ -353,7 +353,7 @@ export async function renderDoc(entry: DocEntry, resolveImage: ImageResolver): P
           return SKIP;
         }
         const known = hl.getLoadedLanguages().includes(lang);
-        const hast = hl.codeToHast(text, { lang: known ? lang : 'text', theme: 'github-dark' });
+        const hast = hl.codeToHast(text, { lang: known ? lang : 'text', theme: 'github-light' });
         const pre = hast.children[0] as Element;
         pre.properties = { ...pre.properties, tabIndex: 0 };
         parent.children[index] = el('div', { className: ['code-block'], dataLang: lang }, [el('span', { className: ['code-lang'] }, [{ type: 'text', value: lang }]), pre]);

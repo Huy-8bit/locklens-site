@@ -1,5 +1,6 @@
 ---
 import '../styles/global.css';
+import '../styles/theme.css';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import SearchDialog from '../components/SearchDialog.astro';
@@ -28,7 +29,7 @@ const ogImage = new URL(url('/og.png'), Astro.site);
     <meta name="description" content={description} />
     <link rel="canonical" href={canonical} />
     {noindex && <meta name="robots" content="noindex" />}
-    <meta name="theme-color" content="#f7f9fc" />
+    <meta name="theme-color" content="#eff4fb" />
     <link rel="icon" href={url('/favicon.svg')} type="image/svg+xml" />
     <link rel="sitemap" href={url('/sitemap-index.xml')} />
 
@@ -50,6 +51,7 @@ const ogImage = new URL(url('/og.png'), Astro.site);
   </head>
   <body class="min-h-dvh overflow-x-clip">
     <a href="#main" class="skip-link">Skip to content</a>
+    <div class="frame-rails" aria-hidden="true"><span class="frame-label">LOCKLENS <b>/</b> READ-ONLY <b>/</b> OUT OF BAND</span></div>
     <Header current={current} />
     <slot />
     {footer && <Footer />}
