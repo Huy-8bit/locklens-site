@@ -1,0 +1,255 @@
+---
+import SectionHeader from '../SectionHeader.astro';
+import Shot from '../Shot.astro';
+import QueryPerformanceChart from '../../islands/QueryPerformanceChart';
+import BaselineChart from '../../islands/BaselineChart';
+import { url } from '../../lib/site';
+
+const cliOutput = `Blocking chains (blocker -> waiter)
+  Incident 1: root blocker pid 116 blocks 1 directly, 2 in total
+    pid 116  idle in transaction  tx 3s  user=demo_app  app=locklens-demo-A  blocks 1 directly, 2 in total
+    └─ pid 117  active  lock wait 3s  tx 3s  user=demo_app  app=locklens-demo-B
+       └─ pid 118  active  lock wait 3s  tx 3s  user=demo_app  app=locklens-demo-C`;
+
+const timeline = [
+  { kind: 'pre_trigger', text: 'Up to 30 samples from before the trigger', tone: 'bg-slate-400' },
+  { kind: 'trigger', text: 'The finding(s) that opened the incident, with evidence', tone: 'bg-blocker' },
+  { kind: 'blocking_snapshot', text: 'Full activity snapshot whenever the graph changes shape', tone: 'bg-wait' },
+  { kind: 'sessions', text: 'Up to 25 sessions: blockers first, then the longest running', tone: 'bg-accent' },
+  { kind: 'load', text: 'Database load in the 5 minutes before the trigger', tone: 'bg-accent-violet' },
+  { kind: 'resolved', text: 'After 3 consecutive samples without the condition', tone: 'bg-ok' },
+];
+
+const destinations = [
+  { name: 'Slack', how: 'Incoming webhook', dir: 'push' },
+  { name: 'Webhook', how: 'JSON POST, optional HMAC-SHA256 signature', dir: 'push' },
+  { name: 'Email', how: 'SMTP with STARTTLS or TLS, up to 20 recipients', dir: 'push' },
+  { name: 'Alertmanager', how: '/api/v2/alerts → your existing receivers', dir: 'push' },
+  { name: 'Prometheus', how: 'GET /metrics/targets with a metrics token', dir: 'pull' },
+  { name: 'Grafana', how: 'Dashboard JSON on the Prometheus metrics', dir: '—' },
+  { name: 'OpenTelemetry', how: 'OTLP/HTTP metrics push every 60 s', dir: 'push' },
+  { name: 'REST API', how: 'Read tokens for scripts; deploy events from pipelines', dir: 'pull' },
+];
+---
+<section id="features" class="relative scroll-mt-16 border-t border-line py-24 sm:py-28" aria-labelledby="features-title">
+  <div class="mx-auto max-w-[1320px] px-4 sm:px-6">
+    <SectionHeader id="features-title" eyebrow="Capabilities" title="From “it’s slow” to the evidence behind it" lead="Everything below is implemented in the LockLens repository today. Synthetic charts are labelled as illustrative; screenshots come from the project’s lab." />
+
+    <!-- 1. Blocking analysis -->
+    <article class="mt-20 grid items-center gap-10 lg:grid-cols-2" aria-labelledby="f-blocking" data-reveal>
+      <div>
+        <p class="eyebrow">Blocking analysis</p>
+        <h3 id="f-blocking" class="mt-3 text-2xl font-semibold tracking-tight text-fg sm:text-3xl">Who blocks whom — and the root of it</h3>
+        <p class="mt-4 leading-relaxed text-fg-muted">Edges come only from <code class="font-mono text-[0.9em] text-fg">pg_blocking_pids()</code>, which respects lock-mode compatibility and queue order. LockLens finds root blockers, counts who they block directly and in total, folds parallel workers into their leaders, and calls out idle-in-transaction blockers.</p>
+        <ul class="mt-5 space-y-2 text-sm text-fg-muted">
+          <li class="flex gap-2"><span class="text-accent">▸</span>Lock modes, lock wait and transaction ages kept distinct</li>
+          <li class="flex gap-2"><span class="text-accent">▸</span>Same analysis in the CLI, the UI and stored incidents</li>
+          <li class="flex gap-2"><span class="text-accent">▸</span>A cycle in sampled data is labelled, never called a confirmed deadlock</li>
+        </ul>
+        <a href={url('/docs/features/blocking-analysis/')} class="mt-6 inline-block text-sm text-accent hover:underline">Blocking graph model →</a>
+      </div>
+      <div class="relative">
+        <div class="overflow-hidden rounded-xl border border-line-strong bg-[#070c17] shadow-2xl shadow-black/50">
+          <div class="flex items-center gap-2 border-b border-line px-4 py-2 font-mono text-[0.72rem] text-fg-subtle">
+            <span class="text-accent">$</span> locklens inspect
+            <span class="ml-auto chip !py-0">real CLI output · demo scenario</span>
+          </div>
+          <pre class="overflow-x-auto p-4 font-mono text-[0.74rem] leading-relaxed text-slate-300"><code>{cliOutput.split('\n').map((l) => (
+            <span class:list={['block', l.includes('root blocker') && 'text-rose-300', l.includes('└─') && 'text-orange-200']}>{l}</span>
+          ))}</code></pre>
+        </div>
+        <svg viewBox="0 0 520 150" class="mt-4 w-full" role="img" aria-label="Animated blocking graph: pid 116 is the root blocker of pid 117, which blocks pid 118">
+          <defs>
+            <marker id="bf-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M1,1 L9,5 L1,9 z" fill="#fb923c" /></marker>
+          </defs>
+          {[
+            { x: 20, pid: 116, label: 'root blocker · idle in tx', root: true },
+            { x: 190, pid: 117, label: 'waiting · lock wait 3 s' },
+            { x: 360, pid: 118, label: 'waiting · lock wait 3 s' },
+          ].map((n, i) => (
+            <g class="bf-node" style={`animation-delay:${i * 0.5}s`}>
+              <rect x={n.x} y={46} width={140} height={58} rx={12} fill={n.root ? 'rgba(251,113,133,0.12)' : 'rgba(251,146,60,0.08)'} stroke={n.root ? '#fb7185' : 'rgba(251,146,60,0.6)'} />
+              <text x={n.x + 14} y={70} fill="#f8fafc" font-size="13" font-weight="650" font-family="var(--font-mono)">pid {n.pid}</text>
+              <text x={n.x + 14} y={89} fill={n.root ? '#fda4af' : '#fdba74'} font-size="10.5">{n.label}</text>
+            </g>
+          ))}
+          <path d="M188,75 L162,75" stroke="#fb923c" stroke-width="2" stroke-dasharray="4 4" marker-end="url(#bf-arrow)" class="dg-flow-dash" />
+          <path d="M358,75 L332,75" stroke="#fb923c" stroke-width="2" stroke-dasharray="4 4" marker-end="url(#bf-arrow)" class="dg-flow-dash" />
+          <text x={260} y={130} text-anchor="middle" fill="#7d8aa5" font-size="10.5">arrows point from a waiting session to the session it waits for</text>
+        </svg>
+      </div>
+    </article>
+
+    <!-- 2. Query performance -->
+    <article class="mt-28 grid items-center gap-10 lg:grid-cols-[1.1fr_1fr]" aria-labelledby="f-queries" data-reveal>
+      <div class="panel order-2 p-5 lg:order-1">
+        <QueryPerformanceChart client:visible />
+      </div>
+      <div class="order-1 lg:order-2">
+        <p class="eyebrow">Query performance</p>
+        <h3 id="f-queries" class="mt-3 text-2xl font-semibold tracking-tight text-fg sm:text-3xl">Every statement, every 15 seconds</h3>
+        <p class="mt-4 leading-relaxed text-fg-muted">The statements collector reads <code class="font-mono text-[0.9em] text-fg">pg_stat_statements</code> counters without texts and fetches a text only for statements it has not seen before — which is what makes a 15-second interval cheap. Statements are classified as SELECT, INSERT, UPDATE, DELETE, DDL and more, with rate, time and rows per type, top queries across instances, and comparison with the previous period.</p>
+        <a href={url('/docs/features/query-analysis/')} class="mt-6 inline-block text-sm text-accent hover:underline">Query analysis →</a>
+      </div>
+    </article>
+
+    <!-- 3. Anomaly detection -->
+    <article class="mt-28 grid items-center gap-10 lg:grid-cols-[1fr_1.1fr]" aria-labelledby="f-anomaly" data-reveal>
+      <div>
+        <p class="eyebrow">Anomaly detection</p>
+        <h3 id="f-anomaly" class="mt-3 text-2xl font-semibold tracking-tight text-fg sm:text-3xl">Compared with its own history</h3>
+        <p class="mt-4 leading-relaxed text-fg-muted">Each statement has a baseline — median and MAD by hour of day, from five-minute rollups. Rules flag slower per call, more calls, more load, more I/O, different rows per call, possible N+1, and statements slow <em>while they run</em>. Each finding has an explainable impact score and a confidence about the data.</p>
+        <p class="mt-4 rounded-xl border border-amber-400/25 bg-amber-400/[0.05] p-4 text-sm leading-relaxed text-amber-50/85">Evidence around an anomaly — waits, changes, server log events — is correlated into ranked <strong class="text-amber-100">hypotheses</strong>. They are never presented as confirmed causes, and LockLens never runs <code class="font-mono">EXPLAIN ANALYZE</code>.</p>
+        <a href={url('/docs/features/query-performance/')} class="mt-6 inline-block text-sm text-accent hover:underline">Query performance intelligence →</a>
+      </div>
+      <div class="panel p-5"><BaselineChart client:visible /></div>
+    </article>
+
+    <!-- 4. Incident investigation -->
+    <article class="mt-28" aria-labelledby="f-incident" data-reveal>
+      <div class="grid gap-10 lg:grid-cols-[1fr_1.4fr]">
+        <div>
+          <p class="eyebrow">Incident investigation</p>
+          <h3 id="f-incident" class="mt-3 text-2xl font-semibold tracking-tight text-fg sm:text-3xl">Incidents that keep their evidence</h3>
+          <p class="mt-4 leading-relaxed text-fg-muted">When a trigger rule fires, the recorder opens an append-only incident: what LockLens saw before the problem, the trigger, how it evolved, and how it ended. Incidents copy their evidence, so retention never changes them, and they export to JSON or a standalone HTML report that opens without LockLens.</p>
+          <ol class="mt-6 space-y-3 border-l border-line pl-5">
+            {timeline.map((t) => (
+              <li class="relative text-sm">
+                <span class:list={['absolute -left-[25px] top-1.5 size-2.5 rounded-full ring-4 ring-ink-950', t.tone]} aria-hidden="true"></span>
+                <span class="font-mono text-xs text-fg">{t.kind}</span>
+                <span class="block text-fg-muted">{t.text}</span>
+              </li>
+            ))}
+          </ol>
+          <a href={url('/docs/features/incidents/')} class="mt-6 inline-block text-sm text-accent hover:underline">Incidents →</a>
+        </div>
+        <Shot name="incident.png" alt="LockLens incident page showing what happened, the root blocker pid 289, and who blocks whom" caption="Incident page from the lab: “Blocking chain rooted at pid 289 persists (2 blocked)”." />
+      </div>
+    </article>
+
+    <!-- 5. Query optimization -->
+    <article class="mt-28" aria-labelledby="f-optimize" data-reveal>
+      <div class="grid gap-10 lg:grid-cols-[1.4fr_1fr]">
+        <Shot name="optimize-detail.png" alt="A recommendation with its evidence, the SQL to apply, and the what-if check" class="order-2 lg:order-1" caption="A recommendation with its evidence, the SQL to apply, and an optional what-if check." />
+        <div class="order-1 lg:order-2">
+          <p class="eyebrow">Query optimization</p>
+          <h3 id="f-optimize" class="mt-3 text-2xl font-semibold tracking-tight text-fg sm:text-3xl">Recommendations you apply — never automatic</h3>
+          <p class="mt-4 leading-relaxed text-fg-muted">Each database’s schema and workload are analysed with PostgreSQL’s own parser: missing and redundant indexes, foreign keys without an index, invalid indexes, stale statistics, row misestimates, spills to disk.</p>
+          <ol class="mt-6 grid gap-2 text-sm">
+            {[
+              ['Detect', 'From the catalog and statement statistics'],
+              ['Recommend', 'Ranked by benefit, with evidence and the SQL'],
+              ['What-if (optional)', 'Hypothetical indexes with HypoPG'],
+              ['You apply', 'A person reviews and runs the SQL'],
+              ['Measure', 'LockLens notices the change and compares before/after'],
+            ].map(([a, b], i) => (
+              <li class:list={['flex items-center gap-3 rounded-xl border px-3 py-2.5', i === 3 ? 'border-amber-400/35 bg-amber-400/[0.05]' : 'border-line bg-ink-900/50']}>
+                <span class="grid size-6 shrink-0 place-items-center rounded-md bg-ink-700 font-mono text-[0.7rem] text-fg-muted">{i + 1}</span>
+                <span class="font-medium text-fg">{a}</span>
+                <span class="ml-auto text-right text-xs text-fg-muted">{b}</span>
+              </li>
+            ))}
+          </ol>
+          <a href={url('/docs/features/query-optimizer/')} class="mt-6 inline-block text-sm text-accent hover:underline">Query optimizer →</a>
+        </div>
+      </div>
+    </article>
+
+    <!-- 6–7. Fleet + replication -->
+    <div class="mt-28 grid gap-6 lg:grid-cols-2">
+      <article class="panel overflow-hidden p-6 sm:p-8" aria-labelledby="f-fleet" data-reveal>
+        <p class="eyebrow">Fleet monitoring</p>
+        <h3 id="f-fleet" class="mt-3 text-2xl font-semibold tracking-tight text-fg">Environments, not just instances</h3>
+        <p class="mt-3 text-sm leading-relaxed text-fg-muted">Group instances into environments (production, staging, …), add one by pasting a connection string, and read several databases per instance. Each target has its own worker, pool and timeouts, so one failing instance never affects the others.</p>
+        <ul class="mt-6 grid grid-cols-2 gap-2 text-xs sm:grid-cols-4" aria-label="Target states (illustrative instances)">
+          {[
+            ['orders-db', 'healthy', 'bg-ok'],
+            ['payments-db', 'healthy', 'bg-ok'],
+            ['reporting', 'degraded', 'bg-amber-400'],
+            ['legacy-crm', 'unreachable', 'bg-blocker'],
+          ].map(([n, s, c]) => (
+            <li class="rounded-lg border border-line bg-ink-900/60 p-2.5">
+              <span class="block truncate font-mono text-fg">{n}</span>
+              <span class="mt-1 flex items-center gap-1.5 text-fg-muted"><span class:list={['size-1.5 rounded-full', c]} aria-hidden="true"></span>{s}</span>
+            </li>
+          ))}
+        </ul>
+        <Shot name="overview.png" alt="LockLens fleet overview" class="mt-6" widths={[640, 960]} />
+      </article>
+
+      <article class="panel overflow-hidden p-6 sm:p-8" aria-labelledby="f-repl" data-reveal>
+        <p class="eyebrow">Replication</p>
+        <h3 id="f-repl" class="mt-3 text-2xl font-semibold tracking-tight text-fg">Primaries, standbys, slots and lag</h3>
+        <p class="mt-3 text-sm leading-relaxed text-fg-muted">The replication topology with replay lag per standby, slots and the WAL they retain, and standby receive/replay state. Rules flag replicas behind by 64 MiB or more and slots retaining 1 GiB or more.</p>
+        <svg viewBox="0 0 520 300" class="mt-6 w-full" role="img" aria-label="Illustrative replication topology: one primary streaming to three standbys with replay lag 0.2, 1.1 and 72 MiB; the third exceeds the 64 MiB threshold">
+          <defs><marker id="rp-a" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M1,1 L9,5 L1,9 z" fill="#a78bfa" /></marker></defs>
+          <rect x="16" y="118" width="150" height="62" rx="12" fill="#0d1528" stroke="#22d3ee" stroke-opacity="0.6" />
+          <text x="32" y="145" fill="#f1f5f9" font-size="13" font-weight="650">primary</text>
+          <text x="32" y="164" fill="#8796b0" font-size="10.5" font-family="var(--font-mono)">WAL 6.4 MB/s</text>
+          {[
+            { y: 22, name: 'standby-1', lag: 0.2 },
+            { y: 118, name: 'standby-2', lag: 1.1 },
+            { y: 214, name: 'standby-3', lag: 72, bad: true },
+          ].map((s, i) => (
+            <g>
+              <path d={`M166,149 C230,149 240,${s.y + 31} 300,${s.y + 31}`} fill="none" stroke="#a78bfa" stroke-width="2" stroke-dasharray="2 4" marker-end="url(#rp-a)" class="dg-flow-dash" />
+              <rect x="304" y={s.y} width="200" height="62" rx="12" fill="#0d1528" stroke={s.bad ? '#fbbf24' : 'rgba(148,163,184,0.3)'} />
+              <text x="318" y={s.y + 22} fill="#f1f5f9" font-size="12" font-weight="600">{s.name}</text>
+              <text x="490" y={s.y + 22} text-anchor="end" fill={s.bad ? '#fcd34d' : '#a3b1c9'} font-size="10.5" font-family="var(--font-mono)">{s.lag} MiB</text>
+              <rect x="318" y={s.y + 36} width="172" height="6" rx="3" fill="rgba(148,163,184,0.15)" />
+              <rect x="318" y={s.y + 36} width={Math.max(3, (s.lag / 80) * 172)} height="6" rx="3" fill={s.bad ? '#fbbf24' : '#a78bfa'} class="rp-bar" style={`animation-delay:${i * 0.2}s`} />
+              <line x1={318 + (64 / 80) * 172} x2={318 + (64 / 80) * 172} y1={s.y + 32} y2={s.y + 46} stroke="#fbbf24" stroke-opacity="0.8" />
+            </g>
+          ))}
+          <text x="16" y="292" fill="#7d8aa5" font-size="10">Illustrative values · bars scale to 80 MiB · tick = 64 MiB default threshold</text>
+        </svg>
+        <a href={url('/docs/features/replication/')} class="mt-4 inline-block text-sm text-accent hover:underline">Replication monitoring →</a>
+      </article>
+    </div>
+
+    <!-- 8. Alerts & integrations -->
+    <article class="mt-28 grid gap-10 lg:grid-cols-[1fr_1.2fr]" aria-labelledby="f-alerts" data-reveal>
+      <div>
+        <p class="eyebrow">Alerts & integrations</p>
+        <h3 id="f-alerts" class="mt-3 text-2xl font-semibold tracking-tight text-fg sm:text-3xl">Fits the stack you already run</h3>
+        <p class="mt-4 leading-relaxed text-fg-muted">Each rule opens incidents, reports findings only, or is off — globally, per environment, or per instance. Channels filter by severity, environment, rule and instance, with escalation tiers, reminders, silences and maintenance windows. Messages never contain SQL text, connection strings or credentials.</p>
+        <Shot name="notifications.png" alt="Notification channels: a first tier and an escalation tier to Alertmanager" class="mt-6" widths={[640, 960]} />
+      </div>
+      <ul class="grid content-start gap-3 sm:grid-cols-2">
+        {destinations.map((d) => (
+          <li class="panel flex flex-col gap-1.5 p-4 transition-colors hover:border-amber-400/30">
+            <div class="flex items-center gap-2">
+              <span class="font-medium text-fg">{d.name}</span>
+              <span class="chip ml-auto !py-0 font-mono text-[0.65rem]">{d.dir}</span>
+            </div>
+            <p class="text-sm leading-relaxed text-fg-muted">{d.how}</p>
+          </li>
+        ))}
+        <li class="sm:col-span-2">
+          <a href={url('/docs/deployment/integrations/')} class="text-sm text-accent hover:underline">Integrations</a>
+          <span class="text-fg-subtle"> · </span>
+          <a href={url('/docs/features/notifications/')} class="text-sm text-accent hover:underline">Notifications</a>
+        </li>
+      </ul>
+    </article>
+  </div>
+</section>
+
+<style>
+  .bf-node {
+    animation: bf-in 3.6s var(--ease-out-soft) infinite;
+  }
+  @keyframes bf-in {
+    0% { opacity: 0.25; }
+    18%, 80% { opacity: 1; }
+    100% { opacity: 0.25; }
+  }
+  .rp-bar {
+    transform-box: fill-box;
+    transform-origin: left;
+    animation: rp-grow 2.4s var(--ease-out-soft) both;
+  }
+  @keyframes rp-grow {
+    from { transform: scaleX(0); }
+  }
+</style>

@@ -1,0 +1,14 @@
+---
+import { Image } from 'astro:assets';
+import { screenshot } from '../lib/images';
+interface Props { name: string; alt: string; caption?: string; class?: string; eager?: boolean; widths?: number[] }
+const { name, alt, caption, class: cls = '', eager = false, widths = [640, 960, 1440] } = Astro.props;
+const img = screenshot(name);
+---
+<figure class:list={['overflow-hidden rounded-xl border border-line-strong bg-ink-900 shadow-2xl shadow-black/40', cls]}>
+  <div class="flex items-center gap-1.5 border-b border-line px-3 py-2" aria-hidden="true">
+    <span class="size-2 rounded-full bg-ink-600"></span><span class="size-2 rounded-full bg-ink-600"></span><span class="size-2 rounded-full bg-ink-600"></span>
+  </div>
+  <Image src={img} alt={alt} widths={widths} sizes="(min-width: 1280px) 760px, 100vw" format="webp" quality={82} loading={eager ? 'eager' : 'lazy'} class="block h-auto w-full bg-white" />
+  {caption && <figcaption class="border-t border-line px-3 py-2 text-[0.72rem] text-fg-muted">{caption}</figcaption>}
+</figure>

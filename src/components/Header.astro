@@ -1,0 +1,79 @@
+---
+import Logo from './Logo.astro';
+import { NAV_LINKS, SITE, url } from '../lib/site';
+interface Props { current?: 'home' | 'architecture' | 'docs' }
+const { current } = Astro.props;
+const isCurrent = (href: string) =>
+  (current === 'architecture' && href.startsWith('/architecture')) || (current === 'docs' && href.startsWith('/docs'));
+---
+<header class="sticky top-0 z-50 h-[var(--header-h)] border-b border-line bg-ink-950/75 backdrop-blur-xl supports-[backdrop-filter]:bg-ink-950/60">
+  <nav class="mx-auto flex h-full max-w-[1320px] items-center gap-4 px-4 sm:px-6" aria-label="Main">
+    <a href={url('/')} class="flex shrink-0 items-center gap-2.5 font-semibold tracking-tight text-fg" aria-label="LockLens home">
+      <Logo size={26} />
+      <span class="text-[1.02rem]">LockLens</span>
+    </a>
+
+    <ul class="ml-6 hidden items-center gap-1 lg:flex">
+      {NAV_LINKS.map((l) => (
+        <li>
+          <a
+            href={url(l.href)}
+            aria-current={isCurrent(l.href) ? 'page' : undefined}
+            class:list={['rounded-lg px-3 py-2 text-sm transition-colors hover:text-fg', isCurrent(l.href) ? 'text-fg' : 'text-fg-muted']}
+          >{l.label}</a>
+        </li>
+      ))}
+    </ul>
+
+    <div class="ml-auto flex items-center gap-2">
+      <button type="button" data-search-open class="hidden h-9 items-center gap-2 rounded-lg border border-line bg-ink-900/70 pl-3 pr-2 text-sm text-fg-subtle transition-colors hover:border-line-strong hover:text-fg-muted md:flex" aria-label="Search documentation">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+        <span class="pr-6">Search docs</span>
+        <kbd class="kbd" data-search-kbd>⌘K</kbd>
+      </button>
+      <button type="button" data-search-open class="ctrl md:hidden" aria-label="Search documentation">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+      </button>
+      <a href={SITE.repo} class="ctrl hidden sm:inline-flex" rel="noopener noreferrer" aria-label="LockLens on GitHub">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 .5a12 12 0 0 0-3.8 23.4c.6.1.8-.3.8-.6v-2.1c-3.3.7-4-1.6-4-1.6-.6-1.4-1.4-1.8-1.4-1.8-1.1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1.1 1.8 2.8 1.3 3.5 1 .1-.8.4-1.3.8-1.6-2.7-.3-5.5-1.3-5.5-5.9 0-1.3.5-2.4 1.2-3.2-.1-.3-.5-1.5.1-3.2 0 0 1-.3 3.3 1.2a11.5 11.5 0 0 1 6 0C17.3 4.6 18.3 5 18.3 5c.7 1.7.3 2.9.1 3.2.8.8 1.2 1.9 1.2 3.2 0 4.6-2.8 5.6-5.5 5.9.4.4.8 1.1.8 2.2v3.3c0 .3.2.7.8.6A12 12 0 0 0 12 .5Z"/></svg>
+        <span class="hidden xl:inline">GitHub</span>
+      </a>
+      <a href={url('/docs/getting-started/')} class="btn btn-primary btn-sm hidden sm:inline-flex">Get started</a>
+      <button type="button" class="ctrl lg:hidden" data-menu-toggle aria-expanded="false" aria-controls="mobile-menu" aria-label="Open menu">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+      </button>
+    </div>
+  </nav>
+
+  <div id="mobile-menu" hidden class="border-b border-line bg-ink-950/95 backdrop-blur-xl lg:hidden">
+    <ul class="mx-auto flex max-w-[1320px] flex-col gap-1 px-4 py-3">
+      {NAV_LINKS.map((l) => (
+        <li><a href={url(l.href)} class="block rounded-lg px-3 py-2.5 text-[0.95rem] text-fg-muted hover:bg-ink-800 hover:text-fg">{l.label}</a></li>
+      ))}
+      <li><a href={SITE.repo} rel="noopener noreferrer" class="block rounded-lg px-3 py-2.5 text-[0.95rem] text-fg-muted hover:bg-ink-800 hover:text-fg">GitHub ↗</a></li>
+      <li class="pt-2"><a href={url('/docs/getting-started/')} class="btn btn-primary w-full justify-center">Get started</a></li>
+    </ul>
+  </div>
+</header>
+
+<script>
+  const toggle = document.querySelector<HTMLButtonElement>('[data-menu-toggle]');
+  const menu = document.getElementById('mobile-menu');
+  if (toggle && menu) {
+    const set = (open: boolean) => {
+      menu.hidden = !open;
+      toggle.setAttribute('aria-expanded', String(open));
+      toggle.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+    };
+    toggle.addEventListener('click', () => set(Boolean(menu.hidden)));
+    menu.addEventListener('click', (e) => {
+      if ((e.target as HTMLElement).closest('a')) set(false);
+    });
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && !menu.hidden) {
+        set(false);
+        toggle.focus();
+      }
+    });
+  }
+</script>

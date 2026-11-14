@@ -1,0 +1,84 @@
+---
+import DocsLayout from '../../layouts/DocsLayout.astro';
+import { getAllDocs, getNavigation } from '../../lib/docs';
+import { url } from '../../lib/site';
+
+const nav = getNavigation();
+const docs = getAllDocs();
+const bySlug = new Map(docs.map((d) => [d.slug, d]));
+const start = [
+  { slug: 'getting-started', blurb: 'Run the Docker lab, create a blocking chain, and watch LockLens explain it.' },
+  { slug: 'architecture', blurb: 'How LockLens fits together, what it reads from PostgreSQL, and production topologies.' },
+  { slug: 'deployment', blurb: 'Two images and a store: Compose, docker run, TLS, several servers.' },
+  { slug: 'architecture/postgresql-observation', blurb: 'What LockLens reads from PostgreSQL and the role it needs.' },
+];
+const groupIcons: Record<string, string> = {
+  'Getting started': 'M5 12h14M13 6l6 6-6 6',
+  Architecture: 'M4 6h6v6H4zM14 12h6v6h-6zM10 9h4v6',
+  Features: 'M12 3v18M3 12h18',
+  'Deployment & operations': 'M4 7h16v10H4zM8 11h.01M12 11h4',
+  Reference: 'M6 4h9l3 3v13H6zM9 12h6M9 16h6',
+};
+---
+<DocsLayout title="Documentation" description="LockLens documentation: getting started, architecture, collectors, features, deployment, integrations, security, API and CLI reference." slug="">
+  <div class="mx-auto max-w-[920px]">
+    <p class="eyebrow">Documentation</p>
+    <h1 class="mt-3 text-4xl font-semibold tracking-tight text-fg sm:text-5xl">Learn LockLens</h1>
+    <p class="mt-4 max-w-2xl text-lg leading-relaxed text-fg-muted">
+      Everything here is generated from the Markdown in the LockLens repository at build time, so it matches the code it describes.
+    </p>
+    <button type="button" data-search-open class="mt-7 flex w-full max-w-xl items-center gap-3 rounded-xl border border-line-strong bg-ink-900/80 px-4 py-3 text-left text-sm text-fg-subtle transition-colors hover:border-accent/40">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+      Search {docs.length} pages…
+      <kbd class="kbd ml-auto" data-search-kbd>⌘K</kbd>
+    </button>
+
+    <h2 class="mt-14 text-sm font-semibold uppercase tracking-[0.14em] text-fg-subtle">Start here</h2>
+    <ul class="mt-4 grid gap-3 sm:grid-cols-2">
+      {start.map((s) => {
+        const d = bySlug.get(s.slug)!;
+        return (
+          <li>
+            <a href={url(`/docs/${s.slug}/`)} class="panel group block h-full p-5 transition-colors hover:border-accent/40">
+              <span class="font-medium text-fg group-hover:text-accent">{d.label}</span>
+              <p class="mt-1.5 text-sm leading-relaxed text-fg-muted">{s.blurb}</p>
+            </a>
+          </li>
+        );
+      })}
+    </ul>
+
+    <a href={url('/architecture/')} class="group mt-6 flex items-center gap-4 overflow-hidden rounded-2xl border border-accent/25 bg-gradient-to-r from-accent/[0.08] to-accent-violet/[0.06] p-5">
+      <span class="grid size-10 shrink-0 place-items-center rounded-xl bg-accent/15 text-accent" aria-hidden="true">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="5" cy="6" r="2.5"/><circle cx="19" cy="6" r="2.5"/><circle cx="12" cy="18" r="2.5"/><path d="M7.2 7.4 10.4 16M16.8 7.4 13.6 16M7.5 6h9"/></svg>
+      </span>
+      <span>
+        <span class="font-medium text-fg">Interactive architecture explorer</span>
+        <span class="block text-sm text-fg-muted">Step through the collection pipeline, production topologies, and a simulated blocking incident.</span>
+      </span>
+      <span class="ml-auto text-accent transition-transform group-hover:translate-x-1" aria-hidden="true">→</span>
+    </a>
+
+    <h2 class="mt-14 text-sm font-semibold uppercase tracking-[0.14em] text-fg-subtle">All sections</h2>
+    <div class="mt-4 grid gap-4 md:grid-cols-2">
+      {nav.map((g) => (
+        <section class="panel p-5" aria-labelledby={`g-${g.title}`}>
+          <h3 id={`g-${g.title}`} class="flex items-center gap-2.5 font-medium text-fg">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-accent" aria-hidden="true"><path d={groupIcons[g.title] ?? groupIcons['More documentation']} /></svg>
+            {g.title}
+          </h3>
+          <ul class="mt-3 space-y-1.5">
+            {g.items.map((i) => (
+              <li>
+                <a href={url(`/docs/${i.slug}/`)} class="group flex items-baseline gap-2 text-sm text-fg-muted hover:text-fg">
+                  <span class="text-fg-subtle group-hover:text-accent" aria-hidden="true">›</span>
+                  <span>{i.label}</span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        </section>
+      ))}
+    </div>
+  </div>
+</DocsLayout>

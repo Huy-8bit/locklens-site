@@ -1,0 +1,80 @@
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+  # Rebuild daily so the documentation follows the LockLens repository's main branch.
+  schedule:
+    - cron: '17 3 * * *'
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the website
+        uses: actions/checkout@v4
+        with:
+          path: site
+
+      - name: Check out the LockLens repository (documentation source)
+        uses: actions/checkout@v4
+        with:
+          repository: Huy-8bit/locklens
+          ref: main
+          path: locklens
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: site/package-lock.json
+
+      - id: pages
+        uses: actions/configure-pages@v5
+
+      - name: Install
+        working-directory: site
+        run: npm ci
+
+      - name: Type check and lint
+        working-directory: site
+        run: npm run check && npm run lint
+
+      - name: Build
+        working-directory: site
+        env:
+          LOCKLENS_REPO: ../locklens
+          LOCKLENS_REPO_REF: main
+          SITE_URL: ${{ steps.pages.outputs.origin }}
+          BASE_PATH: ${{ steps.pages.outputs.base_path }}
+        run: npm run build
+
+      - name: Check internal links
+        working-directory: site
+        env:
+          BASE_PATH: ${{ steps.pages.outputs.base_path }}
+        run: npm run test:links
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: site/dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

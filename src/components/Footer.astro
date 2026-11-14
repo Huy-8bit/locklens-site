@@ -1,0 +1,63 @@
+---
+import Logo from './Logo.astro';
+import { SITE, url } from '../lib/site';
+const cols = [
+  {
+    title: 'Product',
+    links: [
+      { label: 'Features', href: url('/#features') },
+      { label: 'Architecture explorer', href: url('/architecture/') },
+      { label: 'Incident walkthrough', href: url('/architecture/#incident') },
+      { label: 'Quick start', href: url('/#quick-start') },
+    ],
+  },
+  {
+    title: 'Documentation',
+    links: [
+      { label: 'Getting started', href: url('/docs/getting-started/') },
+      { label: 'Architecture', href: url('/docs/architecture/') },
+      { label: 'Deployment', href: url('/docs/deployment/') },
+      { label: 'HTTP API', href: url('/docs/reference/api/') },
+      { label: 'Limitations', href: url('/docs/deployment/limitations/') },
+    ],
+  },
+  {
+    title: 'Project',
+    links: [
+      { label: 'GitHub', href: SITE.repo },
+      { label: 'Releases', href: SITE.releases },
+      { label: 'Issues', href: SITE.issues },
+      { label: 'Security policy', href: url('/docs/deployment/security-policy/') },
+    ],
+  },
+];
+---
+<footer class="relative border-t border-line bg-ink-950">
+  <div class="mx-auto grid max-w-[1320px] gap-10 px-4 py-14 sm:px-6 md:grid-cols-[1.4fr_repeat(3,1fr)]">
+    <div class="max-w-sm">
+      <a href={url('/')} class="flex items-center gap-2.5 font-semibold text-fg"><Logo size={24} /> LockLens</a>
+      <p class="mt-4 text-sm leading-relaxed text-fg-muted">
+        Open-source PostgreSQL monitoring and incident investigation. Read-only by design. MIT licensed.
+      </p>
+      <p class="mt-4 text-xs leading-relaxed text-fg-subtle">
+        LockLens is young: its test suites pass against PostgreSQL 14–18 in a local lab, but it has not yet been run in production environments.
+      </p>
+    </div>
+    {cols.map((c) => (
+      <div>
+        <h2 class="text-xs font-semibold uppercase tracking-[0.12em] text-fg-subtle">{c.title}</h2>
+        <ul class="mt-4 space-y-2.5">
+          {c.links.map((l) => (
+            <li><a href={l.href} class="text-sm text-fg-muted transition-colors hover:text-fg" {...(l.href.startsWith('http') ? { rel: 'noopener noreferrer' } : {})}>{l.label}</a></li>
+          ))}
+        </ul>
+      </div>
+    ))}
+  </div>
+  <div class="border-t border-line">
+    <div class="mx-auto flex max-w-[1320px] flex-col gap-2 px-4 py-5 text-xs text-fg-subtle sm:flex-row sm:items-center sm:justify-between sm:px-6">
+      <span>© The LockLens contributors · MIT License</span>
+      <span>PostgreSQL is a trademark of the PostgreSQL Community Association. Illustrative diagrams are labelled as such.</span>
+    </div>
+  </div>
+</footer>

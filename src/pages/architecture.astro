@@ -1,0 +1,276 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import SectionHeader from '../components/SectionHeader.astro';
+import InternalArchitecture from '../islands/InternalArchitecture';
+import ProductionTopology from '../islands/ProductionTopology';
+import IncidentStory from '../islands/IncidentStory';
+import { FLOWS, type FlowKind } from '../islands/diagram/flows';
+import { MODES } from '../islands/data/topology';
+import { url } from '../lib/site';
+
+const sections = [
+  ['overview', 'Overview'],
+  ['collection', 'Collection'],
+  ['internal', 'Internals'],
+  ['production', 'Production'],
+  ['flows', 'Data flows'],
+  ['incident', 'Incident'],
+  ['boundaries', 'Boundaries'],
+  ['security', 'Security'],
+];
+
+// From docs/collectors.md (Schedule). Intervals in seconds; `interval` = target activity interval (default 10 s).
+const collectors = [
+  { name: 'load', every: '2 s', s: 2, src: 'pg_stat_activity (no query text)', out: 'Active session sampling → 15 s buckets' },
+  { name: 'activity', every: 'interval (10 s)', s: 10, src: 'pg_stat_activity, pg_blocking_pids(), pg_locks', out: 'Sessions, blocking graph, long transactions' },
+  { name: 'statements', every: '15 s', s: 15, src: 'pg_stat_statements(false)', out: 'Per-statement deltas' },
+  { name: 'database', every: '≥ 15 s', s: 15, src: 'pg_stat_database, bgwriter, io, WAL', out: 'Rates, cache hits, temp files, WAL' },
+  { name: 'host', every: '≥ 15 s', s: 15, src: 'node_exporter /metrics (optional)', out: 'CPU, memory, disk, network' },
+  { name: 'replication', every: '≥ 30 s', s: 30, src: 'pg_stat_replication, slots, wal_receiver', out: 'Replicas, lag, retained WAL' },
+  { name: 'table_activity', every: '≥ 60 s', s: 60, src: 'pg_stat_user_tables counters', out: 'Hot tables (20 busiest)' },
+  { name: 'changes', every: '1 min', s: 60, src: 'pg_settings, server facts', out: 'Change timeline' },
+  { name: 'tables', every: '5 min', s: 300, src: 'pg_stat_user_tables/indexes, sizes', out: 'Sizes, vacuum, XID age' },
+  { name: 'catalog', every: '15 min', s: 900, src: 'pg_index, pg_class, pg_stats', out: 'Schema for the optimizer' },
+];
+const maxLog = Math.log(900);
+
+const boundaries = [
+  { from: 'Browser', to: 'Frontend (nginx)', port: '8080 → behind your TLS proxy', note: 'UI and /api/ on one origin. The only component people reach.', kind: 'api' as FlowKind },
+  { from: 'Frontend', to: 'Backend', port: '8080', note: 'Proxies /api/ and /metrics/targets. Never exposes /metrics.', kind: 'api' as FlowKind },
+  { from: 'Backend', to: 'Monitored PostgreSQL', port: '5432 (your servers)', note: 'Read-only role, READ ONLY transactions, 1–5 connections per target.', kind: 'collect' as FlowKind },
+  { from: 'Backend', to: 'Monitoring store', port: '5432 (LockLens’ own)', note: 'Read/write. Never one of the monitored databases.', kind: 'store' as FlowKind },
+  { from: 'Backend', to: 'Slack · webhooks · SMTP · Alertmanager · OTLP', port: 'outbound HTTPS / SMTP', note: 'Only destinations you configure. Link-local and metadata addresses refused.', kind: 'alert' as FlowKind },
+  { from: 'Prometheus', to: 'Frontend or backend', port: '/metrics/targets (token) · /metrics', note: 'Pull. Scrape every server when running several.', kind: 'alert' as FlowKind },
+  { from: 'Log agent (optional)', to: 'Backend', port: 'POST /api/v1/ingest/logs', note: 'Token of scope ingest. Never connects to PostgreSQL.', kind: 'alert' as FlowKind },
+];
+
+const security = [
+  { t: 'Observe only', d: 'No DDL or DML, no VACUUM, no index or configuration changes, no cancel or terminate, no failover. Findings suggest; LockLens never acts.' },
+  { t: 'Least privilege', d: 'pg_read_all_stats is enough. A superuser connection string can be used once to create least-privilege roles and is never stored.' },
+  { t: 'Secrets stay secret', d: 'Connection strings encrypted with AES-256-GCM under LOCKLENS_MASTER_KEY; never returned by the API, logged, exported, or put in metric labels.' },
+  { t: 'Sessions and roles', d: 'Administrator, operator, viewer. bcrypt, server-side sessions, HttpOnly + SameSite=Strict cookies, CSRF and Origin checks, login rate limits.' },
+  { t: 'SQL text is your choice', d: 'Collected by default and can be switched off per instance. Exports leave it out unless explicitly requested.' },
+  { t: 'Local by default', d: 'The server binds to 127.0.0.1. Terminate TLS in front of the frontend and set LOCKLENS_COOKIE_SECURE=true.' },
+];
+
+const deepLinks = [
+  ['Architecture overview', '/docs/architecture/'],
+  ['PostgreSQL observation & permissions', '/docs/architecture/postgresql-observation/'],
+  ['Production topology', '/docs/architecture/production-topology/'],
+  ['High availability', '/docs/deployment/high-availability/'],
+  ['Incident investigation', '/docs/features/incidents/'],
+  ['Replication monitoring', '/docs/features/replication/'],
+  ['Deployment', '/docs/deployment/'],
+  ['Security model', '/docs/deployment/security/'],
+  ['Integrations', '/docs/deployment/integrations/'],
+  ['Limitations', '/docs/deployment/limitations/'],
+];
+---
+<BaseLayout title="Architecture explorer" description="Interactive LockLens architecture: the collection pipeline, the internal modules of the server, how LockLens sits out of band in production PostgreSQL environments, multi-instance leases, and a simulated blocking incident." current="architecture">
+  <main id="main">
+    <!-- Overview -->
+    <section id="overview" class="relative overflow-hidden border-b border-line" aria-labelledby="arch-h1">
+      <div class="pointer-events-none absolute inset-0 bg-grid mask-radial opacity-70" aria-hidden="true"></div>
+      <div class="pointer-events-none absolute -top-32 left-1/2 h-[480px] w-[1000px] -translate-x-1/2 rounded-full bg-[radial-gradient(closest-side,rgba(34,211,238,0.14),transparent)]" aria-hidden="true"></div>
+      <div class="relative mx-auto max-w-[1320px] px-4 pb-16 pt-16 sm:px-6 lg:pt-20">
+        <p class="eyebrow">Architecture explorer</p>
+        <h1 id="arch-h1" class="mt-4 max-w-4xl text-[clamp(2.3rem,5vw,4rem)] font-semibold leading-[1.04] tracking-[-0.035em]">How LockLens works — and <span class="text-gradient">where it sits</span> in your system.</h1>
+        <p class="mt-5 max-w-3xl text-lg leading-relaxed text-fg-muted">LockLens observes PostgreSQL from the side. It is a single Go process with an nginx frontend and its own PostgreSQL store, connecting to each monitored server with a read-only role. Explore it step by step; every diagram links to the documentation it is based on.</p>
+        <div class="mt-10 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          {[
+            ['Backend', 'locklens server: collectors, rules, incident recorder, notifications, REST + SSE API'],
+            ['Frontend', 'nginx serving the React UI and proxying /api/ — the only component people reach'],
+            ['Monitoring store', 'PostgreSQL 14+, TimescaleDB recommended — LockLens’ own history, never a monitored database'],
+            ['Targets', 'Your PostgreSQL 14–18 servers, primaries and standbys, each observed read-only'],
+          ].map(([t, d]) => (
+            <div class="panel p-4">
+              <p class="font-medium text-fg">{t}</p>
+              <p class="mt-1 text-sm leading-relaxed text-fg-muted">{d}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <!-- Sticky section nav + persistent mode selector -->
+    <nav class="sticky top-[var(--header-h)] z-40 border-b border-line bg-ink-950/85 backdrop-blur-xl" aria-label="Architecture sections">
+      <div class="mx-auto flex max-w-[1320px] items-center gap-4 px-4 sm:px-6">
+        <ul class="flex flex-1 gap-1 overflow-x-auto py-2 [scrollbar-width:none]">
+          {sections.map(([id, label]) => (
+            <li><a href={`#${id}`} data-arch-link={id} class="arch-link block whitespace-nowrap rounded-lg px-3 py-1.5 text-[0.82rem] text-fg-muted transition-colors hover:text-fg">{label}</a></li>
+          ))}
+        </ul>
+        <div class="hidden items-center gap-1 lg:flex" role="group" aria-label="Production topology mode">
+          <span class="mr-1 text-xs text-fg-subtle">Topology</span>
+          {MODES.map((m) => (
+            <button type="button" class="ctrl !h-7 !min-w-7 font-mono !text-[0.72rem]" data-mode-btn={m.id} aria-pressed="false" title={m.label} aria-label={`Show ${m.label}`}>{m.short}</button>
+          ))}
+        </div>
+      </div>
+    </nav>
+
+    <!-- Collection -->
+    <section id="collection" class="scroll-mt-28 py-20" aria-labelledby="collection-title">
+      <div class="mx-auto max-w-[1320px] px-4 sm:px-6">
+        <SectionHeader id="collection-title" eyebrow="1 · How LockLens collects data" title="Ten collectors, each on its own schedule" lead="One worker per target runs its collectors one at a time, under a global concurrency limit (default 4). Each run has a timeout; while a target has a problem it is sampled faster for 10 minutes; a collector that takes more than 10% of its interval three times runs less often." />
+        <div class="mt-10 overflow-hidden rounded-2xl border border-line">
+          <table class="w-full text-left text-sm">
+            <caption class="sr-only">Collectors, their default intervals, what they read and produce</caption>
+            <thead class="bg-ink-900 text-[0.7rem] uppercase tracking-[0.12em] text-fg-subtle">
+              <tr><th class="px-4 py-3 font-semibold">Collector</th><th class="px-4 py-3 font-semibold">Every</th><th class="hidden px-4 py-3 font-semibold md:table-cell">Reads</th><th class="hidden px-4 py-3 font-semibold lg:table-cell">Produces</th><th class="w-[24%] px-4 py-3 font-semibold"><span class="sr-only">Relative frequency</span></th></tr>
+            </thead>
+            <tbody>
+              {collectors.map((c) => (
+                <tr class="border-t border-line">
+                  <td class="px-4 py-3 font-mono text-[0.82rem] text-fg">{c.name}</td>
+                  <td class="whitespace-nowrap px-4 py-3 text-fg-muted">{c.every}</td>
+                  <td class="hidden px-4 py-3 font-mono text-[0.75rem] text-fg-muted md:table-cell">{c.src}</td>
+                  <td class="hidden px-4 py-3 text-fg-muted lg:table-cell">{c.out}</td>
+                  <td class="px-4 py-3" aria-hidden="true">
+                    <div class="h-1.5 overflow-hidden rounded-full bg-ink-700">
+                      <div class="h-full rounded-full bg-gradient-to-r from-accent to-accent-blue" style={`width:${Math.max(6, 100 - (Math.log(c.s) / maxLog) * 92)}%`}></div>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        <p class="mt-3 text-xs text-fg-subtle">Bars show relative frequency on a log scale. Defaults; the activity interval is configurable per target (5–3600 s).</p>
+      </div>
+    </section>
+
+    <!-- Internal -->
+    <section id="internal" class="scroll-mt-28 border-t border-line py-20" aria-labelledby="internal-title">
+      <div class="mx-auto max-w-[1440px] px-4 sm:px-6">
+        <SectionHeader id="internal-title" eyebrow="2 · Internal component explorer" title="Inside the locklens server" lead="Logical boundaries of one process. Play the flow — connect, collect, process, store, visualise, detect and notify — or click any component for its purpose, schedule, implementation and docs." />
+        <div class="mt-10"><InternalArchitecture client:visible /></div>
+      </div>
+    </section>
+
+    <!-- Production -->
+    <section id="production" class="scroll-mt-28 border-t border-line py-20" aria-labelledby="production-title">
+      <div class="mx-auto max-w-[1440px] px-4 sm:px-6">
+        <SectionHeader id="production-title" eyebrow="3 · Integration with production systems" title="Out of band, from one database to a fleet" lead="Switch between a single instance, a production cluster, a microservices fleet with several independent clusters, and several LockLens servers sharing one store. Toggle traffic types, pick a cluster, or click a component." />
+        <div class="mt-10"><ProductionTopology client:visible initialMode="fleet" /></div>
+      </div>
+    </section>
+
+    <!-- Flows -->
+    <section id="flows" class="scroll-mt-28 border-t border-line py-20" aria-labelledby="flows-title">
+      <div class="mx-auto max-w-[1320px] px-4 sm:px-6">
+        <SectionHeader id="flows-title" eyebrow="4 · Monitoring data flows" title="Six kinds of connection, never confused" lead="Every diagram on this site uses the same visual language. Colour is never the only cue: each flow also has its own line pattern." />
+        <ul class="mt-10 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+          {(['app', 'collect', 'store', 'api', 'alert', 'repl'] as FlowKind[]).map((k) => (
+            <li class="panel p-5">
+              <svg width="100%" height="14" viewBox="0 0 300 14" preserveAspectRatio="none" aria-hidden="true">
+                <line x1="2" y1="7" x2="286" y2="7" stroke={FLOWS[k].color} stroke-width="2.5" stroke-dasharray={FLOWS[k].dash} stroke-linecap="round" class="dg-flow-dash" />
+                <path d="M286,2 L297,7 L286,12 z" fill={FLOWS[k].color} />
+              </svg>
+              <p class="mt-3 font-medium text-fg">{FLOWS[k].label}</p>
+              <p class="mt-1 text-sm leading-relaxed text-fg-muted">{FLOWS[k].description}</p>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </section>
+
+    <!-- Incident -->
+    <section id="incident" class="scroll-mt-28 border-t border-line py-20" aria-labelledby="incident-title">
+      <div class="mx-auto max-w-[1440px] px-4 sm:px-6">
+        <SectionHeader id="incident-title" eyebrow="5 · Incident investigation walkthrough" title="From one long transaction to a recorded incident" lead="A deterministic simulation that follows the documented rules: blocked sessions trigger faster sampling, blocking.long_chain fires after 30 s and 3 samples, and the incident resolves after 3 samples without the condition." />
+        <div class="mt-10"><IncidentStory client:visible /></div>
+      </div>
+    </section>
+
+    <!-- Boundaries -->
+    <section id="boundaries" class="scroll-mt-28 border-t border-line py-20" aria-labelledby="boundaries-title">
+      <div class="mx-auto max-w-[1320px] px-4 sm:px-6">
+        <SectionHeader id="boundaries-title" eyebrow="6 · Deployment boundaries" title="What connects to what" lead="Expose the frontend to people, the backend to the frontend and Prometheus, and nothing else. LockLens needs no access to your services, load balancers, or connection poolers." />
+        <ol class="mt-10 grid gap-3">
+          {boundaries.map((b) => (
+            <li class="panel grid gap-3 p-4 md:grid-cols-[minmax(0,1.3fr)_auto_minmax(0,1fr)] md:items-center">
+              <div class="flex flex-wrap items-center gap-2 text-sm">
+                <span class="rounded-lg border border-line bg-ink-900 px-2.5 py-1 text-fg">{b.from}</span>
+                <svg width="46" height="10" aria-hidden="true"><line x1="1" y1="5" x2="38" y2="5" stroke={FLOWS[b.kind].color} stroke-width="2" stroke-dasharray={FLOWS[b.kind].dash} /><path d="M37,1 L45,5 L37,9 z" fill={FLOWS[b.kind].color} /></svg>
+                <span class="rounded-lg border border-line bg-ink-900 px-2.5 py-1 text-fg">{b.to}</span>
+              </div>
+              <span class="chip w-fit font-mono">{b.port}</span>
+              <p class="text-sm text-fg-muted">{b.note}</p>
+            </li>
+          ))}
+        </ol>
+        <p class="mt-4 text-sm text-fg-muted">Details: <a class="text-accent hover:underline" href={url('/docs/deployment/')}>Deployment</a> · <a class="text-accent hover:underline" href={url('/docs/architecture/production-topology/')}>Production topology</a> · <a class="text-accent hover:underline" href={url('/docs/deployment/high-availability/')}>High availability</a></p>
+      </div>
+    </section>
+
+    <!-- Security -->
+    <section id="security" class="scroll-mt-28 border-t border-line py-20" aria-labelledby="security-title">
+      <div class="mx-auto max-w-[1320px] px-4 sm:px-6">
+        <SectionHeader id="security-title" eyebrow="7 · Security considerations" title="Built to be safe to point at production" />
+        <ul class="mt-10 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+          {security.map((s) => (
+            <li class="panel p-5">
+              <p class="font-medium text-fg">{s.t}</p>
+              <p class="mt-1.5 text-sm leading-relaxed text-fg-muted">{s.d}</p>
+            </li>
+          ))}
+        </ul>
+        <p class="mt-4 rounded-xl border border-amber-400/25 bg-amber-400/[0.05] p-4 text-sm leading-relaxed text-fg-muted"><strong class="text-amber-100">Known gaps:</strong> three fixed roles, no SSO, no per-environment permissions, no general audit log, no in-place master key rotation, no built-in TLS termination. <a class="text-accent hover:underline" href={url('/docs/deployment/limitations/')}>Limitations →</a></p>
+      </div>
+    </section>
+
+    <!-- Deep links -->
+    <section class="border-t border-line py-20" aria-labelledby="links-title">
+      <div class="mx-auto max-w-[1320px] px-4 sm:px-6">
+        <h2 id="links-title" class="text-2xl font-semibold tracking-tight">Go deeper in the documentation</h2>
+        <ul class="mt-6 grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
+          {deepLinks.map(([l, h]) => (
+            <li><a href={url(h)} class="group flex items-center justify-between rounded-xl border border-line px-4 py-3 text-sm text-fg-muted transition-colors hover:border-accent/40 hover:text-fg">{l}<span class="text-accent transition-transform group-hover:translate-x-0.5" aria-hidden="true">→</span></a></li>
+          ))}
+        </ul>
+      </div>
+    </section>
+  </main>
+</BaseLayout>
+
+<style is:global>
+  .arch-link.is-active {
+    color: var(--color-fg);
+    background: rgb(34 211 238 / 0.1);
+  }
+</style>
+
+<script>
+  // Section tracking for the sticky nav.
+  const links = new Map<string, HTMLElement>();
+  document.querySelectorAll<HTMLElement>('[data-arch-link]').forEach((a) => links.set(a.dataset.archLink!, a));
+  const io = new IntersectionObserver(
+    (entries) => {
+      for (const e of entries) {
+        if (!e.isIntersecting) continue;
+        links.forEach((a) => a.classList.remove('is-active'));
+        links.get(e.target.id)?.classList.add('is-active');
+      }
+    },
+    { rootMargin: '-45% 0px -50% 0px' },
+  );
+  links.forEach((_, id) => {
+    const el = document.getElementById(id);
+    if (el) io.observe(el);
+  });
+
+  // Persistent topology mode selector: talks to the ProductionTopology island via events.
+  const modeBtns = document.querySelectorAll<HTMLButtonElement>('[data-mode-btn]');
+  modeBtns.forEach((b) =>
+    b.addEventListener('click', () => {
+      (window as unknown as { __locklensMode?: string }).__locklensMode = b.dataset.modeBtn;
+      window.dispatchEvent(new CustomEvent('locklens:set-mode', { detail: b.dataset.modeBtn }));
+      document.getElementById('production')?.scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
+    }),
+  );
+  window.addEventListener('locklens:mode-changed', (e) => {
+    const mode = (e as CustomEvent<string>).detail;
+    modeBtns.forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.modeBtn === mode)));
+  });
+</script>

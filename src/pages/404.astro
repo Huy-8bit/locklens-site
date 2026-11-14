@@ -1,0 +1,20 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { url } from '../lib/site';
+---
+<BaseLayout title="Page not found" description="This page does not exist." noindex>
+  <main id="main" class="relative overflow-hidden">
+    <div class="pointer-events-none absolute inset-0 bg-grid mask-radial opacity-70" aria-hidden="true"></div>
+    <div class="relative mx-auto flex min-h-[70vh] max-w-2xl flex-col items-center justify-center px-4 py-24 text-center">
+      <p class="font-mono text-sm text-wait">pid 404 · waiting for ShareLock</p>
+      <h1 class="mt-4 text-4xl font-semibold tracking-tight sm:text-5xl">This page is not here.</h1>
+      <p class="mt-4 text-fg-muted">The page you requested does not exist or has moved. Nothing is blocking you from these instead:</p>
+      <div class="mt-8 flex flex-wrap justify-center gap-3">
+        <a class="btn btn-primary" href={url('/')}>Home</a>
+        <a class="btn btn-ghost" href={url('/docs/')}>Documentation</a>
+        <a class="btn btn-ghost" href={url('/architecture/')}>Architecture</a>
+        <button type="button" class="btn btn-ghost" data-search-open>Search docs <kbd class="kbd" data-search-kbd>⌘K</kbd></button>
+      </div>
+    </div>
+  </main>
+</BaseLayout>

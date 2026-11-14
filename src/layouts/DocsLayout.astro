@@ -1,0 +1,210 @@
+---
+import BaseLayout from './BaseLayout.astro';
+import { getNavigation, type TocItem } from '../lib/docs';
+import { url } from '../lib/site';
+
+interface Props {
+  title: string;
+  description: string;
+  slug: string; // '' for the docs home
+  toc?: TocItem[];
+  jsonLd?: Record<string, unknown> | Record<string, unknown>[];
+}
+const { title, description, slug, toc = [], jsonLd } = Astro.props;
+const nav = getNavigation();
+const activeGroup = nav.find((g) => g.items.some((i) => i.slug === slug))?.title;
+---
+<BaseLayout title={title} description={description} current="docs" ogType={slug ? 'article' : 'website'} jsonLd={jsonLd}>
+  <div class="relative">
+    <div class="pointer-events-none absolute inset-x-0 top-0 h-[420px] bg-grid mask-radial opacity-60" aria-hidden="true"></div>
+
+    <!-- Mobile docs bar -->
+    <div class="sticky top-[var(--header-h)] z-40 flex items-center gap-2 border-b border-line bg-ink-950/85 px-4 py-2 backdrop-blur-xl lg:hidden">
+      <button type="button" class="ctrl" data-docs-nav-open aria-controls="docs-sidebar" aria-expanded="false">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 6h16M4 12h10M4 18h16"/></svg>
+        Docs menu
+      </button>
+      <span class="truncate text-xs text-fg-subtle">{activeGroup ? `${activeGroup} / ${title}` : 'Documentation'}</span>
+    </div>
+
+    <div class="relative mx-auto grid max-w-[1440px] grid-cols-1 lg:grid-cols-[268px_minmax(0,1fr)] xl:grid-cols-[268px_minmax(0,1fr)_232px]">
+      <!-- Left sidebar -->
+      <aside id="docs-sidebar" data-docs-sidebar class="docs-sidebar fixed inset-y-0 left-0 z-[60] w-[300px] max-w-[85vw] -translate-x-full overflow-y-auto border-r border-line bg-ink-950 px-4 pb-10 pt-5 transition-[translate] duration-300 lg:sticky lg:top-[var(--header-h)] lg:z-auto lg:h-[calc(100dvh-var(--header-h))] lg:w-auto lg:max-w-none lg:translate-x-0 lg:bg-transparent lg:pt-8" aria-label="Documentation">
+        <div class="mb-4 flex items-center justify-between lg:hidden">
+          <span class="text-sm font-semibold">Documentation</span>
+          <button type="button" class="ctrl" data-docs-nav-close aria-label="Close documentation menu">✕</button>
+        </div>
+        <a href={url('/docs/')} aria-current={slug === '' ? 'page' : undefined} class:list={['docs-nav-link mb-4 block', { 'is-active': slug === '' }]}>Documentation home</a>
+        <nav class="space-y-5">
+          {nav.map((g) => {
+            const open = !g.collapsed || g.title === activeGroup;
+            return (
+              <details open={open} class="group/nav">
+                <summary class="flex cursor-pointer list-none items-center justify-between px-2 py-1 text-[0.7rem] font-semibold uppercase tracking-[0.14em] text-fg-subtle hover:text-fg-muted">
+                  {g.title}
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="transition-transform group-open/nav:rotate-90" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg>
+                </summary>
+                <ul class="mt-1.5 space-y-0.5 border-l border-line pl-0">
+                  {g.items.map((i) => (
+                    <li>
+                      <a href={url(`/docs/${i.slug}/`)} aria-current={i.slug === slug ? 'page' : undefined} class:list={['docs-nav-link', { 'is-active': i.slug === slug }]}>{i.label}</a>
+                    </li>
+                  ))}
+                </ul>
+              </details>
+            );
+          })}
+        </nav>
+      </aside>
+      <div data-docs-backdrop hidden class="fixed inset-0 z-[55] bg-black/60 lg:hidden"></div>
+
+      <!-- Main -->
+      <main id="main" class="min-w-0 px-4 pb-24 pt-8 sm:px-8 lg:px-12 lg:pt-10">
+        <slot />
+      </main>
+
+      <!-- Right: on this page -->
+      <aside class="hidden xl:block" aria-label="On this page">
+        {toc.length > 0 && (
+          <div class="sticky top-[calc(var(--header-h)+2.5rem)] max-h-[calc(100dvh-var(--header-h)-4rem)] overflow-y-auto pb-10 pr-4">
+            <p class="text-[0.7rem] font-semibold uppercase tracking-[0.14em] text-fg-subtle">On this page</p>
+            <ul class="mt-3 space-y-1 border-l border-line" data-toc>
+              {toc.map((t) => (
+                <li>
+                  <a href={`#${t.id}`} data-toc-link={t.id} class:list={['toc-link', t.depth === 3 && 'pl-6']}>{t.text}</a>
+                </li>
+              ))}
+            </ul>
+            <slot name="toc-after" />
+          </div>
+        )}
+      </aside>
+    </div>
+  </div>
+</BaseLayout>
+
+<style is:global>
+  .docs-nav-link {
+    display: block;
+    margin-left: -1px;
+    padding: 0.32rem 0.75rem;
+    border-left: 1px solid transparent;
+    font-size: 0.86rem;
+    color: var(--color-fg-muted);
+    transition: color 120ms, border-color 120ms;
+  }
+  .docs-nav-link:hover {
+    color: var(--color-fg);
+    border-left-color: var(--color-line-strong);
+  }
+  .docs-nav-link.is-active {
+    color: #a5f3fc;
+    border-left-color: var(--color-accent);
+    background: linear-gradient(90deg, rgb(34 211 238 / 0.08), transparent);
+  }
+  .docs-sidebar.is-open {
+    translate: 0 0; /* Tailwind v4 translate utilities use the `translate` property */
+  }
+  .toc-link {
+    display: block;
+    margin-left: -1px;
+    padding: 0.2rem 0 0.2rem 0.85rem;
+    border-left: 1px solid transparent;
+    font-size: 0.8rem;
+    line-height: 1.4;
+    color: var(--color-fg-subtle);
+    transition: color 120ms, border-color 120ms;
+  }
+  .toc-link:hover {
+    color: var(--color-fg-muted);
+  }
+  .toc-link.is-active {
+    color: #a5f3fc;
+    border-left-color: var(--color-accent);
+  }
+</style>
+
+<script>
+  // Mobile drawer
+  const sidebar = document.querySelector<HTMLElement>('[data-docs-sidebar]');
+  const backdrop = document.querySelector<HTMLElement>('[data-docs-backdrop]');
+  const openBtn = document.querySelector<HTMLButtonElement>('[data-docs-nav-open]');
+  const closeBtn = document.querySelector<HTMLButtonElement>('[data-docs-nav-close]');
+  const setOpen = (open: boolean) => {
+    if (!sidebar || !backdrop) return;
+    sidebar.classList.toggle('is-open', open);
+    backdrop.hidden = !open;
+    openBtn?.setAttribute('aria-expanded', String(open));
+    document.body.style.overflow = open ? 'hidden' : '';
+    if (open) closeBtn?.focus();
+    else openBtn?.focus();
+  };
+  openBtn?.addEventListener('click', () => setOpen(true));
+  closeBtn?.addEventListener('click', () => setOpen(false));
+  backdrop?.addEventListener('click', () => setOpen(false));
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && sidebar?.classList.contains('is-open')) setOpen(false);
+  });
+  // Keep the active link visible in the sidebar
+  const activeLink = sidebar?.querySelector<HTMLElement>('.docs-nav-link.is-active');
+  if (sidebar && activeLink) sidebar.scrollTop = Math.max(0, activeLink.offsetTop - sidebar.clientHeight / 2);
+
+  // Active heading tracking
+  const links = new Map<string, HTMLElement>();
+  document.querySelectorAll<HTMLElement>('[data-toc-link]').forEach((a) => links.set(a.dataset.tocLink!, a));
+  if (links.size && 'IntersectionObserver' in window) {
+    const headings = Array.from(links.keys())
+      .map((id) => document.getElementById(id))
+      .filter((h): h is HTMLElement => Boolean(h));
+    const visible = new Set<string>();
+    let current = '';
+    const setActive = (id: string) => {
+      if (id === current) return;
+      links.get(current)?.classList.remove('is-active');
+      links.get(id)?.classList.add('is-active');
+      current = id;
+    };
+    const io = new IntersectionObserver(
+      (entries) => {
+        for (const e of entries) {
+          if (e.isIntersecting) visible.add(e.target.id);
+          else visible.delete(e.target.id);
+        }
+        const first = headings.find((h) => visible.has(h.id));
+        if (first) setActive(first.id);
+        else {
+          // Between headings: the last one above the viewport top is current.
+          const above = headings.filter((h) => h.getBoundingClientRect().top < 120);
+          if (above.length) setActive(above[above.length - 1].id);
+        }
+      },
+      { rootMargin: '-72px 0px -60% 0px' },
+    );
+    headings.forEach((h) => io.observe(h));
+  }
+
+  // Copy buttons for code blocks
+  document.querySelectorAll<HTMLElement>('.prose .code-block').forEach((block) => {
+    const pre = block.querySelector('pre');
+    if (!pre) return;
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'copy-btn';
+    btn.textContent = 'Copy';
+    btn.setAttribute('aria-label', 'Copy code to clipboard');
+    btn.addEventListener('click', async () => {
+      try {
+        await navigator.clipboard.writeText(pre.innerText.replace(/\n$/, ''));
+        btn.textContent = 'Copied';
+        btn.dataset.copied = 'true';
+      } catch {
+        btn.textContent = 'Press Ctrl+C';
+      }
+      window.setTimeout(() => {
+        btn.textContent = 'Copy';
+        delete btn.dataset.copied;
+      }, 1600);
+    });
+    block.append(btn);
+  });
+</script>

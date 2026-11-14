@@ -1,0 +1,54 @@
+import { expect, test } from '@playwright/test';
+
+test.describe('landing page', () => {
+  test('renders every section, navigation and CTAs without console errors', async ({ page }) => {
+    const errors: string[] = [];
+    page.on('pageerror', (e) => errors.push(String(e)));
+    page.on('console', (m) => m.type() === 'error' && errors.push(m.text()));
+    await page.goto('/');
+    await expect(page.getByRole('heading', { level: 1 })).toContainText('PostgreSQL metrics');
+    for (const name of ['Features', 'Architecture', 'Interactive demo', 'Documentation']) {
+      await expect(page.getByRole('navigation', { name: 'Main' }).getByRole('link', { name, exact: true })).toBeVisible();
+    }
+    await expect(page.getByRole('navigation', { name: 'Main' }).getByRole('link', { name: 'Documentation' })).toHaveAttribute('href', '/docs/');
+    for (const id of ['problem-title', 'showcase-title', 'arch-title', 'features-title', 'prod-title', 'demo-title', 'how-title', 'qs-title', 'oss-title', 'cta-title']) {
+      await expect(page.locator(`#${id}`)).toHaveCount(1);
+    }
+    await expect(page.getByRole('link', { name: 'Explore LockLens' })).toHaveAttribute('href', '/#features');
+    await expect(page.getByRole('link', { name: 'View architecture' })).toHaveAttribute('href', '/architecture/');
+    // Scroll through to hydrate islands and load lazy images.
+    for (let y = 0; y < 16000; y += 800) {
+      await page.evaluate((v) => window.scrollTo(0, v), y);
+      await page.waitForTimeout(60);
+    }
+    const broken = await page.$$eval('img', (imgs) => imgs.filter((i) => i.complete && i.naturalWidth === 0).map((i) => i.src));
+    expect(broken).toEqual([]);
+    expect(errors).toEqual([]);
+  });
+
+  test('screenshot tabs and quick start tabs switch panels', async ({ page }) => {
+    await page.goto('/');
+    await page.getByRole('tab', { name: 'Incident' }).click();
+    await expect(page.locator('#panel-incident')).toBeVisible();
+    await expect(page.locator('#panel-overview')).toBeHidden();
+    await page.getByRole('tab', { name: 'docker run' }).click();
+    await expect(page.locator('#qs-docker')).toContainText('johnnynguyen882/locklens-backend');
+  });
+
+  test('hero animation plays and can be paused', async ({ page }) => {
+    await page.goto('/');
+    const pause = page.getByRole('button', { name: 'Pause hero animation' });
+    await expect(pause).toBeVisible();
+    await expect(page.locator('svg[aria-label^="Animation: Other sessions wait"]')).toBeVisible({ timeout: 9000 });
+    await pause.click();
+    await expect(page.getByRole('button', { name: 'Play hero animation' })).toBeVisible();
+  });
+
+  test('reduced motion shows the composed hero state without autoplay', async ({ browser }) => {
+    const ctx = await browser.newContext({ reducedMotion: 'reduce' });
+    const page = await ctx.newPage();
+    await page.goto('/');
+    await expect(page.locator('svg[aria-label^="Animation: Blocking graph"]')).toBeVisible();
+    await ctx.close();
+  });
+});

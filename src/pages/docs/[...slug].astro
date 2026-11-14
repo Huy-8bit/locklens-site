@@ -1,0 +1,122 @@
+---
+import DocsLayout from '../../layouts/DocsLayout.astro';
+import { getAllDocs, getDoc, getPrevNext, getRelated, renderDoc } from '../../lib/docs';
+import { INTERACTIVE_LINKS } from '../../lib/docs/manifest';
+import { docsImageMap } from '../../lib/images';
+import { SITE, url } from '../../lib/site';
+
+export function getStaticPaths() {
+  return getAllDocs().map((d) => ({ params: { slug: d.slug } }));
+}
+
+const slug = Astro.params.slug as string;
+const entry = getDoc(slug);
+if (!entry) return Astro.redirect(url('/404/'));
+
+const images = await docsImageMap();
+const rendered = await renderDoc(entry, (p) => images.get(p));
+const { prev, next } = getPrevNext(slug);
+const related = getRelated(slug);
+const interactive = INTERACTIVE_LINKS[slug];
+const issueUrl = `${SITE.issues}/new?title=${encodeURIComponent(`Docs: ${entry.title}`)}&body=${encodeURIComponent(`Page: /docs/${slug}/\nSource: ${entry.source}\n\nWhat is wrong or missing?\n`)}`;
+
+const jsonLd = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'TechArticle',
+    headline: entry.title,
+    description: entry.description,
+    url: new URL(Astro.url.pathname, Astro.site).toString(),
+    isPartOf: { '@type': 'WebSite', name: 'LockLens', url: new URL(url('/'), Astro.site).toString() },
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Documentation', item: new URL(url('/docs/'), Astro.site).toString() },
+      { '@type': 'ListItem', position: 2, name: entry.group },
+      { '@type': 'ListItem', position: 3, name: entry.title },
+    ],
+  },
+];
+---
+<DocsLayout title={entry.title} description={entry.description} slug={slug} toc={rendered.toc} jsonLd={jsonLd}>
+  <article class="mx-auto max-w-[76ch]">
+    <nav aria-label="Breadcrumb" class="text-xs text-fg-subtle">
+      <ol class="flex flex-wrap items-center gap-1.5">
+        <li><a href={url('/docs/')} class="hover:text-fg-muted">Docs</a></li>
+        <li aria-hidden="true">/</li>
+        <li>{entry.group}</li>
+        <li aria-hidden="true">/</li>
+        <li aria-current="page" class="text-fg-muted">{entry.label}</li>
+      </ol>
+    </nav>
+
+    <div data-pagefind-body>
+      <header class="prose mt-4">
+        <h1 data-pagefind-meta="title">{entry.title}</h1>
+        <span hidden data-pagefind-meta="section">{entry.group}</span>
+      </header>
+
+      <div class="mt-4 flex flex-wrap items-center gap-2 text-xs text-fg-subtle" data-pagefind-ignore>
+        {entry.origin === 'repo' ? (
+          <span class="chip"><span class="font-mono">{entry.source.replace('repo:', '')}</span></span>
+        ) : (
+          <span class="chip" title="Written for this website from the repository documentation it links to">Site guide · summarises repository docs</span>
+        )}
+        {entry.editUrl && <a class="chip hover:text-fg" href={entry.editUrl} rel="noopener noreferrer">Edit on GitHub ↗</a>}
+        <a class="chip hover:text-fg" href={issueUrl} rel="noopener noreferrer">Report an issue ↗</a>
+      </div>
+
+      {interactive && (
+        <a href={url(interactive.href)} data-pagefind-ignore class="group mt-6 flex items-center gap-3 rounded-xl border border-accent/25 bg-accent/[0.06] px-4 py-3 text-sm text-fg transition-colors hover:border-accent/50">
+          <span class="grid size-8 shrink-0 place-items-center rounded-lg bg-accent/15 text-accent" aria-hidden="true">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="5" cy="6" r="2.5"/><circle cx="19" cy="6" r="2.5"/><circle cx="12" cy="18" r="2.5"/><path d="M7.2 7.4 10.4 16M16.8 7.4 13.6 16M7.5 6h9"/></svg>
+          </span>
+          <span><span class="font-medium">Explore the interactive architecture</span><span class="block text-xs text-fg-muted">{interactive.label}</span></span>
+          <span class="ml-auto text-accent transition-transform group-hover:translate-x-0.5" aria-hidden="true">→</span>
+        </a>
+      )}
+
+      <div class="prose mt-8" set:html={rendered.html} />
+    </div>
+
+    {rendered.sourceRefs.length > 0 && (
+      <section class="mt-14 rounded-xl border border-line p-5" aria-labelledby="source-refs">
+        <h2 id="source-refs" class="text-sm font-semibold text-fg">Source references</h2>
+        <p class="mt-1 text-xs text-fg-subtle">Repository files this page links to.</p>
+        <ul class="mt-3 flex flex-wrap gap-2">
+          {rendered.sourceRefs.map((r) => (
+            <li><a class="chip font-mono hover:text-fg" href={r.href} rel="noopener noreferrer">{r.label}</a></li>
+          ))}
+        </ul>
+      </section>
+    )}
+
+    {related.length > 0 && (
+      <section class="mt-8" aria-labelledby="related">
+        <h2 id="related" class="text-sm font-semibold text-fg">Related in {entry.group}</h2>
+        <ul class="mt-3 grid gap-2 sm:grid-cols-3">
+          {related.map((r) => (
+            <li><a href={url(`/docs/${r.slug}/`)} class="block h-full rounded-xl border border-line p-3 text-sm text-fg-muted transition-colors hover:border-line-strong hover:text-fg">{r.label}</a></li>
+          ))}
+        </ul>
+      </section>
+    )}
+
+    <nav class="mt-10 grid gap-3 border-t border-line pt-6 sm:grid-cols-2" aria-label="Previous and next pages">
+      {prev ? (
+        <a href={url(`/docs/${prev.slug}/`)} rel="prev" class="group rounded-xl border border-line p-4 transition-colors hover:border-accent/40">
+          <span class="text-xs text-fg-subtle">← Previous</span>
+          <span class="mt-1 block text-sm font-medium text-fg group-hover:text-accent">{prev.label}</span>
+        </a>
+      ) : <span />}
+      {next && (
+        <a href={url(`/docs/${next.slug}/`)} rel="next" class="group rounded-xl border border-line p-4 text-right transition-colors hover:border-accent/40">
+          <span class="text-xs text-fg-subtle">Next →</span>
+          <span class="mt-1 block text-sm font-medium text-fg group-hover:text-accent">{next.label}</span>
+        </a>
+      )}
+    </nav>
+  </article>
+</DocsLayout>

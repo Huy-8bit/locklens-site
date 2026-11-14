@@ -1,0 +1,75 @@
+---
+import SectionHeader from '../SectionHeader.astro';
+import Shot from '../Shot.astro';
+const tabs = [
+  { id: 'overview', label: 'Fleet overview', img: 'overview.png', alt: 'LockLens fleet overview: databases monitored, active connections, query throughput, replication health, slow queries, incidents', text: 'Every instance of an environment on one screen: connections, throughput and latency, replication, slow queries, incidents.' },
+  { id: 'database', label: 'Instance', img: 'database.png', alt: 'One instance: health values, queries by type, query mix', text: 'Per-instance health: sessions, transactions, cache, WAL, temp files, vacuum, and the query mix.' },
+  { id: 'load', label: 'Database load', img: 'load.png', alt: 'Database load by wait class from active session sampling', text: 'Active session sampling every 2 s: average active sessions by wait class, wait event, statement, user, or application.' },
+  { id: 'queries', label: 'Queries', img: 'queries.png', alt: 'Queries classified by statement type over time', text: 'Every statement from pg_stat_statements, classified by type, with rate, time and rows over time.' },
+  { id: 'incident', label: 'Incident', img: 'incident.png', alt: 'An incident: what happened, who blocks whom, the sessions when it started', text: 'What happened, the root blocker, the sessions at the moment it started, and the full timeline.' },
+  { id: 'optimize', label: 'Optimize', img: 'optimize.png', alt: 'Optimize: recommendations ranked by benefit', text: 'Recommendations from each database’s schema and workload, ranked by benefit, with evidence and the SQL to apply.' },
+  { id: 'sql', label: 'SQL editor', img: 'sql.png', alt: 'SQL editor with an execution plan graph', text: 'Opt-in, read-only SQL with an execution-plan graph — off by default and never with an administrative role.' },
+];
+---
+<section class="relative border-t border-line py-24 sm:py-28" aria-labelledby="showcase-title">
+  <div class="pointer-events-none absolute inset-x-0 top-0 h-[600px] bg-[radial-gradient(ellipse_at_top,rgba(59,130,246,0.10),transparent_65%)]" aria-hidden="true"></div>
+  <div class="relative mx-auto max-w-[1320px] px-4 sm:px-6">
+    <SectionHeader id="showcase-title" eyebrow="The product" title="One investigation surface for your whole fleet" lead="Real screenshots from the LockLens lab: a PostgreSQL primary with three streaming standbys and a background workload." center />
+
+    <div class="mt-12" data-tabs>
+      <div role="tablist" aria-label="Product screens" class="mx-auto flex max-w-full gap-1 overflow-x-auto rounded-2xl border border-line bg-ink-900/70 p-1 [scrollbar-width:none] md:w-fit">
+        {tabs.map((t, i) => (
+          <button type="button" role="tab" id={`tab-${t.id}`} aria-controls={`panel-${t.id}`} aria-selected={i === 0 ? 'true' : 'false'} tabindex={i === 0 ? 0 : -1} class="showcase-tab shrink-0 rounded-xl px-3.5 py-2 text-sm text-fg-muted transition-colors hover:text-fg">{t.label}</button>
+        ))}
+      </div>
+      <div class="mx-auto mt-6 max-w-[1100px]">
+        {tabs.map((t, i) => (
+          <div role="tabpanel" id={`panel-${t.id}`} aria-labelledby={`tab-${t.id}`} hidden={i !== 0} class="showcase-panel">
+            <p class="mx-auto mb-5 max-w-2xl text-center text-sm leading-relaxed text-fg-muted">{t.text}</p>
+            <Shot name={t.img} alt={t.alt} eager={i === 0} widths={[640, 1100, 1440]} />
+          </div>
+        ))}
+      </div>
+    </div>
+  </div>
+</section>
+
+<style is:global>
+  .showcase-tab[aria-selected='true'] {
+    background: rgb(34 211 238 / 0.1);
+    color: var(--color-fg);
+    box-shadow: inset 0 0 0 1px rgb(34 211 238 / 0.4);
+  }
+  .showcase-panel:not([hidden]) {
+    animation: fade-in 420ms var(--ease-out-soft);
+  }
+  @keyframes fade-in {
+    from { opacity: 0; transform: translateY(6px); }
+  }
+</style>
+
+<script>
+  document.querySelectorAll<HTMLElement>('[data-tabs]').forEach((root) => {
+    const tabs = Array.from(root.querySelectorAll<HTMLButtonElement>('[role="tab"]'));
+    const select = (tab: HTMLButtonElement, focus = false) => {
+      tabs.forEach((t) => {
+        const on = t === tab;
+        t.setAttribute('aria-selected', String(on));
+        t.tabIndex = on ? 0 : -1;
+        const panel = document.getElementById(t.getAttribute('aria-controls')!);
+        if (panel) panel.hidden = !on;
+      });
+      if (focus) tab.focus();
+      tab.scrollIntoView({ block: 'nearest', inline: 'nearest' });
+    };
+    tabs.forEach((t, i) => {
+      t.addEventListener('click', () => select(t));
+      t.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowRight') select(tabs[(i + 1) % tabs.length], true);
+        if (e.key === 'ArrowLeft') select(tabs[(i - 1 + tabs.length) % tabs.length], true);
+        if (e.key === 'Home') select(tabs[0], true);
+        if (e.key === 'End') select(tabs[tabs.length - 1], true);
+      });
+    });
+  });
+</script>
