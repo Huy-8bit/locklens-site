@@ -32,7 +32,7 @@ export const DOCS_MANIFEST: ManifestGroup[] = [
   {
     title: 'Architecture',
     entries: [
-      { source: 'repo:docs/architecture.md', slug: 'architecture', label: 'Architecture overview' },
+      { source: 'site:architecture.md', slug: 'architecture', label: 'Architecture overview' },
       { source: 'repo:docs/postgresql-observation.md', slug: 'architecture/postgresql-observation', label: 'PostgreSQL observation & permissions' },
       { source: 'site:production-topology.md', slug: 'architecture/production-topology', label: 'Production topology' },
     ],
@@ -41,7 +41,7 @@ export const DOCS_MANIFEST: ManifestGroup[] = [
     title: 'Features',
     entries: [
       { source: 'repo:docs/blocking-graph.md', slug: 'features/blocking-analysis', label: 'Blocking analysis' },
-      { source: 'repo:docs/query-analysis.md', slug: 'features/query-analysis', label: 'Query analysis' },
+      { source: 'site:query-analysis.md', slug: 'features/query-analysis', label: 'Query analysis' },
       { source: 'repo:docs/query-intelligence.md', slug: 'features/query-performance', label: 'Query performance intelligence' },
       { source: 'repo:docs/query-optimizer.md', slug: 'features/query-optimizer', label: 'Query optimizer' },
       { source: 'repo:docs/rules.md', slug: 'features/rules', label: 'Rules & findings' },

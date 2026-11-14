@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { Eye, EyeOff, Focus, MousePointerClick, Play, Power, RotateCcw, Info } from 'lucide-react';
+import { Eye, EyeOff, Focus, MousePointerClick, Pause, Play, Power, RotateCcw, Info } from 'lucide-react';
 import { CANVAS, CLUSTERS, EDGES, FRAMES, GROUPS, MODES, MODE_COPY, NODES, type ClusterId, type Mode, type TopoEdge, type TopoNode } from './data/topology';
 import { FLOWS, type FlowKind } from './diagram/flows';
 import { easeInOut, lerp, route, type Pt, type Rect, type Route } from './diagram/geometry';
@@ -52,7 +52,7 @@ function firstGroup(at: Record<string, { x: number; y: number; w: number; h: num
   return { ...p, o: 0 };
 }
 
-function useTweenedLayout(target: Layout, reduced: boolean, duration = 850): Layout {
+function useTweenedLayout(target: Layout, reduced: boolean, duration = 420): Layout {
   const [display, setDisplay] = useState(target);
   const displayRef = useRef(target);
   useEffect(() => {
@@ -222,7 +222,7 @@ export default function ProductionTopology({ initialMode = 'cluster', compact = 
     return () => window.clearInterval(iv);
   }, [crash]);
 
-  const animate = inView && !reduced;
+  const animate = inView && !reduced && (phase !== 'all' || selected !== null);
   useSvgAnimationControl(svgRef, animate);
 
   // ---- which server collects which target (only differs in 'ha')
@@ -316,7 +316,7 @@ export default function ProductionTopology({ initialMode = 'cluster', compact = 
     const vis = kindVisible(e.kind) ? 1 : 0;
     const dim = dimmed(`e:${e.id}`);
     const phaseOn = PHASE_KINDS[phase].includes(e.kind);
-    return { e, r, o: o * vis * (dim ? 0.12 : 1), active: !dim && phaseOn && vis > 0, kind: e.kind, toId };
+    return { e, r, o: o * vis * (dim || (phase !== 'all' && !phaseOn) ? 0.14 : 1), active: !dim && phaseOn && vis > 0 && (phase !== 'all' || selected !== null), kind: e.kind, toId };
   }).filter(Boolean) as { e: TopoEdge; r: Route; o: number; active: boolean; kind: FlowKind; toId: string }[];
 
   const sel = selected ? nodeById.get(selected) : undefined;
@@ -329,7 +329,7 @@ export default function ProductionTopology({ initialMode = 'cluster', compact = 
     <div ref={wrapRef} className="pt-root">
       {/* Mode selector */}
       <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
-        <div role="tablist" aria-label="Architecture mode" className="grid grid-cols-2 gap-1 rounded-2xl border border-line bg-ink-900/70 p-1 sm:inline-grid sm:grid-cols-4">
+        <div role="tablist" aria-label="Architecture mode" className="topology-tabs grid grid-cols-2 sm:grid-cols-4">
           {MODES.map((m) => (
             <button
               key={m.id}
@@ -339,19 +339,24 @@ export default function ProductionTopology({ initialMode = 'cluster', compact = 
               onClick={() => changeMode(m.id)}
               className={`flex items-center gap-2 rounded-xl px-3 py-2 text-left text-[0.82rem] transition-colors ${mode === m.id ? 'bg-accent/12 text-fg ring-1 ring-accent/45' : 'text-fg-muted hover:bg-ink-800 hover:text-fg'}`}
             >
-              <span className={`grid size-5 shrink-0 place-items-center rounded-md font-mono text-[0.68rem] ${mode === m.id ? 'bg-accent text-ink-950' : 'bg-ink-700 text-fg-subtle'}`}>{m.short}</span>
+
               {m.label}
             </button>
           ))}
         </div>
         <div className="hidden flex-wrap items-center gap-1.5 lg:flex">
-          <button type="button" className="ctrl" onClick={replay} disabled={phase !== 'all'}>
-            <Play size={13} aria-hidden /> Replay data flow
+          <button type="button" className="ctrl" onClick={phase === 'all' ? replay : () => setPhase('all')}>
+            {phase === 'all' ? <Play size={13} aria-hidden /> : <Pause size={13} aria-hidden />} {phase === 'all' ? 'Replay data flow' : 'Stop replay'}
           </button>
           <button type="button" className="ctrl" aria-pressed={focusMonitoring} onClick={() => { setFocusMonitoring((f) => !f); setCluster(null); setSelected(null); }}>
             <Focus size={13} aria-hidden /> Highlight LockLens connections
           </button>
         </div>
+      </div>
+
+      <div className="topology-guide" role="group" aria-label="Follow a data flow">
+        <button type="button" aria-pressed={phase === 'all'} onClick={() => setPhase('all')}>All connections</button>
+        {PHASES.map((p, i) => <button key={p.id} type="button" aria-pressed={phase === p.id} onClick={() => { setPhase(p.id); setSelected(null); setCluster(null); setFocusMonitoring(false); }}><span>{String(i + 1).padStart(2, '0')}</span>{['Application', 'Observation', 'History & UI', 'Notifications'][i]}</button>)}
       </div>
 
       {/* Canvas */}
@@ -444,7 +449,7 @@ export default function ProductionTopology({ initialMode = 'cluster', compact = 
             )}
             {edgesToDraw.map(({ e, r, o, active, kind, toId }) => (
               <g key={e.id}>
-                <DiagramEdge defsId={DEFS} route={r} kind={kind} label={e.label} state={active ? 'active' : 'normal'} opacityOverride={o} animate={animate} particles={e.kind === 'app' ? 1 : 2} speed={e.kind === 'app' ? 3 : 2.4} bidirectional={e.bidirectional} />
+                <DiagramEdge defsId={DEFS} route={r} kind={kind} label={e.label} state={active ? 'active' : 'normal'} opacityOverride={o} animate={animate} particles={1} speed={3.8} bidirectional={e.bidirectional} />
                 {mode === 'ha' && kind === 'collect' && o > 0.05 && <circle cx={r.end.x} cy={r.end.y - 6} r={3.5} fill={serverColor[toId]} opacity={o} />}
               </g>
             ))}
@@ -464,7 +469,7 @@ export default function ProductionTopology({ initialMode = 'cluster', compact = 
                   subtitle={down ? 'leases not renewed' : gap ? 'not collected · gap' : (p?.subtitle ?? n.subtitle)}
                   icon={icon(n.icon)}
                   tone={down ? 'slate' : gap ? 'orange' : n.tone}
-                  badge={n.badge}
+                  badge={undefined}
                   compact
                   status={n.layer === 'db' ? (gap ? 'wait' : 'ok') : down ? 'down' : null}
                   state={selected === n.id ? 'active' : 'normal'}

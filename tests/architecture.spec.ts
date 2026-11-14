@@ -61,6 +61,11 @@ test.describe('architecture explorer', () => {
     await page.goto('/architecture/#production');
     const root = page.locator('#production .pt-root');
     await root.scrollIntoViewIfNeeded();
+    await expect(root.locator('animateMotion')).toHaveCount(0);
+    await root.getByRole('button', { name: 'Replay data flow', exact: true }).click();
+    await expect.poll(() => root.locator('animateMotion').count()).toBeGreaterThan(0);
+    await root.getByRole('button', { name: 'Stop replay', exact: true }).click();
+    await expect(root.locator('animateMotion')).toHaveCount(0);
     for (const [label, title] of [
       ['Single instance', 'Start with one database'],
       ['Production cluster', 'Alongside a production cluster'],

@@ -5,7 +5,7 @@ export const DOC_INTROS: Record<string, string> = {
   'getting-started/ui-guide': 'Find your way around the workspace, from fleet health and database activity to query analysis and incident investigation.',
   'getting-started/local-lab': 'Run a local PostgreSQL environment with reproducible workloads to explore LockLens safely.',
   'getting-started/troubleshooting': 'Diagnose common setup, connection, collection, and deployment problems.',
-  architecture: 'Understand the backend, frontend, and monitoring store, and follow the path from PostgreSQL statistics to recorded incidents.',
+  architecture: 'Follow the flow from PostgreSQL observations to live views, historical data, and incident evidence.',
   'architecture/postgresql-observation': 'Understand the PostgreSQL statistics LockLens reads, the permissions it needs, and the limits of sampled observations.',
   'architecture/production-topology': 'See how LockLens connects alongside your applications, databases, and existing observability tools.',
   'features/blocking-analysis': 'Trace waiting sessions to their blockers and understand the blocking graph, lock modes, and transaction ages.',

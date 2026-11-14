@@ -1,15 +1,15 @@
 /* One reading grid for every guide and reference page. */
 .docs-shell { background:#fff; }
-.docs-grid { display:grid; grid-template-columns:minmax(0,1fr); max-width:1560px; margin:auto; }
+.docs-grid { display:grid; grid-template-columns:minmax(0,1fr); max-width:1344px; margin:auto; }
 .docs-main { min-width:0; padding:40px 24px 80px; }
-.docs-article,.docs-home { width:100%; max-width:880px; margin-inline:auto; }
+.docs-article,.docs-home { width:100%; max-width:720px; margin-inline:auto; }
 .docs-article-header { padding:28px 0 30px; border-bottom:1px solid #e2e8e3; }
 .docs-category { color:#087f5b; font-size:11px; font-weight:600; letter-spacing:.09em; text-transform:uppercase; margin-bottom:12px; }
 .docs-article-header h1 { font-size:clamp(2rem,3.3vw,2.8rem); font-weight:600; line-height:1.15; letter-spacing:-.04em; color:#17352e; text-wrap:balance; }
 .docs-intro { margin-top:18px; font-size:16px; line-height:1.75; color:#52645e; max-width:70ch; }
-.docs-shell .prose { width:100%; max-width:none; color:#3d4e48; font-size:15px; line-height:1.85; overflow-wrap:break-word; }
+.docs-shell .prose { width:100%; max-width:none; color:#3d4e48; font-size:15px; line-height:1.75; overflow-wrap:break-word; }
 .docs-shell .prose > * + * { margin-top:20px; }
-.docs-shell .prose h2 { font-size:25px; font-weight:600; margin-top:52px; padding-top:28px; line-height:1.3; letter-spacing:-.025em; border-color:#e6ebe7; }
+.docs-shell .prose h2 { font-size:23px; font-weight:600; margin-top:40px; padding-top:0; border-top:0; line-height:1.3; letter-spacing:-.025em; border-color:#e6ebe7; }
 .docs-shell .prose > h2:first-child { margin-top:0; padding-top:0; border:0; }
 .docs-shell .prose h3 { font-size:19px; font-weight:600; margin-top:32px; line-height:1.45; }
 .docs-shell .prose h4 { font-size:16px; margin-top:28px; }
@@ -18,7 +18,7 @@
 .docs-shell .prose li + li { margin-top:8px; }
 .docs-shell .prose li > :is(p,ul,ol) { margin-top:8px; }
 .docs-shell .prose a { text-decoration-color:#9abbaa; }
-.docs-shell .prose :not(pre) > code { font-size:.84em; background:#f4f6f4; border-color:#e5eae5; border-radius:4px; padding:2px 4px; box-decoration-break:clone; }
+.docs-shell .prose :not(pre) > code { font-size:.88em; color:#31574b; background:transparent; border:0; border-radius:0; padding:0 1px; box-decoration-break:clone; }
 .docs-shell .prose blockquote { padding:16px 20px; background:#f5f9f4; border-color:#87b49b; border-radius:0 6px 6px 0; }
 .docs-shell .prose blockquote > p + p { margin-top:12px; }
 .docs-shell .table-wrap { width:100%; max-width:100%; margin-block:24px; border:1px solid #dfe6df; border-radius:8px; overflow-x:auto; }
@@ -55,5 +55,5 @@
 .docs-home > h1 { font-weight:600; letter-spacing:-.04em; }
 .docs-home > p { font-size:16px; }
 @media(min-width:1024px) { .docs-grid { grid-template-columns:240px minmax(0,1fr); }.docs-main { padding:42px 48px 100px; }.docs-sidebar { background:#fafbf8; } }
-@media(min-width:1280px) { .docs-grid { grid-template-columns:240px minmax(0,1fr) 200px; }.docs-main { padding-inline:40px; } }
+@media(min-width:1280px) { .docs-grid { grid-template-columns:224px minmax(0,1fr) 184px; }.docs-main { padding-inline:36px; } }
 @media(max-width:767px) { .docs-main { padding:28px 20px 60px; }.docs-shell .prose { font-size:14px; }.docs-shell .prose h2 { font-size:22px; margin-top:40px; }.docs-shell .prose h3 { font-size:18px; }.docs-intro { font-size:15px; }.docs-shell .prose :is(.cols-3,.cols-4) { min-width:620px; }.docs-shell .prose .cols-2 { min-width:440px; }.docs-shell .prose :is(th,td) { padding:12px; }.docs-shell .prose pre { font-size:11px; padding:16px; }.docs-shell .prose :is(h2,h3,h4) { scroll-margin-top:calc(var(--header-h) + 64px); } }

@@ -38,7 +38,7 @@ const activeGroup = nav.find((g) => g.items.some((i) => i.slug === slug))?.title
         <a href={url('/docs/')} aria-current={slug === '' ? 'page' : undefined} class:list={['docs-nav-link mb-4 block', { 'is-active': slug === '' }]}>Documentation home</a>
         <nav class="space-y-5">
           {nav.map((g) => {
-            const open = !g.collapsed || g.title === activeGroup;
+            const open = g.title === activeGroup || (!slug && g.title === 'Getting started');
             return (
               <details open={open} class="group/nav">
                 <summary class="flex cursor-pointer list-none items-center justify-between px-2 py-1 text-[0.7rem] font-semibold uppercase tracking-[0.14em] text-fg-subtle hover:text-fg-muted">

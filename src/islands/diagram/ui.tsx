@@ -1,10 +1,9 @@
-import { BookOpen, ExternalLink, Maximize, Pause, Play, RotateCcw, SkipBack, SkipForward, X, ZoomIn, ZoomOut, Repeat } from 'lucide-react';
+import { BookOpen, Maximize, Pause, Play, RotateCcw, SkipBack, SkipForward, X, ZoomIn, ZoomOut, Repeat } from 'lucide-react';
 import type { Stepper, ZoomPan } from './hooks';
 import type { NodeDetails } from '../data/internal';
 
 const base = () => (import.meta.env.BASE_URL ?? '/').replace(/\/$/, '');
 export const siteUrl = (p: string) => (p.startsWith('http') ? p : `${base()}${p}`);
-const GH = 'https://github.com/Huy-8bit/locklens/tree/main/';
 
 export function StepControls({ stepper, labels }: { stepper: Stepper; labels?: { play?: string } }) {
   const { step, playing, count } = stepper;
@@ -116,21 +115,6 @@ export function DetailsPanel({ title, subtitle, details, onClose, illustrative }
         </p>
       )}
       {details.note && <p className="rounded-lg border border-amber-400/25 bg-amber-400/[0.06] px-3 py-2 text-[0.8rem] leading-relaxed text-amber-900/85">{details.note}</p>}
-      {details.refs && details.refs.length > 0 && (
-        <div>
-          <p className="text-[0.7rem] font-semibold uppercase tracking-[0.12em] text-fg-subtle">Implementation</p>
-          <ul className="mt-2 flex flex-wrap gap-1.5">
-            {details.refs.map((r) => (
-              <li key={r}>
-                <a className="chip font-mono hover:text-fg" href={GH + r} target="_blank" rel="noopener noreferrer">
-                  {r.replace('backend/internal/', '')}
-                  <ExternalLink size={10} aria-hidden />
-                </a>
-              </li>
-            ))}
-          </ul>
-        </div>
-      )}
       <div className="flex flex-wrap gap-2 pt-1">
         {(details.docs ?? []).map((d) => (
           <a key={d.href + d.label} href={siteUrl(d.href)} className="inline-flex items-center gap-1.5 rounded-lg border border-accent/30 bg-accent/[0.07] px-2.5 py-1.5 text-xs font-medium text-accent transition-colors hover:border-accent/60">

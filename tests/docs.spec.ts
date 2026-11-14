@@ -15,12 +15,14 @@ test.describe('documentation', () => {
   test('article features: mermaid, images, anchors, edit link, prev/next, TOC', async ({ page }) => {
     await page.goto('/docs/architecture/');
     await expect(page.locator('.mermaid-figure svg').first()).toBeVisible();
-    await expect(page.getByRole('link', { name: 'Edit on GitHub ↗' })).toHaveAttribute('href', 'https://github.com/Huy-8bit/locklens/edit/main/docs/architecture.md');
+    await expect(page.locator('.prose')).not.toContainText('backend/internal');
+    await expect(page.locator('.docs-source-details')).toHaveCount(0);
     await expect(page.locator('a[rel="next"]')).toHaveAttribute('href', '/docs/architecture/postgresql-observation/');
     await expect(page.locator('a[rel="prev"]')).toHaveAttribute('href', '/docs/getting-started/troubleshooting/');
     await page.locator('[data-toc-link="several-servers"]').click();
     await expect(page).toHaveURL(/#several-servers$/);
     await page.goto('/docs/features/notifications/');
+    await expect(page.getByRole('link', { name: 'Edit on GitHub ↗' })).toHaveAttribute('href', 'https://github.com/Huy-8bit/locklens/edit/main/docs/notifications.md');
     const img = page.locator('.prose img').first();
     await img.scrollIntoViewIfNeeded();
     await expect.poll(() => img.evaluate((i: HTMLImageElement) => i.naturalWidth)).toBeGreaterThan(0);
@@ -83,4 +85,20 @@ test('reference tables share the reading width and retain readable file links', 
   await table.focus();
   await page.keyboard.press('ArrowRight');
   await expect.poll(() => table.evaluate((el) => el.scrollLeft)).toBeGreaterThan(0);
+});
+
+test('query analysis keeps a readable measure and navigable command reference', async ({ page }) => {
+  await page.goto('/docs/features/query-analysis/');
+  await page.locator('[data-toc-link="statement-types"]').click();
+  await expect(page).toHaveURL(/#statement-types$/);
+  const reference = page.getByRole('region', { name: /Statement types — table/ });
+  await expect(reference).toBeVisible();
+  await expect(reference.getByRole('cell', { name: 'transaction', exact: true })).toBeVisible();
+  const prose = await page.locator('.prose').boundingBox();
+  const table = await reference.boundingBox();
+  expect(prose!.width).toBeLessThanOrEqual(760);
+  expect(Math.abs(table!.width - prose!.width)).toBeLessThan(2);
+  await page.setViewportSize({ width: 375, height: 812 });
+  await reference.scrollIntoViewIfNeeded();
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
 });

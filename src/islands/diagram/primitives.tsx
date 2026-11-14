@@ -26,7 +26,7 @@ export function DiagramDefs({ id }: { id: string }) {
   return (
     <defs>
       {(Object.keys(FLOWS) as FlowKind[]).map((k) => (
-        <marker key={k} id={`${id}-arrow-${k}`} viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+        <marker key={k} id={`${id}-arrow-${k}`} viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
           <path d="M1,1.2 L8.8,5 L1,8.8 z" fill={FLOWS[k].color} />
         </marker>
       ))}
@@ -35,8 +35,8 @@ export function DiagramDefs({ id }: { id: string }) {
         <stop offset="1" stopColor="#ffffff" />
       </linearGradient>
       <linearGradient id={`${id}-group`} x1="0" y1="0" x2="0" y2="1">
-        <stop offset="0" stopColor="rgba(221,234,218,0.38)" />
-        <stop offset="1" stopColor="rgba(235,242,234,0.22)" />
+        <stop offset="0" stopColor="rgba(242,246,242,0.7)" />
+        <stop offset="1" stopColor="rgba(248,250,247,0.5)" />
       </linearGradient>
       <filter id={`${id}-glow`} x="-30%" y="-30%" width="160%" height="160%">
         <feGaussianBlur stdDeviation="7" result="b" />
@@ -85,7 +85,7 @@ export const DiagramGroup = memo(function DiagramGroup({
         y={rect.y}
         width={rect.w}
         height={rect.h}
-        rx={18}
+        rx={10}
         fill={`url(#${id}-group)`}
         stroke={emphasis ? t.ring : 'rgba(148,163,184,0.22)'}
         strokeOpacity={emphasis ? 0.55 : 1}
@@ -180,12 +180,12 @@ export const DiagramNode = memo(function DiagramNode({
       onClick={clickable ? () => onSelect?.(id) : undefined}
       onKeyDown={clickable ? onKey : undefined}
     >
-      {active && <rect x={-3} y={-3} width={rect.w + 6} height={rect.h + 6} rx={15} fill="none" stroke={t.ring} strokeOpacity={0.55} strokeWidth={6} filter={`url(#${defsId}-glow)`} className="dg-pulse" />}
+      {active && <rect x={-3} y={-3} width={rect.w + 6} height={rect.h + 6} rx={11} fill="none" stroke={t.ring} strokeOpacity={0.16} strokeWidth={2} />}
       <rect
         className="dg-box"
         width={rect.w}
         height={rect.h}
-        rx={12}
+        rx={8}
         fill={`url(#${defsId}-node)`}
         stroke={selected ? '#087f5b' : active ? t.ring : state === 'visited' ? 'rgba(148,163,184,0.38)' : 'rgba(148,163,184,0.26)'}
         strokeWidth={active ? 1.6 : 1}
@@ -200,7 +200,7 @@ export const DiagramNode = memo(function DiagramNode({
         {title}
       </text>
       {subtitle && (
-        <text x={IconCmp ? (compact ? 44 : 52) : 14} y={rect.h / 2 + 13} fill="#627570" fontSize={compact ? 10 : 10.5} className="mono">
+        <text x={IconCmp ? (compact ? 44 : 52) : 14} y={rect.h / 2 + 13} fill="#627570" fontSize={compact ? 10 : 10.5} >
           {subtitle}
         </text>
       )}
@@ -214,7 +214,6 @@ export const DiagramNode = memo(function DiagramNode({
       )}
       {status && (
         <circle cx={rect.w - 12} cy={12} r={4} fill={STATUS_COLOR[status]}>
-          {status !== 'down' && <animate attributeName="opacity" values="1;0.35;1" dur="1.6s" repeatCount="indefinite" />}
         </circle>
       )}
       {children}
@@ -250,8 +249,8 @@ export const DiagramEdge = memo(function DiagramEdge({
   state = 'normal',
   animate = true,
   bidirectional,
-  speed = 2.4,
-  particles = 2,
+  speed = 3.6,
+  particles = 1,
   labelOffset,
   opacityOverride,
   reverseParticles,
@@ -264,12 +263,11 @@ export const DiagramEdge = memo(function DiagramEdge({
   const lw = label ? label.length * 5.5 + 14 : 0;
   return (
     <g className="dg-edge" style={{ opacity }} aria-hidden="true" data-kind={kind}>
-      <path d={r.d} fill="none" stroke={f.color} strokeOpacity={active ? 0.95 : 0.6} strokeWidth={active ? f.width + 0.5 : f.width} strokeDasharray={f.dash} strokeLinecap="round" markerEnd={`url(#${defsId}-arrow-${kind})`} markerStart={bidirectional ? `url(#${defsId}-arrow-${kind})` : undefined} />
+      <path d={r.d} fill="none" stroke={f.color} strokeOpacity={active ? 0.95 : 0.6} strokeWidth={active ? 1.6 : 1.2} strokeDasharray={f.dash} strokeLinecap="round" markerEnd={`url(#${defsId}-arrow-${kind})`} markerStart={bidirectional ? `url(#${defsId}-arrow-${kind})` : undefined} />
       {active && animate && (
         <>
-          <path d={r.d} fill="none" stroke={f.color} strokeOpacity={0.35} strokeWidth={f.width + 5} strokeLinecap="round" style={{ filter: 'blur(3px)' }} />
           {Array.from({ length: particles }, (_, i) => (
-            <circle key={i} r={kind === 'collect' ? 3.2 : 2.8} fill={f.color} opacity={0}>
+            <circle key={i} r={2} fill={f.color} opacity={0}>
               <animateMotion dur={`${speed}s`} repeatCount="indefinite" begin={`${(i * speed) / particles}s`} path={r.d} keyPoints={reverseParticles ? '1;0' : '0;1'} keyTimes="0;1" calcMode="linear" />
               <animate attributeName="opacity" dur={`${speed}s`} repeatCount="indefinite" begin={`${(i * speed) / particles}s`} values="0;1;1;0" keyTimes="0;0.1;0.85;1" />
             </circle>
@@ -278,7 +276,7 @@ export const DiagramEdge = memo(function DiagramEdge({
       )}
       {label && (
         <g transform={`translate(${lx}, ${ly})`} style={{ opacity: active ? 1 : 0.85 }}>
-          <rect x={-lw / 2} y={-9} width={lw} height={18} rx={9} fill="#f7faf6" stroke={f.color} strokeOpacity={active ? 0.6 : 0.3} />
+          <rect x={-lw / 2} y={-9} width={lw} height={18} rx={4} fill="#ffffff" stroke="#e3e9e5" />
           <text textAnchor="middle" y={3.6} fill={active ? '#183b35' : '#526764'} fontSize={10} fontWeight={550}>
             {label}
           </text>
