@@ -28,7 +28,7 @@ const ogImage = new URL(url('/og.png'), Astro.site);
     <meta name="description" content={description} />
     <link rel="canonical" href={canonical} />
     {noindex && <meta name="robots" content="noindex" />}
-    <meta name="theme-color" content="#ffffff" />
+    <meta name="theme-color" content="#f7f9fc" />
     <link rel="icon" href={url('/favicon.svg')} type="image/svg+xml" />
     <link rel="sitemap" href={url('/sitemap-index.xml')} />
 
@@ -63,6 +63,13 @@ const ogImage = new URL(url('/og.png'), Astro.site);
         motionToggle.setAttribute('aria-pressed', String(paused));
         motionToggle.textContent = paused ? 'Resume decorative motion ▷' : 'Pause decorative motion Ⅱ';
       });
+      const ambient = document.querySelectorAll('[data-ambient]');
+      if ('IntersectionObserver' in window) {
+        const ambientObserver = new IntersectionObserver((entries) => {
+          entries.forEach((entry) => entry.target.classList.toggle('motion-visible', entry.isIntersecting));
+        });
+        ambient.forEach((el) => ambientObserver.observe(el));
+      } else ambient.forEach((el) => el.classList.add('motion-visible'));
       const progress = document.querySelector<HTMLElement>('.scroll-progress');
       let pending = false;
       const updateProgress = () => {

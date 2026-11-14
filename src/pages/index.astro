@@ -1,48 +1,60 @@
 ---
 import '../styles/landing.css';
 import BaseLayout from '../layouts/BaseLayout.astro';
-import CapabilityArt from '../components/landing/CapabilityArt.astro';
 import Hero from '../components/landing/Hero.astro';
+import Showcase from '../components/landing/Showcase.astro';
 import Shot from '../components/Shot.astro';
 import Code from '../components/Code.astro';
+import SignalComparison from '../islands/SignalComparison';
+import InvestigationExperience from '../islands/InvestigationExperience';
+import BaselineChart from '../islands/BaselineChart';
 import { SITE, url } from '../lib/site';
-const capabilities = [
- ['01', 'Find the blocker.', 'Follow the chain to the session holding everything up. See who is waiting, for how long, and why.', 'blocking-analysis'],
- ['02', 'Know what changed.', 'Compare each statement with its own history. Spot regressions without treating every workload the same.', 'query-performance'],
- ['03', 'Keep the evidence.', 'Capture the sessions, blocking graph, and timeline around an incident. Investigate even after it is over.', 'incidents'],
-];
 const command = `git clone https://github.com/Huy-8bit/locklens.git\ncd locklens\nmake lab-up`;
 ---
-<BaseLayout title="LockLens" current="home" jsonLd={{
-  '@context': 'https://schema.org', '@type': 'SoftwareApplication', name: SITE.name,
-  applicationCategory: 'DeveloperApplication', operatingSystem: 'Linux (Docker)',
-  description: SITE.description, codeRepository: SITE.repo,
-  license: 'https://opensource.org/licenses/MIT',
-  offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
-}}>
- <main id="main" class="new-home">
-  <Hero />
-  <section class="editorial intro" aria-labelledby="problem-title">
-   <div class="section-kicker" data-reveal><span>01 / THE BIGGER PICTURE</span><span>OBSERVABILITY, WITH CONTEXT</span></div>
-   <div class="intro-grid"><h2 id="problem-title" data-reveal>Your database has<br />a story to tell.<br /><em>See the whole picture.</em></h2><div data-reveal><p class="large-copy">Metrics show the spike.<br />LockLens shows what’s behind it.</p><p>Bring queries, blocking chains, and incident evidence into one place. Spend less time piecing together what happened, and more time understanding your PostgreSQL.</p><a class="editorial-link" href={url('/docs/')} >Meet LockLens <span>↗</span></a></div></div>
-  </section>
-  <section class="product-stage" aria-labelledby="showcase-title">
-   <div class="editorial">
-    <div class="section-kicker" data-reveal><span>02 / ONE CONNECTED VIEW</span><span class="live-label">● YOUR POSTGRESQL, IN FOCUS</span></div>
-    <div class="stage-heading" data-reveal><h2 id="showcase-title">Less noise.<br /><em>More clarity.</em></h2><p>Your fleet. Your queries. Your next investigation.<br />A shared view of what matters.</p></div>
-    <div class="product-window" data-reveal><div class="window-label"><span>LOCKLENS / FLEET OVERVIEW</span><span>LAB SCREENSHOT ↗</span></div><Shot name="overview.png" alt="LockLens fleet overview with PostgreSQL health, throughput, and active incidents" eager widths={[640,1100,1440]} /></div>
-    <div class="stage-bottom"><span>From the LockLens lab · PostgreSQL primary + three standbys</span><a href={url('/docs/getting-started/ui-guide/')}>Explore the workspace ↗</a></div>
-   </div>
-  </section>
-  <section id="features" class="editorial capabilities" aria-labelledby="features-title">
-   <div class="section-kicker" data-reveal><span>03 / BUILT FOR THE INVESTIGATION</span><span>FOLLOW THE SIGNAL</span></div>
-   <h2 id="features-title" data-reveal>From “it’s slow”<br /><em>to “here’s why.”</em></h2>
-   <div class="capability-grid">{capabilities.map(([n,title,body,slug],i)=><a class="capability" href={url(`/docs/features/${slug}/`)} data-reveal style={`transition-delay:${i*90}ms`}><div class="cap-top"><span>{n}</span><span>↗</span></div><div class={`cap-art art-${i}`} aria-hidden="true"><CapabilityArt index={i} /></div><h3>{title}</h3><p>{body}</p><span class="cap-read">Explore capability →</span></a>)}</div>
-  </section>
-  <section id="incident-demo" class="investigation-band" aria-labelledby="incident-title">
-   <div class="editorial investigation-grid"><div data-reveal><p class="section-kicker">04 / WATCH IT UNFOLD</p><h2 id="incident-title">One lock.<br />A chain reaction.<br /><em>A clear answer.</em></h2><p>Watch a transaction hold a lock, sessions start to wait, and LockLens record the evidence. Step through the story at your own pace.</p><a class="btn btn-primary" href={url('/architecture/#incident')}>Launch interactive demo <span>↗</span></a></div><div class="chain-scene" data-reveal aria-label="Illustrative blocking chain"><div class="chain-caption">ILLUSTRATIVE / BLOCKING CHAIN</div><div class="chain-node root"><span>01</span><div>Root blocker<small>Idle in transaction</small></div><b>●</b></div><div class="chain-wire"></div><div class="chain-node waiter"><span>02</span><div>Waiting session<small>Blocked by session 01</small></div><b>↳</b></div><div class="chain-wire"></div><div class="chain-node waiter second"><span>03</span><div>Waiting session<small>Blocked by session 02</small></div><b>↳</b></div><div class="chain-result">↳ Follow the chain. Find the root.</div></div></div>
-  </section>
-  <section class="editorial principle" aria-labelledby="arch-title"><div class="section-kicker" data-reveal><span>05 / DESIGNED TO OBSERVE</span><span>YOUR DATABASE STAYS YOURS</span></div><div class="intro-grid"><h2 id="arch-title" data-reveal>A clearer view.<br /><em>A lighter touch.</em></h2><div data-reveal><p class="large-copy">Read-only. Out of band.<br />Open source.</p><p>LockLens connects alongside your applications. It observes PostgreSQL without sitting in the request path, changing settings, or automatically terminating sessions.</p><a class="editorial-link" href={url('/architecture/')}>Explore architecture <span>↗</span></a></div></div><div class="principle-strip" data-reveal><div><strong>14–18</strong><span>PostgreSQL versions</span></div><div><strong>MIT</strong><span>Open-source license</span></div><div><strong>Read-only</strong><span>By construction</span></div></div></section>
-  <section id="quick-start" class="start-section" aria-labelledby="start-title"><div class="editorial start-grid"><div data-reveal><p class="section-kicker">YOUR NEXT INVESTIGATION STARTS HERE</p><h2 id="start-title">See it.<br /><em>Understand it.</em></h2><p>Start a local lab with Docker Compose.<br />Create a blocking chain. Follow the evidence.</p><a class="btn btn-primary" href={url('/docs/getting-started/')}>Get started <span>↗</span></a><a class="start-github" href={SITE.repo}>View on GitHub ↗</a></div><div data-reveal><Code code={command} lang="sh" title="Start your local lab"/><p class="lab-note">Requires Docker Compose v2. First build takes a few minutes.</p><p class="project-note">Built in the open, still early. Tested in a local lab; production use and performance are not yet validated. <a href={url('/docs/deployment/limitations/')}>Read the limitations ↗</a></p></div></div></section>
- </main>
+<BaseLayout title="LockLens" current="home" jsonLd={{'@context':'https://schema.org','@type':'SoftwareApplication',name:SITE.name,applicationCategory:'DeveloperApplication',operatingSystem:'Linux (Docker)',description:SITE.description,codeRepository:SITE.repo,license:'https://opensource.org/licenses/MIT',offers:{'@type':'Offer',price:'0',priceCurrency:'USD'}}}>
+  <main id="main" class="premium-home">
+    <Hero />
+    <section class="premium-section comparison-section" aria-labelledby="problem-title">
+      <div class="premium-container">
+        <div class="section-index" data-reveal><span>01 / CONNECT THE CONTEXT</span><span>LESS ASSEMBLY. MORE UNDERSTANDING.</span></div>
+        <div class="split-heading"><h2 id="problem-title" data-reveal>The clues are there.<br/><em>Make the connection.</em></h2><p data-reveal>A wait event here. A query over there. Bring observations together to see which session is holding up the work — and keep the context when it ends.</p></div>
+        <SignalComparison client:visible={{ rootMargin: "400px" }} />
+      </div>
+    </section>
+    <section id="incident-demo" class="premium-section surface-dark investigation-section" aria-labelledby="experience-title">
+      <div class="premium-container">
+        <div class="section-index" data-reveal><span>02 / FOLLOW THE INVESTIGATION</span><span>INTERACTIVE PRODUCT STORY</span></div>
+        <div class="split-heading"><h2 id="experience-title" data-reveal>From the first wait<br/>to the <em>full picture.</em></h2><div data-reveal><p>Follow one transaction through a growing blocking chain, a triggered rule, and a recorded incident. The same sessions stay in view as the story unfolds.</p><a class="premium-link" href={url('/architecture/#incident')}>Launch interactive demo <span>↗</span></a></div></div>
+        <InvestigationExperience client:visible={{ rootMargin: "400px" }} />
+        <p class="visual-caption">A deterministic simulation of LockLens’ documented rules. Illustrative values; no connection to your databases.</p>
+      </div>
+    </section>
+    <section id="features" class="premium-section feature-stories" aria-labelledby="features-title">
+      <div class="premium-container">
+        <div class="section-index" data-reveal><span>03 / BUILT FOR THE INVESTIGATION</span><span>OBSERVE → UNDERSTAND → ACT WITH CONTEXT</span></div>
+        <h2 id="features-title" class="features-intro" data-reveal>Every signal.<br/><em>A sharper perspective.</em></h2>
+        <article class="feature-story" aria-labelledby="monitor-title">
+          <div class="feature-copy" data-reveal><p class="micro-label">01 — REAL-TIME MONITORING</p><h3 id="monitor-title">Your fleet.<br/>In focus.</h3><p>Move from fleet health to the activity of one PostgreSQL instance. Explore active sessions, workload, replication lag, and the statements consuming execution time.</p><ul><li>Database load by wait class</li><li>Primary and standby visibility</li><li>Queries compared across time windows</li></ul><a class="premium-link" href={url('/docs/getting-started/ui-guide/')}>Explore the monitoring workspace ↗</a></div>
+          <div class="feature-visual monitor-visual" data-reveal><span class="visual-eyebrow">ACTUAL PRODUCT / LOCAL LAB</span><Shot name="overview.png" alt="Actual LockLens fleet overview showing PostgreSQL instance health, workload, and incidents" widths={[640,960,1440]}/><div class="visual-foot"><span>One environment. Every instance.</span><a href={url('/docs/features/replication/')}>Replication monitoring ↗</a></div></div>
+        </article>
+        <article class="feature-story reversed" aria-labelledby="query-title">
+          <div class="feature-copy" data-reveal><p class="micro-label">02 — QUERY PERFORMANCE</p><h3 id="query-title">Slow is relative.<br/>Context is everything.</h3><p>Compare a statement with its own history. Separate slower calls from more calls, with baseline coverage, confidence, and the evidence behind each finding.</p><a class="premium-link" href={url('/docs/features/query-performance/')}>Understand query regressions ↗</a></div>
+          <div class="feature-visual baseline-visual" data-reveal data-ambient><span class="visual-eyebrow">ILLUSTRATIVE / STATEMENT BASELINE</span><BaselineChart client:visible={{ rootMargin: "400px" }} /><div class="baseline-explanation"><span>01 / Establish a baseline</span><span>02 / Compare the window</span><span>03 / Examine the evidence</span></div></div>
+        </article>
+        <article class="feature-story" aria-labelledby="evidence-title">
+          <div class="feature-copy" data-reveal><p class="micro-label">03 — BLOCKING & INCIDENT EVIDENCE</p><h3 id="evidence-title">The incident ends.<br/>The evidence stays.</h3><p>Follow PostgreSQL’s blocker relationships to the root session. Keep snapshots, affected sessions, and the incident timeline for investigation after the live activity is gone.</p><a class="premium-link" href={url('/docs/features/incidents/')}>Explore incident investigation ↗</a></div>
+          <div class="evidence-document feature-visual" data-reveal data-ambient><div class="evidence-document-header"><span>INCIDENT / 0042</span><span>● RESOLVED</span></div><h4>Blocking chain persisted</h4><p>Illustrative incident record</p><div class="document-timeline">{[['14:01:20','Before the trigger','Activity samples retained'],['14:02:40','Rule triggered','Root blocker + three waiters captured'],['14:03:19','Investigation','Sessions and timeline available'],['14:04:04','Recovery','Three clear samples; evidence preserved']].map(([time,title,desc],i)=><div style={`--event-order:${i}`}><time>{time}</time><span></span><div><strong>{title}</strong><small>{desc}</small></div></div>)}</div><a href={url('/docs/features/blocking-analysis/')}>Explore the blocking graph <span>↗</span></a></div>
+        </article>
+      </div>
+    </section>
+    <div class="real-product-section"><Showcase /></div>
+    <section class="premium-section surface-dark architecture-teaser" aria-labelledby="arch-title">
+      <div class="premium-container">
+        <div class="section-index" data-reveal><span>04 / BUILT TO OBSERVE</span><span>READ-ONLY. OUT OF BAND. YOURS.</span></div>
+        <div class="architecture-teaser-grid"><div data-reveal><h2 id="arch-title">Fits your system.<br/><em>Stays out of its way.</em></h2><p>LockLens connects directly to PostgreSQL using a read-only monitoring role. Your application traffic follows its existing path. Monitoring history lives in a separate store.</p><a class="btn btn-primary" href={url('/architecture/')}>Explore architecture <span>↗</span></a></div><div class="architecture-mini" data-reveal data-ambient><div class="mini-path"><span>Applications</span><i>→</i><span>PostgreSQL</span></div><div class="mini-observation"><span>Read-only observation</span><i></i></div><div class="mini-locklens"><span>◈</span><strong>LockLens</strong><small>Collection · rules · API</small></div><div class="mini-store"><i>↓</i><span>Separate monitoring store</span></div></div></div>
+        <div class="platform-facts"><div><strong>14–18</strong><span>PostgreSQL versions</span></div><div><strong>Self-hosted</strong><span>Inside your infrastructure</span></div><div><strong>MIT</strong><span>Open source, inspectable</span></div></div>
+      </div>
+    </section>
+    <section id="quick-start" class="premium-section start-section" aria-labelledby="start-title"><div class="premium-container start-grid"><div data-reveal><p class="micro-label">YOUR NEXT INVESTIGATION STARTS HERE</p><h2 id="start-title">Bring your database<br/><em>into focus.</em></h2><p>Start a local lab with Docker Compose.<br/>Create a blocking chain. Follow the evidence.</p><a class="btn btn-primary" href={url('/docs/getting-started/')}>Get started <span>↗</span></a></div><div class="surface-dark start-terminal" data-reveal><Code code={command} lang="sh" title="Start your local lab"/><p class="visual-caption">Requires Docker Compose v2. First build takes a few minutes.</p><p class="project-note">LockLens is early-stage software, tested in a local lab. Production behavior and performance are not yet validated. <a href={url('/docs/deployment/limitations/')}>Read the limitations ↗</a></p></div></div></section>
+  </main>
 </BaseLayout>

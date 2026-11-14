@@ -6,14 +6,14 @@ export type NodeState = 'normal' | 'active' | 'visited' | 'dim' | 'hidden';
 export type Tone = 'cyan' | 'blue' | 'violet' | 'emerald' | 'amber' | 'slate' | 'rose' | 'orange';
 
 export const TONES: Record<Tone, { fg: string; bg: string; ring: string }> = {
-  cyan: { fg: '#087f5b', bg: 'rgba(8,127,91,0.12)', ring: '#087f5b' },
-  blue: { fg: '#2464a2', bg: 'rgba(96,165,250,0.13)', ring: '#2870b5' },
-  violet: { fg: '#6944a1', bg: 'rgba(167,139,250,0.14)', ring: '#7954b3' },
-  emerald: { fg: '#157052', bg: 'rgba(52,211,153,0.13)', ring: '#14865d' },
-  amber: { fg: '#926208', bg: 'rgba(251,191,36,0.13)', ring: '#aa7309' },
-  slate: { fg: '#48615b', bg: 'rgba(148,163,184,0.12)', ring: '#73867f' },
-  rose: { fg: '#b63850', bg: 'rgba(251,113,133,0.15)', ring: '#cb4560' },
-  orange: { fg: '#a54b0e', bg: 'rgba(251,146,60,0.15)', ring: '#c45b17' },
+  cyan: { fg: 'var(--diagram-cyan, #087a9e)', bg: 'rgba(8,127,91,0.12)', ring: '#087f5b' },
+  blue: { fg: 'var(--diagram-blue, #346db6)', bg: 'rgba(96,165,250,0.13)', ring: '#2870b5' },
+  violet: { fg: 'var(--diagram-violet, #7154af)', bg: 'rgba(167,139,250,0.14)', ring: '#7954b3' },
+  emerald: { fg: 'var(--diagram-emerald, #147c77)', bg: 'rgba(52,211,153,0.13)', ring: '#14865d' },
+  amber: { fg: 'var(--diagram-amber, #956608)', bg: 'rgba(251,191,36,0.13)', ring: '#aa7309' },
+  slate: { fg: 'var(--diagram-slate, #566c88)', bg: 'rgba(148,163,184,0.12)', ring: '#73867f' },
+  rose: { fg: 'var(--diagram-rose, #b63850)', bg: 'rgba(251,113,133,0.15)', ring: '#cb4560' },
+  orange: { fg: 'var(--diagram-orange, #a54b0e)', bg: 'rgba(251,146,60,0.15)', ring: '#c45b17' },
 };
 
 type Icon = ComponentType<SVGProps<SVGSVGElement> & { size?: number | string; strokeWidth?: number | string }>;
@@ -31,12 +31,12 @@ export function DiagramDefs({ id }: { id: string }) {
         </marker>
       ))}
       <linearGradient id={`${id}-node`} x1="0" y1="0" x2="0" y2="1">
-        <stop offset="0" stopColor="#ffffff" />
-        <stop offset="1" stopColor="#ffffff" />
+        <stop offset="0" stopColor="var(--diagram-node, #fff)" />
+        <stop offset="1" stopColor="var(--diagram-node, #fff)" />
       </linearGradient>
       <linearGradient id={`${id}-group`} x1="0" y1="0" x2="0" y2="1">
-        <stop offset="0" stopColor="rgba(242,246,242,0.7)" />
-        <stop offset="1" stopColor="rgba(248,250,247,0.5)" />
+        <stop offset="0" stopColor="var(--diagram-group, #f3f6fb)" />
+        <stop offset="1" stopColor="var(--diagram-group, #f3f6fb)" />
       </linearGradient>
       <filter id={`${id}-glow`} x="-30%" y="-30%" width="160%" height="160%">
         <feGaussianBlur stdDeviation="7" result="b" />
@@ -97,7 +97,7 @@ export const DiagramGroup = memo(function DiagramGroup({
         {label.toUpperCase()}
       </text>
       {sublabel && (
-        <text x={rect.x + 18} y={rect.y + 40} fill="#627570" fontSize={10.5}>
+        <text x={rect.x + 18} y={rect.y + 40} fill="var(--diagram-muted)" fontSize={10.5}>
           {sublabel}
         </text>
       )}
@@ -196,18 +196,18 @@ export const DiagramNode = memo(function DiagramNode({
           <IconCmp x={(iconSize - 16) / 2} y={(iconSize - 16) / 2} width={16} height={16} color={t.fg} strokeWidth={1.8} aria-hidden="true" />
         </g>
       )}
-      <text x={IconCmp ? (compact ? 44 : 52) : 14} y={subtitle ? rect.h / 2 - 3 : rect.h / 2 + 4.5} fill="#183b35" fontSize={compact ? 12 : 13} fontWeight={600}>
+      <text x={IconCmp ? (compact ? 44 : 52) : 14} y={subtitle ? rect.h / 2 - 3 : rect.h / 2 + 4.5} fill="var(--diagram-text)" fontSize={compact ? 12 : 13} fontWeight={600}>
         {title}
       </text>
       {subtitle && (
-        <text x={IconCmp ? (compact ? 44 : 52) : 14} y={rect.h / 2 + 13} fill="#627570" fontSize={compact ? 10 : 10.5} >
+        <text x={IconCmp ? (compact ? 44 : 52) : 14} y={rect.h / 2 + 13} fill="var(--diagram-muted)" fontSize={compact ? 10 : 10.5} >
           {subtitle}
         </text>
       )}
       {badge && (
         <g transform={`translate(${rect.w - 8}, -9)`}>
-          <rect x={-(badge.length * 5.7 + 14)} width={badge.length * 5.7 + 14} height={17} rx={8.5} fill="#f3f6f2" stroke="rgba(148,163,184,0.35)" />
-          <text x={-(badge.length * 5.7 + 14) / 2} y={11.8} textAnchor="middle" fill="#526764" fontSize={9.5} fontWeight={600} letterSpacing="0.02em">
+          <rect x={-(badge.length * 5.7 + 14)} width={badge.length * 5.7 + 14} height={17} rx={8.5} fill="var(--diagram-node)" stroke="rgba(148,163,184,0.35)" />
+          <text x={-(badge.length * 5.7 + 14) / 2} y={11.8} textAnchor="middle" fill="var(--diagram-muted)" fontSize={9.5} fontWeight={600} letterSpacing="0.02em">
             {badge}
           </text>
         </g>
@@ -276,8 +276,8 @@ export const DiagramEdge = memo(function DiagramEdge({
       )}
       {label && (
         <g transform={`translate(${lx}, ${ly})`} style={{ opacity: active ? 1 : 0.85 }}>
-          <rect x={-lw / 2} y={-9} width={lw} height={18} rx={4} fill="#ffffff" stroke="#e3e9e5" />
-          <text textAnchor="middle" y={3.6} fill={active ? '#183b35' : '#526764'} fontSize={10} fontWeight={550}>
+          <rect x={-lw / 2} y={-9} width={lw} height={18} rx={4} fill="var(--diagram-node)" stroke="var(--diagram-border)" />
+          <text textAnchor="middle" y={3.6} fill={active ? 'var(--diagram-text)' : 'var(--diagram-muted)'} fontSize={10} fontWeight={550}>
             {label}
           </text>
         </g>

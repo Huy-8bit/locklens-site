@@ -1,31 +1,56 @@
 <!doctype html>
 <html><head><meta charset="utf-8"><style>
-  body{margin:0;width:1200px;height:630px;background:#05080f;font-family:Inter,system-ui,sans-serif;color:#e6edf7;overflow:hidden;position:relative}
+  body{margin:0;width:1200px;height:630px;background:#f6f8ff;font-family:Inter,system-ui,sans-serif;color:#0b1021;overflow:hidden;position:relative}
   .grid{position:absolute;inset:0;background-image:linear-gradient(to right,rgba(148,163,184,.07) 1px,transparent 1px),linear-gradient(to bottom,rgba(148,163,184,.07) 1px,transparent 1px);background-size:48px 48px;-webkit-mask-image:radial-gradient(ellipse at 30% 40%,#000 30%,transparent 75%)}
-  .glow{position:absolute;width:900px;height:500px;left:-150px;top:-200px;background:radial-gradient(closest-side,rgba(34,211,238,.22),transparent)}
-  .glow2{position:absolute;width:700px;height:500px;right:-200px;bottom:-200px;background:radial-gradient(closest-side,rgba(139,92,246,.2),transparent)}
+  .glow{position:absolute;width:900px;height:500px;left:-150px;top:-200px;background:radial-gradient(closest-side,rgba(77,112,255,.1),transparent)}
+  .glow2{position:absolute;width:700px;height:500px;right:-200px;bottom:-200px;background:radial-gradient(closest-side,rgba(52,120,246,.2),transparent)}
   .c{position:absolute;left:72px;top:72px;right:72px}
   .brand{display:flex;align-items:center;gap:14px;font-size:30px;font-weight:650}
-  h1{font-size:76px;line-height:1.02;letter-spacing:-.035em;margin:56px 0 0;font-weight:650}
-  .g{background:linear-gradient(100deg,#f8fafc 10%,#a5f3fc 45%,#a78bfa 90%);-webkit-background-clip:text;color:transparent}
-  p{font-size:26px;color:#9aa8c1;max-width:640px;line-height:1.4;margin-top:26px}
+  h1{font-size:62px;line-height:1.02;letter-spacing:-.035em;margin:38px 0 0;font-weight:650}
+  .g{background:linear-gradient(100deg,#2448ff 10%,#2448ff 45%,#7190ff 90%);-webkit-background-clip:text;color:transparent}
+  p{font-size:22px;color:#53617b;max-width:600px;line-height:1.4;margin-top:26px}
   .tags{position:absolute;left:72px;bottom:64px;display:flex;gap:12px}
-  .tag{font-size:18px;color:#cbd5e1;border:1px solid rgba(148,163,184,.3);border-radius:999px;padding:8px 16px;background:rgba(15,23,42,.7)}
-  svg.g2{position:absolute;right:56px;top:150px}
+  .tag{font-size:18px;color:#394b77;border:1px solid rgba(148,163,184,.3);border-radius:999px;padding:8px 16px;background:rgba(255,255,255,.7)}
+  svg.g2{position:absolute;right:-20px;top:92px}
 </style></head><body>
 <div class="grid"></div><div class="glow"></div><div class="glow2"></div>
 <div class="c">
-  <div class="brand"><svg width="44" height="44" viewBox="0 0 32 32" fill="none"><defs><linearGradient id="l" x1="4" y1="3" x2="28" y2="29" gradientUnits="userSpaceOnUse"><stop stop-color="#a5f3fc"/><stop offset=".55" stop-color="#22d3ee"/><stop offset="1" stop-color="#8b5cf6"/></linearGradient></defs><ellipse cx="14" cy="7.5" rx="9" ry="3.5" stroke="url(#l)" stroke-width="2"/><path d="M5 7.5v13c0 1.9 4 3.5 9 3.5M23 7.5v5" stroke="url(#l)" stroke-width="2" stroke-linecap="round"/><circle cx="22" cy="21" r="5" stroke="url(#l)" stroke-width="2"/><path d="m25.6 24.6 3 3" stroke="url(#l)" stroke-width="2.2" stroke-linecap="round"/></svg>LockLens</div>
-  <h1><span class="g">See beyond</span><br>PostgreSQL metrics.</h1>
+  <div class="brand"><svg width="44" height="44" viewBox="0 0 32 32" fill="none"><defs><linearGradient id="l" x1="4" y1="3" x2="28" y2="29" gradientUnits="userSpaceOnUse"><stop stop-color="#7190ff"/><stop offset=".55" stop-color="#2448ff"/><stop offset="1" stop-color="#3478f6"/></linearGradient></defs><ellipse cx="14" cy="7.5" rx="9" ry="3.5" stroke="url(#l)" stroke-width="2"/><path d="M5 7.5v13c0 1.9 4 3.5 9 3.5M23 7.5v5" stroke="url(#l)" stroke-width="2" stroke-linecap="round"/><circle cx="22" cy="21" r="5" stroke="url(#l)" stroke-width="2"/><path d="m25.6 24.6 3 3" stroke="url(#l)" stroke-width="2.2" stroke-linecap="round"/></svg>LockLens</div>
+  <h1>Find the cause<br>behind PostgreSQL<br><span class="g">slowdowns.</span></h1>
   <p>Open-source PostgreSQL monitoring and incident investigation. Blocking chains, query baselines, and incidents that keep their evidence.</p>
 </div>
-<svg class="g2" width="360" height="300" viewBox="0 0 360 300">
-  <g font-family="ui-monospace,Menlo,monospace" font-size="16">
-    <rect x="10" y="20" width="200" height="54" rx="12" fill="rgba(251,113,133,.15)" stroke="#fb7185" stroke-width="2"/><text x="28" y="53" fill="#fff" font-weight="700">pid 4127</text><text x="120" y="53" fill="#fda4af" font-size="13">root</text>
-    <path d="M40 74 V120 H70" stroke="#fb923c" stroke-width="2" fill="none" stroke-dasharray="5 4"/><rect x="72" y="96" width="190" height="48" rx="12" fill="rgba(251,146,60,.12)" stroke="rgba(251,146,60,.7)"/><text x="88" y="126" fill="#fff" font-weight="700">pid 4133</text><text x="178" y="126" fill="#fdba74" font-size="13">waiting</text>
-    <path d="M102 144 V190 H132" stroke="#fb923c" stroke-width="2" fill="none" stroke-dasharray="5 4"/><rect x="134" y="166" width="190" height="48" rx="12" fill="rgba(251,146,60,.12)" stroke="rgba(251,146,60,.7)"/><text x="150" y="196" fill="#fff" font-weight="700">pid 4139</text><text x="240" y="196" fill="#fdba74" font-size="13">waiting</text>
-    <path d="M40 74 V258 H70" stroke="#fb923c" stroke-width="2" fill="none" stroke-dasharray="5 4"/><rect x="72" y="234" width="190" height="48" rx="12" fill="rgba(251,146,60,.12)" stroke="rgba(251,146,60,.7)"/><text x="88" y="264" fill="#fff" font-weight="700">pid 4142</text><text x="178" y="264" fill="#fdba74" font-size="13">waiting</text>
-  </g>
-</svg>
+<svg class="g2" width="540" height="460" style="font-family:Inter,system-ui,sans-serif" viewBox="0 0 760 620" role="img" aria-label="PostgreSQL at the centre of an investigation, with activity, locks and evidence arranged around it">
+    <defs>
+      <linearGradient id="sc-floor" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#ecf1ff"/><stop offset=".55" stop-color="#b9ceff"/><stop offset="1" stop-color="#eff4ff"/></linearGradient>
+      <linearGradient id="sc-ribbon" x1="0" y1="1" x2="1" y2="0"><stop stop-color="#a9b7ff" stop-opacity=".1"/><stop offset=".5" stop-color="#5075ff" stop-opacity=".5"/><stop offset="1" stop-color="#1945f3" stop-opacity=".85"/></linearGradient>
+      <linearGradient id="sc-glass" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#fff" stop-opacity=".85"/><stop offset=".35" stop-color="#8caaff" stop-opacity=".32"/><stop offset="1" stop-color="#3763ee" stop-opacity=".18"/></linearGradient>
+      <linearGradient id="sc-face" x1="0" y1="0" x2="1" y2="0"><stop stop-color="#163bec"/><stop offset=".24" stop-color="#4477ff"/><stop offset=".63" stop-color="#2350ef"/><stop offset="1" stop-color="#1428b8"/></linearGradient>
+      <linearGradient id="sc-top" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#dceaff"/><stop offset=".45" stop-color="#7daaff"/><stop offset="1" stop-color="#3157f0"/></linearGradient>
+      <linearGradient id="sc-edge"><stop stop-color="#fff"/><stop offset="1" stop-color="#749aff"/></linearGradient>
+      <radialGradient id="sc-shadow"><stop stop-color="#1538a1" stop-opacity=".26"/><stop offset="1" stop-color="#1538a1" stop-opacity="0"/></radialGradient>
+    </defs>
+    <!-- A folded ribbon and an isometric plane establish a continuous visual language. -->
+    <path class="sc-ribbon-back" d="M-40 570L252 404V205L842-128V75L436 307V469L60 690Z" fill="url(#sc-ribbon)"/>
+    <path d="M-40 570L252 404V205L842-128M252 404L436 307" fill="none" stroke="#f4f7ff" stroke-opacity=".8"/>
+    <path d="M62 437L428 226L794 437L428 648Z" fill="url(#sc-floor)" opacity=".75"/>
+    <g stroke="#fff" stroke-opacity=".55" fill="none"><path d="M123 472L489 261M184 507L550 296M245 542L611 331M306 577L672 366M367 612L733 401M123 402L489 613M184 367L550 578M245 332L611 543M306 297L672 508M367 262L733 473"/></g>
+    <ellipse cx="470" cy="449" rx="174" ry="70" fill="url(#sc-shadow)"/>
+    <g class="sc-back-pane"><path d="M474 115Q474 102 486 95L611 24Q623 17 623 32V342L474 428Z" fill="url(#sc-glass)" stroke="url(#sc-edge)" stroke-width="1"/><path d="M474 151L623 65M474 194L623 108" stroke="#e7efff" stroke-opacity=".35"/></g>
+    <g class="sc-database">
+      <path d="M377 340V389C377 416 557 416 557 389V340Z" fill="url(#sc-face)"/><ellipse cx="467" cy="340" rx="90" ry="29" fill="url(#sc-top)"/><path d="M377 387C377 420 557 420 557 387" stroke="#82b3ff" fill="none"/>
+      <path d="M377 294V343C377 370 557 370 557 343V294Z" fill="url(#sc-face)"/><ellipse cx="467" cy="294" rx="90" ry="29" fill="url(#sc-top)"/><path d="M377 341C377 374 557 374 557 341" stroke="#82b3ff" fill="none"/>
+      <path d="M377 248V297C377 324 557 324 557 297V248Z" fill="url(#sc-face)"/><ellipse cx="467" cy="248" rx="90" ry="29" fill="url(#sc-top)" stroke="#d4e8ff" stroke-width="1.2"/>
+      <text x="467" y="290" text-anchor="middle" fill="white" font-size="20" font-weight="600" letter-spacing="-.6">PostgreSQL</text>
+      <path d="M446 345h42m-42 5h30" stroke="#d0e3ff" stroke-linecap="round" opacity=".6"/>
+    </g>
+    <g class="sc-activity-pane">
+      <path d="M124 317Q124 304 136 297L278 215Q290 208 290 223V401Q290 414 278 421L136 503Q124 510 124 495Z" fill="url(#sc-glass)" stroke="url(#sc-edge)" stroke-width="1.2"/>
+      <g transform="matrix(1,-.577,0,1,146,340)"><text fill="#2637a0" font-size="11" font-weight="600">DATABASE ACTIVITY</text><path d="M0 95H123" stroke="#fff" stroke-opacity=".8"/><g fill="#e6f1ff"><rect x="5" y="63" width="12" height="27" rx="1"/><rect x="28" y="49" width="12" height="41" rx="1"/><rect x="51" y="35" width="12" height="55" rx="1"/><rect x="74" y="45" width="12" height="45" rx="1"/><rect x="97" y="16" width="12" height="74" rx="1"/></g></g>
+    </g>
+    <g class="sc-signal-paths" fill="none"><path d="M290 368L338 396L377 374M557 288L615 255V185M469 418V462L573 522" stroke="#5d7df1" stroke-width="1.4" stroke-dasharray="3 6"/><path class="signal-particles" d="M290 368L338 396L377 374M557 288L615 255V185M469 418V462L573 522" stroke="#2448ff" stroke-width="2.5"/></g>
+    <g class="sc-label sc-label-query" transform="translate(249 134)"><rect width="158" height="46" rx="23" fill="#fff" stroke="#d8e1ff"/><path d="m19 17 6 6-6 6m12 0h8" fill="none" stroke="#2448ff" stroke-width="2"/><text x="51" y="29" fill="#10152d" font-size="14" font-weight="600">Queries</text></g>
+    <g class="sc-label sc-label-lock" transform="translate(567 139)"><rect width="152" height="46" rx="23" fill="#fff" stroke="#d8e1ff"/><rect x="22" y="21" width="13" height="12" rx="2" fill="none" stroke="#2448ff" stroke-width="2"/><path d="M25 21v-4a4 4 0 0 1 8 0v4" fill="none" stroke="#2448ff" stroke-width="2"/><text x="48" y="29" fill="#10152d" font-size="14" font-weight="600">Blocking</text></g>
+    <g class="sc-label sc-label-evidence" transform="translate(533 500)"><rect width="178" height="46" rx="23" fill="#fff" stroke="#d8e1ff"/><path d="M23 14h11v18H20V17m3 8 3 3 6-6" fill="none" stroke="#2448ff" stroke-width="1.6"/><text x="48" y="29" fill="#10152d" font-size="14" font-weight="600">Evidence</text></g>
+  </svg>
 <div class="tags"><span class="tag">Read-only by design</span><span class="tag">PostgreSQL 14–18</span><span class="tag">MIT licensed</span></div>
 </body></html>

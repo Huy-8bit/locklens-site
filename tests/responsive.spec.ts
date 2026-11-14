@@ -31,6 +31,8 @@ for (const route of ['/', '/architecture/', '/docs/', '/docs/architecture/', '/d
 
 test('architecture uses guided mobile layouts instead of shrunken canvases', async ({ page }) => {
   await page.goto('/architecture/');
+  await page.locator('#internal').scrollIntoViewIfNeeded();
+  await page.locator('#internal').getByRole('button', { name: 'Deep Dive', exact: true }).click();
   const ia = page.locator('#internal .ia-root');
   await ia.scrollIntoViewIfNeeded();
   await expect(ia.locator('svg.diagram-svg')).toBeHidden();
@@ -51,4 +53,21 @@ test('mobile navigation menu and docs drawer', async ({ page }) => {
   await page.keyboard.press('Escape');
   await page.getByRole('button', { name: 'Open menu' }).click();
   await expect(page.locator('#mobile-menu')).toBeVisible();
+});
+
+test('mobile investigation and architecture details remain interactive', async ({ page }) => {
+  await page.goto('/#incident-demo');
+  const story = page.locator('.investigation-experience');
+  await story.getByRole('button', { name: '03 Blocking chain' }).click();
+  await expect(story.locator('.experience-mobile-graph')).toContainText('Root blocker · PID 4127');
+  await expect(story.locator('.experience-graph')).toBeHidden();
+  await page.goto('/architecture/#internal');
+  const pipeline = page.locator('.pipeline-explorer');
+  await expect(pipeline.getByRole('button', { name: 'Deep Dive', exact: true })).toBeEnabled();
+  await pipeline.getByRole('button', { name: 'Read-only collection Schedules, rates, live state', exact: true }).click();
+  await expect(pipeline.getByRole('complementary')).toContainText('Included components');
+  const topology = page.locator('.pt-root');
+  await topology.scrollIntoViewIfNeeded();
+  await topology.getByRole('button', { name: 'commerce-primary', exact: true }).click();
+  await expect(topology.getByRole('complementary', { name: 'commerce-primary mobile details', exact: true })).toBeVisible();
 });

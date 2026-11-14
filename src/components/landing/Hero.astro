@@ -1,26 +1,18 @@
 ---
-import Logo from '../Logo.astro';
+import SignalSculpture from './SignalSculpture.astro';
 import { SITE, url } from '../../lib/site';
-const technologies = ['PostgreSQL', 'Go', 'React', 'Docker', 'Prometheus', 'Grafana', 'OpenTelemetry'];
 ---
-<section class="statement-hero" aria-labelledby="hero-title">
- <div class="statement-content">
-  <a href={SITE.repo} class="statement-badge hero-enter"><span class="status-dot"></span> OPEN-SOURCE POSTGRESQL OBSERVABILITY <span aria-hidden="true">↗</span></a>
-  <h1 id="hero-title" class="hero-enter">See beyond<br /><span>PostgreSQL metrics.</span></h1>
-  <p class="statement-description hero-enter">Every slowdown has a story.<br />Connect the signals. Find the cause. Keep the evidence.</p>
-  <div class="statement-actions hero-enter"><a href={url('/#features')} class="btn btn-primary">Explore LockLens <span aria-hidden="true">↗</span></a><a href={url('/architecture/')} class="hero-text-link">View architecture <span aria-hidden="true">→</span></a></div>
- </div>
- <div class="signal-landscape hero-enter" role="img" aria-label="Illustration: PostgreSQL signals flow through LockLens into incident evidence">
-  <svg class="signal-routes" viewBox="0 0 1200 240" preserveAspectRatio="none" aria-hidden="true"><path d="M0 25H170Q220 25 220 75V105Q220 120 260 120H940Q980 120 980 105V75Q980 25 1030 25H1200 M0 120H1200 M0 215H170Q220 215 220 165V135Q220 120 260 120H940Q980 120 980 135V165Q980 215 1030 215H1200"/><path class="signal-particles" d="M0 25H170Q220 25 220 75V105Q220 120 260 120H940Q980 120 980 105V75Q980 25 1030 25H1200 M0 120H1200 M0 215H170Q220 215 220 165V135Q220 120 260 120H940Q980 120 980 135V165Q980 215 1030 215H1200"/></svg>
-  <div class="signal-label">FROM SCATTERED SIGNALS</div>
-  <div class="signal-core"><span class="core-mark" aria-hidden="true"><Logo size={44} /></span><strong>LockLens</strong><span>Clarity, connected.</span></div>
-  <div class="signal-label">TO A CLEARER PICTURE</div>
- </div>
- <div class="statement-bottom"><span>READ-ONLY BY DESIGN <i>·</i> MIT LICENSED <i>·</i> POSTGRESQL 14–18</span><button type="button" data-motion-toggle aria-pressed="false">Pause decorative motion <span aria-hidden="true">Ⅱ</span></button></div>
-</section>
-<div class="tech-band" aria-label="Built with and integrates with PostgreSQL, Go, React, Docker, Prometheus, Grafana, and OpenTelemetry">
-  <div class="tech-band-label">BUILT FOR<br /><strong>YOUR STACK</strong></div>
-  <div class="tech-marquee" aria-hidden="true">
-    <div class="tech-track">{[0, 1].map(() => <div class="tech-group">{technologies.map((name) => <span><i>✳</i>{name}</span>)}</div>)}</div>
+<section class="platform-hero concept-hero" aria-labelledby="hero-title" data-ambient>
+  <div class="hero-grid premium-container">
+    <div class="hero-copy">
+      <a href={SITE.repo} class="open-source-label hero-enter"><span></span> OPEN SOURCE · POSTGRESQL OBSERVABILITY <span aria-hidden="true">↗</span></a>
+      <h1 id="hero-title" class="hero-enter">Find the cause behind PostgreSQL <em>slowdowns.</em></h1>
+      <p class="hero-enter">Detect blocking chains, investigate query regressions, correlate database activity, and preserve incident evidence in one workspace.</p>
+      <div class="hero-actions hero-enter"><a href={url('/#features')} class="btn btn-primary">Explore LockLens <span aria-hidden="true">↗</span></a><a href={SITE.repo} class="btn btn-ghost">View on GitHub <span aria-hidden="true">→</span></a></div>
+      <div class="hero-facts"><span>Read-only by design</span><span>Self-hosted</span><span>MIT licensed</span></div>
+    </div>
+    <SignalSculpture />
   </div>
-</div>
+  <div class="hero-bottom premium-container"><span>POSTGRESQL, UNDERSTOOD.</span><div><span>01 <b>Observe</b></span><i></i><span>02 <b>Investigate</b></span><i></i><span>03 <b>Preserve</b></span></div><a href={url('/architecture/')}>View architecture <span aria-hidden="true">↗</span></a></div>
+</section>
+<div class="platform-stack"><div class="premium-container"><span>AT HOME IN YOUR STACK</span><ul aria-label="Technologies and integrations">{['PostgreSQL', 'Docker', 'Prometheus', 'Grafana', 'OpenTelemetry'].map(t=><li>{t}</li>)}</ul></div></div>

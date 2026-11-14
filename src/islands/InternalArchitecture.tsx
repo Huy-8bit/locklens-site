@@ -37,7 +37,7 @@ export default function InternalArchitecture({ variant = 'full' }: Props) {
     return () => window.clearTimeout(t);
   }, [variant, reduced, stepper]);
 
-  const animate = !reduced && inView;
+  const animate = !reduced && inView && (stepper.playing || selected !== null);
   useSvgAnimationControl(svgRef, animate);
 
   const routes = useMemo(
@@ -74,6 +74,7 @@ export default function InternalArchitecture({ variant = 'full' }: Props) {
 
   const onSelect = (id: string) => {
     if (zp.wasDragged()) return;
+    stepper.goTo(-1);
     setSelected((s) => (s === id ? null : id));
   };
   const sel = selected ? byId.get(selected) : undefined;

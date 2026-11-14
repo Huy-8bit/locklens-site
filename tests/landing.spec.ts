@@ -6,7 +6,7 @@ test.describe('landing page', () => {
     page.on('pageerror', (e) => errors.push(String(e)));
     page.on('console', (m) => m.type() === 'error' && errors.push(m.text()));
     await page.goto('/');
-    await expect(page.getByRole('heading', { level: 1 })).toContainText('PostgreSQL metrics');
+    await expect(page.getByRole('heading', { level: 1 })).toContainText('PostgreSQL');
     for (const name of ['Features', 'Architecture', 'Interactive demo', 'Documentation']) {
       await expect(page.getByRole('navigation', { name: 'Main' }).getByRole('link', { name, exact: true })).toBeVisible();
     }

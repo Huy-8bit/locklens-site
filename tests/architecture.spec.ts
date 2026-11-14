@@ -35,6 +35,7 @@ test.describe('architecture data accuracy', () => {
 test.describe('architecture explorer', () => {
   test('internal architecture: step controls, node details, zoom', async ({ page }) => {
     await page.goto('/architecture/#internal');
+    await page.locator('#internal').getByRole('button', { name: 'Deep Dive', exact: true }).click();
     const root = page.locator('#internal .ia-root');
     await root.scrollIntoViewIfNeeded();
     await root.getByRole('button', { name: 'Next step' }).click();
@@ -64,7 +65,7 @@ test.describe('architecture explorer', () => {
     await expect(root.locator('animateMotion')).toHaveCount(0);
     await root.getByRole('button', { name: 'Replay data flow', exact: true }).click();
     await expect.poll(() => root.locator('animateMotion').count()).toBeGreaterThan(0);
-    await root.getByRole('button', { name: 'Stop replay', exact: true }).click();
+    await root.getByRole('button', { name: 'Pause data flow', exact: true }).click();
     await expect(root.locator('animateMotion')).toHaveCount(0);
     for (const [label, title] of [
       ['Single instance', 'Start with one database'],

@@ -1,0 +1,39 @@
+---
+// An original vector composition. Surfaces describe signal categories, not network paths.
+---
+<div class="signal-landscape signal-sculpture hero-enter" role="group" aria-label="Conceptual visualization of PostgreSQL activity, blocking relationships and incident evidence" data-ambient>
+  <svg class="sculpture-canvas" viewBox="0 0 760 620" role="img" aria-label="PostgreSQL at the centre of an investigation, with activity, locks and evidence arranged around it">
+    <defs>
+      <linearGradient id="sc-floor" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#ecf1ff"/><stop offset=".55" stop-color="#b9ceff"/><stop offset="1" stop-color="#eff4ff"/></linearGradient>
+      <linearGradient id="sc-ribbon" x1="0" y1="1" x2="1" y2="0"><stop stop-color="#a9b7ff" stop-opacity=".1"/><stop offset=".5" stop-color="#5075ff" stop-opacity=".5"/><stop offset="1" stop-color="#1945f3" stop-opacity=".85"/></linearGradient>
+      <linearGradient id="sc-glass" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#fff" stop-opacity=".85"/><stop offset=".35" stop-color="#8caaff" stop-opacity=".32"/><stop offset="1" stop-color="#3763ee" stop-opacity=".18"/></linearGradient>
+      <linearGradient id="sc-face" x1="0" y1="0" x2="1" y2="0"><stop stop-color="#163bec"/><stop offset=".24" stop-color="#4477ff"/><stop offset=".63" stop-color="#2350ef"/><stop offset="1" stop-color="#1428b8"/></linearGradient>
+      <linearGradient id="sc-top" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#dceaff"/><stop offset=".45" stop-color="#7daaff"/><stop offset="1" stop-color="#3157f0"/></linearGradient>
+      <linearGradient id="sc-edge"><stop stop-color="#fff"/><stop offset="1" stop-color="#749aff"/></linearGradient>
+      <radialGradient id="sc-shadow"><stop stop-color="#1538a1" stop-opacity=".26"/><stop offset="1" stop-color="#1538a1" stop-opacity="0"/></radialGradient>
+    </defs>
+    <!-- A folded ribbon and an isometric plane establish a continuous visual language. -->
+    <path class="sc-ribbon-back" d="M-40 570L252 404V205L842-128V75L436 307V469L60 690Z" fill="url(#sc-ribbon)"/>
+    <path d="M-40 570L252 404V205L842-128M252 404L436 307" fill="none" stroke="#f4f7ff" stroke-opacity=".8"/>
+    <path d="M62 437L428 226L794 437L428 648Z" fill="url(#sc-floor)" opacity=".75"/>
+    <g stroke="#fff" stroke-opacity=".55" fill="none"><path d="M123 472L489 261M184 507L550 296M245 542L611 331M306 577L672 366M367 612L733 401M123 402L489 613M184 367L550 578M245 332L611 543M306 297L672 508M367 262L733 473"/></g>
+    <ellipse cx="470" cy="449" rx="174" ry="70" fill="url(#sc-shadow)"/>
+    <g class="sc-back-pane"><path d="M474 115Q474 102 486 95L611 24Q623 17 623 32V342L474 428Z" fill="url(#sc-glass)" stroke="url(#sc-edge)" stroke-width="1"/><path d="M474 151L623 65M474 194L623 108" stroke="#e7efff" stroke-opacity=".35"/></g>
+    <g class="sc-database">
+      <path d="M377 340V389C377 416 557 416 557 389V340Z" fill="url(#sc-face)"/><ellipse cx="467" cy="340" rx="90" ry="29" fill="url(#sc-top)"/><path d="M377 387C377 420 557 420 557 387" stroke="#82b3ff" fill="none"/>
+      <path d="M377 294V343C377 370 557 370 557 343V294Z" fill="url(#sc-face)"/><ellipse cx="467" cy="294" rx="90" ry="29" fill="url(#sc-top)"/><path d="M377 341C377 374 557 374 557 341" stroke="#82b3ff" fill="none"/>
+      <path d="M377 248V297C377 324 557 324 557 297V248Z" fill="url(#sc-face)"/><ellipse cx="467" cy="248" rx="90" ry="29" fill="url(#sc-top)" stroke="#d4e8ff" stroke-width="1.2"/>
+      <text x="467" y="290" text-anchor="middle" fill="white" font-size="20" font-weight="600" letter-spacing="-.6">PostgreSQL</text>
+      <path d="M446 345h42m-42 5h30" stroke="#d0e3ff" stroke-linecap="round" opacity=".6"/>
+    </g>
+    <g class="sc-activity-pane">
+      <path d="M124 317Q124 304 136 297L278 215Q290 208 290 223V401Q290 414 278 421L136 503Q124 510 124 495Z" fill="url(#sc-glass)" stroke="url(#sc-edge)" stroke-width="1.2"/>
+      <g transform="matrix(1,-.577,0,1,146,340)"><text fill="#2637a0" font-size="11" font-weight="600">DATABASE ACTIVITY</text><path d="M0 95H123" stroke="#fff" stroke-opacity=".8"/><g fill="#e6f1ff"><rect x="5" y="63" width="12" height="27" rx="1"/><rect x="28" y="49" width="12" height="41" rx="1"/><rect x="51" y="35" width="12" height="55" rx="1"/><rect x="74" y="45" width="12" height="45" rx="1"/><rect x="97" y="16" width="12" height="74" rx="1"/></g></g>
+    </g>
+    <g class="sc-signal-paths" fill="none"><path d="M290 368L338 396L377 374M557 288L615 255V185M469 418V462L573 522" stroke="#5d7df1" stroke-width="1.4" stroke-dasharray="3 6"/><path class="signal-particles" d="M290 368L338 396L377 374M557 288L615 255V185M469 418V462L573 522" stroke="#2448ff" stroke-width="2.5"/></g>
+    <g class="sc-label sc-label-query" transform="translate(249 134)"><rect width="158" height="46" rx="23" fill="#fff" stroke="#d8e1ff"/><path d="m19 17 6 6-6 6m12 0h8" fill="none" stroke="#2448ff" stroke-width="2"/><text x="51" y="29" fill="#10152d" font-size="14" font-weight="600">Queries</text></g>
+    <g class="sc-label sc-label-lock" transform="translate(567 139)"><rect width="152" height="46" rx="23" fill="#fff" stroke="#d8e1ff"/><rect x="22" y="21" width="13" height="12" rx="2" fill="none" stroke="#2448ff" stroke-width="2"/><path d="M25 21v-4a4 4 0 0 1 8 0v4" fill="none" stroke="#2448ff" stroke-width="2"/><text x="48" y="29" fill="#10152d" font-size="14" font-weight="600">Blocking</text></g>
+    <g class="sc-label sc-label-evidence" transform="translate(533 500)"><rect width="178" height="46" rx="23" fill="#fff" stroke="#d8e1ff"/><path d="M23 14h11v18H20V17m3 8 3 3 6-6" fill="none" stroke="#2448ff" stroke-width="1.6"/><text x="48" y="29" fill="#10152d" font-size="14" font-weight="600">Evidence</text></g>
+  </svg>
+  <div class="sculpture-caption"><span>POSTGRESQL SIGNALS, CONNECTED <i> / CONCEPTUAL VIEW</i></span><button type="button" data-motion-toggle aria-pressed="false">Pause decorative motion Ⅱ</button></div>
+</div>

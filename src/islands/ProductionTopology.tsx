@@ -155,6 +155,7 @@ export default function ProductionTopology({ initialMode = 'cluster', compact = 
   const [cluster, setCluster] = useState<ClusterId | null>(null);
   const [selected, setSelected] = useState<string | null>(null);
   const [phase, setPhase] = useState<Phase>('all');
+  const [playing, setPlaying] = useState(false);
   const [crash, setCrash] = useState<Crash>('none');
   const [countdown, setCountdown] = useState(45);
 
@@ -171,6 +172,9 @@ export default function ProductionTopology({ initialMode = 'cluster', compact = 
         setMode(m);
         setSelected(null);
         setCrash('none');
+        setCluster(null);
+        setPhase('all');
+        setPlaying(false);
       }
     };
     window.addEventListener('locklens:set-mode', onSet);
@@ -190,6 +194,8 @@ export default function ProductionTopology({ initialMode = 'cluster', compact = 
 
   const changeMode = (m: Mode) => {
     setMode(m);
+    setPhase('all');
+    setPlaying(false);
     setSelected(null);
     setCrash('none');
     if (cluster && !CLUSTERS.find((c) => c.id === cluster)?.modes.includes(m)) setCluster(null);
@@ -197,14 +203,15 @@ export default function ProductionTopology({ initialMode = 'cluster', compact = 
 
   // Replay: walk through the four flow phases, then show everything.
   const replay = () => {
-    setPhase('app');
+    if (phase === 'all') setPhase('app');
+    setPlaying(p => !p);
   };
   useEffect(() => {
-    if (phase === 'all') return;
+    if (phase === 'all' || !playing || !inView || reduced) return;
     const order: Phase[] = ['app', 'collect', 'deliver', 'alert', 'all'];
-    const t = window.setTimeout(() => setPhase(order[order.indexOf(phase) + 1]), reduced ? 3200 : 2800);
+    const t = window.setTimeout(() => { const next = order[order.indexOf(phase) + 1]; setPhase(next); if (next === 'all') setPlaying(false); }, 3400);
     return () => window.clearTimeout(t);
-  }, [phase, reduced]);
+  }, [phase, reduced, playing, inView]);
 
   // Lease takeover simulation (multi-instance mode).
   useEffect(() => {
@@ -222,7 +229,7 @@ export default function ProductionTopology({ initialMode = 'cluster', compact = 
     return () => window.clearInterval(iv);
   }, [crash]);
 
-  const animate = inView && !reduced && (phase !== 'all' || selected !== null);
+  const animate = inView && !reduced && (playing || selected !== null);
   useSvgAnimationControl(svgRef, animate);
 
   // ---- which server collects which target (only differs in 'ha')
@@ -336,6 +343,14 @@ export default function ProductionTopology({ initialMode = 'cluster', compact = 
               type="button"
               role="tab"
               aria-selected={mode === m.id}
+              tabIndex={mode === m.id ? 0 : -1}
+              onKeyDown={e => {
+                const index = MODES.findIndex(x => x.id === m.id);
+                const next = e.key === 'ArrowRight' ? (index + 1) % MODES.length : e.key === 'ArrowLeft' ? (index + MODES.length - 1) % MODES.length : e.key === 'Home' ? 0 : e.key === 'End' ? MODES.length - 1 : -1;
+                if (next < 0) return;
+                e.preventDefault(); changeMode(MODES[next].id);
+                e.currentTarget.parentElement?.querySelectorAll<HTMLButtonElement>('[role="tab"]')[next]?.focus();
+              }}
               onClick={() => changeMode(m.id)}
               className={`flex items-center gap-2 rounded-xl px-3 py-2 text-left text-[0.82rem] transition-colors ${mode === m.id ? 'bg-accent/12 text-fg ring-1 ring-accent/45' : 'text-fg-muted hover:bg-ink-800 hover:text-fg'}`}
             >
@@ -345,9 +360,10 @@ export default function ProductionTopology({ initialMode = 'cluster', compact = 
           ))}
         </div>
         <div className="hidden flex-wrap items-center gap-1.5 lg:flex">
-          <button type="button" className="ctrl" onClick={phase === 'all' ? replay : () => setPhase('all')}>
-            {phase === 'all' ? <Play size={13} aria-hidden /> : <Pause size={13} aria-hidden />} {phase === 'all' ? 'Replay data flow' : 'Stop replay'}
-          </button>
+          {!reduced && <button type="button" className="ctrl" onClick={replay}>
+            {playing ? <Pause size={13} aria-hidden /> : <Play size={13} aria-hidden />} {playing ? 'Pause data flow' : phase === 'all' ? 'Replay data flow' : 'Resume data flow'}
+          </button>}
+          <button type="button" className="ctrl" aria-label="Reset data flow" onClick={() => { setPlaying(false); setPhase('all'); setSelected(null); }}><RotateCcw size={13} aria-hidden /></button>
           <button type="button" className="ctrl" aria-pressed={focusMonitoring} onClick={() => { setFocusMonitoring((f) => !f); setCluster(null); setSelected(null); }}>
             <Focus size={13} aria-hidden /> Highlight LockLens connections
           </button>
@@ -355,8 +371,8 @@ export default function ProductionTopology({ initialMode = 'cluster', compact = 
       </div>
 
       <div className="topology-guide" role="group" aria-label="Follow a data flow">
-        <button type="button" aria-pressed={phase === 'all'} onClick={() => setPhase('all')}>All connections</button>
-        {PHASES.map((p, i) => <button key={p.id} type="button" aria-pressed={phase === p.id} onClick={() => { setPhase(p.id); setSelected(null); setCluster(null); setFocusMonitoring(false); }}><span>{String(i + 1).padStart(2, '0')}</span>{['Application', 'Observation', 'History & UI', 'Notifications'][i]}</button>)}
+        <button type="button" aria-pressed={phase === 'all'} onClick={() => { setPlaying(false); setPhase('all'); }}>All connections</button>
+        {PHASES.map((p, i) => <button key={p.id} type="button" aria-pressed={phase === p.id} onClick={() => { setPlaying(false); setPhase(p.id); setSelected(null); setCluster(null); setFocusMonitoring(false); }}><span>{String(i + 1).padStart(2, '0')}</span>{['Application', 'Observation', 'History & UI', 'Notifications'][i]}</button>)}
       </div>
 
       {/* Canvas */}
@@ -555,7 +571,8 @@ export default function ProductionTopology({ initialMode = 'cluster', compact = 
         </div>
       </div>
 
-      <MobileTopology mode={mode} />
+      <MobileTopology mode={mode} onSelect={id => setSelected(s => s === id ? null : id)} />
+      {sel && <aside className="panel mt-4 p-5 lg:hidden" aria-label={`${sel.title} mobile details`}><DetailsPanel title={sel.at[mode]?.title ?? sel.title} details={sel.details} onClose={() => setSelected(null)} illustrative={sel.illustrative}/></aside>}
     </div>
   );
 }
@@ -572,7 +589,7 @@ const APP_LAYERS: { layer: TopoNode['layer']; label: string }[] = [
   { layer: 'db', label: 'PostgreSQL servers' },
 ];
 
-function MobileTopology({ mode }: { mode: Mode }) {
+function MobileTopology({ mode, onSelect }: { mode: Mode; onSelect: (id: string) => void }) {
   const present = (n: TopoNode) => Boolean(n.at[mode]);
   const nodes = NODES.filter(present);
   const title = (n: TopoNode) => n.at[mode]?.title ?? n.title;
@@ -596,9 +613,9 @@ function MobileTopology({ mode }: { mode: Mode }) {
                 <p className="text-[0.65rem] font-semibold uppercase tracking-[0.14em] text-fg-subtle">{label}</p>
                 <div className="mt-1 flex flex-wrap gap-1.5">
                   {ns.map((n) => (
-                    <span key={n.id} className={`chip ${layer === 'db' ? 'border-accent/35 text-accent' : ''}`}>
+                    <button type="button" key={n.id} onClick={() => onSelect(n.id)} className={`chip min-h-11 ${layer === 'db' ? 'border-accent/35 text-accent' : ''}`}>
                       {title(n)}
-                    </span>
+                    </button>
                   ))}
                 </div>
                 {layer !== 'db' && <div className="ml-3 mt-1 h-3 border-l border-dashed border-line-strong" aria-hidden />}
@@ -623,7 +640,7 @@ function MobileTopology({ mode }: { mode: Mode }) {
             const Icon = icon(n.icon);
             const t = TONES[n.tone];
             return (
-              <li key={n.id} className="flex items-center gap-3 rounded-xl border border-line bg-ink-900/50 px-3 py-2">
+              <li key={n.id}><button type="button" onClick={() => onSelect(n.id)} className="flex w-full items-center gap-3 rounded-xl border border-line bg-ink-900/50 px-3 py-3 text-left">
                 <span className="grid size-7 place-items-center rounded-lg" style={{ background: t.bg, color: t.fg }}>
                   <Icon size={14} aria-hidden />
                 </span>
@@ -631,7 +648,7 @@ function MobileTopology({ mode }: { mode: Mode }) {
                   <span className="block text-sm text-fg">{title(n)}</span>
                   <span className="block truncate font-mono text-[0.68rem] text-fg-subtle">{n.at[mode]?.subtitle ?? n.subtitle}</span>
                 </span>
-              </li>
+              </button></li>
             );
           })}
         </ul>
@@ -640,9 +657,9 @@ function MobileTopology({ mode }: { mode: Mode }) {
             <p className="mt-4 text-[0.65rem] font-semibold uppercase tracking-[0.14em] text-amber-800">Alerts & telemetry (configured destinations)</p>
             <div className="mt-1.5 flex flex-wrap gap-1.5">
               {out.map((n) => (
-                <span key={n.id} className="chip">
+                <button type="button" key={n.id} className="chip min-h-11" onClick={() => onSelect(n.id)}>
                   {title(n)}
-                </span>
+                </button>
               ))}
             </div>
           </>

@@ -2,7 +2,7 @@
 import '../styles/architecture.css';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import SectionHeader from '../components/SectionHeader.astro';
-import InternalArchitecture from '../islands/InternalArchitecture';
+import ArchitecturePipeline from '../islands/ArchitecturePipeline';
 import ProductionTopology from '../islands/ProductionTopology';
 import IncidentStory from '../islands/IncidentStory';
 import { FLOWS, type FlowKind } from '../islands/diagram/flows';
@@ -11,8 +11,8 @@ import { url } from '../lib/site';
 
 const sections = [
   ['overview', 'Overview'],
-  ['production', 'Deployment'],
   ['internal', 'Data pipeline'],
+  ['production', 'Deployment'],
   ['collection', 'Collection'],
   ['flows', 'Data flows'],
   ['incident', 'Incident'],
@@ -69,19 +69,19 @@ const deepLinks = [
 ---
 <BaseLayout title="Architecture explorer" description="Interactive LockLens architecture: the collection pipeline, the internal modules of the server, how LockLens sits out of band in production PostgreSQL environments, multi-instance leases, and a simulated blocking incident." current="architecture">
   <main id="main" class="architecture-page">
-    <section id="overview" class="arch-hero" aria-labelledby="arch-h1">
+    <section id="overview" class="arch-hero concept-arch-hero" aria-labelledby="arch-h1">
       <div class="arch-container arch-hero-grid">
         <div>
           <p class="eyebrow">The architecture</p>
-          <h1 id="arch-h1">Clarity, without<br /><span>getting in the way.</span></h1>
+          <h1 id="arch-h1">Built to observe.<br /><span>Designed to connect.</span></h1>
           <p class="arch-hero-lead">Your applications talk to PostgreSQL. LockLens observes alongside them — turning database activity into a clear picture of what happened, and why.</p>
           <div class="arch-hero-actions">
-            <a href="#production" class="btn btn-primary">Explore the architecture <span aria-hidden="true">↗</span></a>
+            <a href="#internal" class="btn btn-primary">Explore the architecture <span aria-hidden="true">↗</span></a>
             <a href={url('/docs/architecture/')} class="arch-text-link">Read the overview <span aria-hidden="true">→</span></a>
           </div>
           <ul class="arch-principles" aria-label="Architecture principles"><li>Read-only collection</li><li>Your infrastructure</li><li>Evidence preserved</li></ul>
         </div>
-        <div class="arch-system" aria-label="Applications connect directly to PostgreSQL. LockLens observes separately and preserves incident evidence.">
+        <div class="arch-system" data-ambient aria-label="Applications connect directly to PostgreSQL. LockLens observes separately and preserves incident evidence.">
           <div class="arch-system-label">YOUR APPLICATION PATH</div>
           <div class="arch-system-row">
             <div class="arch-system-node"><span class="arch-node-icon" aria-hidden="true">⌘</span><strong>Applications</strong><small>Your services, as they are</small></div>
@@ -112,21 +112,23 @@ const deepLinks = [
       </div>
     </nav>
 
+    <section id="internal" class="scroll-mt-28 border-t border-line py-20" aria-labelledby="internal-title">
+      <div class="mx-auto max-w-[1240px] px-4 sm:px-6">
+        <SectionHeader id="internal-title" eyebrow="01 / From signal to evidence" title="Every observation has a path." lead="Follow a reading from PostgreSQL through collection, analysis, storage, and incident detection. Select a component to understand its role." />
+        <div class="mt-10"><ArchitecturePipeline client:visible={{ rootMargin: "400px" }} /></div>
+      </div>
+    </section>
+
     <!-- Production -->
     <section id="production" class="scroll-mt-28 border-t border-line py-20" aria-labelledby="production-title">
       <div class="mx-auto max-w-[1240px] px-4 sm:px-6">
-        <SectionHeader id="production-title" eyebrow="01 / In your environment" title="A place alongside your databases." lead="Choose your environment. Follow a connection, select a component, or replay the flow to see how observation stays separate from application traffic." />
-        <div class="mt-10"><ProductionTopology client:visible initialMode="cluster" /></div>
+        <SectionHeader id="production-title" eyebrow="02 / In your environment" title="A place alongside your databases." lead="Choose your environment. Follow a connection, select a component, or replay the flow to see how observation stays separate from application traffic." />
+        <div class="mt-10"><ProductionTopology client:visible={{ rootMargin: "400px" }} initialMode="cluster" /></div>
       </div>
     </section>
 
     <!-- Internal -->
-    <section id="internal" class="scroll-mt-28 border-t border-line py-20" aria-labelledby="internal-title">
-      <div class="mx-auto max-w-[1240px] px-4 sm:px-6">
-        <SectionHeader id="internal-title" eyebrow="02 / From signal to evidence" title="Every observation has a path." lead="Follow a reading from PostgreSQL through collection, analysis, storage, and incident detection. Select a component to understand its role." />
-        <div class="mt-10"><InternalArchitecture client:visible /></div>
-      </div>
-    </section>
+
 
     <!-- Collection -->
     <section id="collection" class="scroll-mt-28 py-20" aria-labelledby="collection-title">

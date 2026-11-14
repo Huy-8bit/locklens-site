@@ -28,6 +28,13 @@ export const useReducedMotion = () => useMediaQuery('(prefers-reduced-motion: re
 
 export function useInView<T extends Element>(ref: RefObject<T | null>, rootMargin = '120px'): boolean {
   const [inView, setInView] = useState(false);
+  const [pageVisible, setPageVisible] = useState(true);
+  useEffect(() => {
+    const update = () => setPageVisible(!document.hidden);
+    update();
+    document.addEventListener('visibilitychange', update);
+    return () => document.removeEventListener('visibilitychange', update);
+  }, []);
   useEffect(() => {
     const el = ref.current;
     if (!el || !('IntersectionObserver' in window)) {
@@ -38,7 +45,7 @@ export function useInView<T extends Element>(ref: RefObject<T | null>, rootMargi
     io.observe(el);
     return () => io.disconnect();
   }, [ref, rootMargin]);
-  return inView;
+  return inView && pageVisible;
 }
 
 /** Pauses/resumes SMIL animations (animateMotion particles) of an SVG. */
