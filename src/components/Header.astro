@@ -6,7 +6,8 @@ const { current } = Astro.props;
 const isCurrent = (href: string) =>
   (current === 'architecture' && href.startsWith('/architecture')) || (current === 'docs' && href.startsWith('/docs'));
 ---
-<header class="sticky top-0 z-50 h-[var(--header-h)] border-b border-line bg-ink-950/75 backdrop-blur-xl supports-[backdrop-filter]:bg-ink-950/60">
+<header class="site-header sticky top-0 z-50 h-[var(--header-h)] border-b border-line bg-ink-950/75 backdrop-blur-xl supports-[backdrop-filter]:bg-ink-950/60">
+  <div class="scroll-progress" aria-hidden="true"></div>
   <nav class="mx-auto flex h-full max-w-[1320px] items-center gap-4 px-4 sm:px-6" aria-label="Main">
     <a href={url('/')} class="flex shrink-0 items-center gap-2.5 font-semibold tracking-tight text-fg" aria-label="LockLens home">
       <Logo size={26} />
@@ -26,12 +27,12 @@ const isCurrent = (href: string) =>
     </ul>
 
     <div class="ml-auto flex items-center gap-2">
-      <button type="button" data-search-open class="hidden h-9 items-center gap-2 rounded-lg border border-line bg-ink-900/70 pl-3 pr-2 text-sm text-fg-subtle transition-colors hover:border-line-strong hover:text-fg-muted md:flex" aria-label="Search documentation">
+      <button type="button" data-search-open class="hidden h-9 items-center gap-2 rounded-lg border border-line bg-ink-900/70 pl-3 pr-2 text-sm text-fg-subtle transition-colors hover:border-line-strong hover:text-fg-muted xl:flex" aria-label="Search documentation">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
         <span class="pr-6">Search docs</span>
         <kbd class="kbd" data-search-kbd>⌘K</kbd>
       </button>
-      <button type="button" data-search-open class="ctrl md:hidden" aria-label="Search documentation">
+      <button type="button" data-search-open class="ctrl xl:hidden" aria-label="Search documentation">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
       </button>
       <a href={SITE.repo} class="ctrl hidden sm:inline-flex" rel="noopener noreferrer" aria-label="LockLens on GitHub">

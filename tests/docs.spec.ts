@@ -20,7 +20,7 @@ test.describe('documentation', () => {
     await expect(page.locator('a[rel="prev"]')).toHaveAttribute('href', '/docs/getting-started/troubleshooting/');
     await page.locator('[data-toc-link="several-servers"]').click();
     await expect(page).toHaveURL(/#several-servers$/);
-    await page.goto('/docs/architecture/postgresql-observation/');
+    await page.goto('/docs/features/notifications/');
     const img = page.locator('.prose img').first();
     await img.scrollIntoViewIfNeeded();
     await expect.poll(() => img.evaluate((i: HTMLImageElement) => i.naturalWidth)).toBeGreaterThan(0);

@@ -48,26 +48,26 @@ export default function BaselineChart() {
           {[0, 5, 10].map((t) => (
             <g key={t}>
               <line x1={pad.l} x2={w - pad.r} y1={y(t)} y2={y(t)} stroke="rgba(148,163,184,0.12)" />
-              <text x={pad.l - 8} y={y(t) + 3.5} textAnchor="end" fill="#8796b0" fontSize={10}>{t} ms</text>
+              <text x={pad.l - 8} y={y(t) + 3.5} textAnchor="end" fill="#627570" fontSize={10}>{t} ms</text>
             </g>
           ))}
           {[0, 12, 24, 36, 47].map((i) => (
-            <text key={i} x={x(i)} y={h - 8} textAnchor="middle" fill="#8796b0" fontSize={10}>{label(i)}</text>
+            <text key={i} x={x(i)} y={h - 8} textAnchor="middle" fill="#627570" fontSize={10}>{label(i)}</text>
           ))}
           <rect x={x(START) - 4} y={pad.t} width={x(N - 1) - x(START) + 8} height={h - pad.t - pad.b} fill="rgba(251,191,36,0.06)" />
           <path d={band} fill="rgba(148,163,184,0.16)" />
           <path d={median} fill="none" stroke="rgba(148,163,184,0.55)" strokeWidth={1} strokeDasharray="3 3" />
           <path d={line} fill="none" stroke="#3987e5" strokeWidth={2} strokeLinejoin="round" />
           <g transform={`translate(${x(START) + 6}, ${pad.t + 6})`}>
-            <rect width={196} height={38} rx={8} fill="#0b1120" stroke="rgba(251,191,36,0.5)" />
-            <path d="M12 10 L19 23 H5 Z" fill="none" stroke="#fbbf24" strokeWidth={1.5} strokeLinejoin="round" />
-            <text x={26} y={17} fill="#f1f5f9" fontSize={10.5} fontWeight={600}>queries.mean_regression</text>
-            <text x={26} y={30} fill="#cbd5e1" fontSize={9.5}>2.3× slower per call · finding</text>
+            <rect width={196} height={38} rx={8} fill="#f3f6f2" stroke="rgba(251,191,36,0.5)" />
+            <path d="M12 10 L19 23 H5 Z" fill="none" stroke="#aa7309" strokeWidth={1.5} strokeLinejoin="round" />
+            <text x={26} y={17} fill="#183b35" fontSize={10.5} fontWeight={600}>queries.mean_regression</text>
+            <text x={26} y={30} fill="#48615b" fontSize={9.5}>2.3× slower per call · finding</text>
           </g>
           {hd && (
             <g>
               <line x1={x(hd.i)} x2={x(hd.i)} y1={pad.t} y2={h - pad.b} stroke="rgba(226,232,240,0.35)" />
-              <circle cx={x(hd.i)} cy={y(hd.value)} r={4.5} fill="#3987e5" stroke="#0d1528" strokeWidth={2} />
+              <circle cx={x(hd.i)} cy={y(hd.value)} r={4.5} fill="#3987e5" stroke="#ffffff" strokeWidth={2} />
             </g>
           )}
         </svg>

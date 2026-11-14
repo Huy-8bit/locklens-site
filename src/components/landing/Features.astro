@@ -49,18 +49,18 @@ const destinations = [
         <a href={url('/docs/features/blocking-analysis/')} class="mt-6 inline-block text-sm text-accent hover:underline">Blocking graph model →</a>
       </div>
       <div class="relative">
-        <div class="overflow-hidden rounded-xl border border-line-strong bg-[#070c17] shadow-2xl shadow-black/50">
+        <div class="overflow-hidden rounded-xl border border-line-strong bg-[#f4f7f2] shadow-2xl shadow-emerald-950/10">
           <div class="flex items-center gap-2 border-b border-line px-4 py-2 font-mono text-[0.72rem] text-fg-subtle">
             <span class="text-accent">$</span> locklens inspect
             <span class="ml-auto chip !py-0">real CLI output · demo scenario</span>
           </div>
-          <pre class="overflow-x-auto p-4 font-mono text-[0.74rem] leading-relaxed text-slate-300"><code>{cliOutput.split('\n').map((l) => (
-            <span class:list={['block', l.includes('root blocker') && 'text-rose-300', l.includes('└─') && 'text-orange-200']}>{l}</span>
+          <pre class="overflow-x-auto p-4 font-mono text-[0.74rem] leading-relaxed text-fg-muted"><code>{cliOutput.split('\n').map((l) => (
+            <span class:list={['block', l.includes('root blocker') && 'text-rose-700', l.includes('└─') && 'text-orange-800']}>{l}</span>
           ))}</code></pre>
         </div>
         <svg viewBox="0 0 520 150" class="mt-4 w-full" role="img" aria-label="Animated blocking graph: pid 116 is the root blocker of pid 117, which blocks pid 118">
           <defs>
-            <marker id="bf-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M1,1 L9,5 L1,9 z" fill="#fb923c" /></marker>
+            <marker id="bf-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M1,1 L9,5 L1,9 z" fill="#c45b17" /></marker>
           </defs>
           {[
             { x: 20, pid: 116, label: 'root blocker · idle in tx', root: true },
@@ -68,14 +68,14 @@ const destinations = [
             { x: 360, pid: 118, label: 'waiting · lock wait 3 s' },
           ].map((n, i) => (
             <g class="bf-node" style={`animation-delay:${i * 0.5}s`}>
-              <rect x={n.x} y={46} width={140} height={58} rx={12} fill={n.root ? 'rgba(251,113,133,0.12)' : 'rgba(251,146,60,0.08)'} stroke={n.root ? '#fb7185' : 'rgba(251,146,60,0.6)'} />
-              <text x={n.x + 14} y={70} fill="#f8fafc" font-size="13" font-weight="650" font-family="var(--font-mono)">pid {n.pid}</text>
-              <text x={n.x + 14} y={89} fill={n.root ? '#fda4af' : '#fdba74'} font-size="10.5">{n.label}</text>
+              <rect x={n.x} y={46} width={140} height={58} rx={12} fill={n.root ? 'rgba(251,113,133,0.12)' : 'rgba(251,146,60,0.08)'} stroke={n.root ? '#cb4560' : 'rgba(251,146,60,0.6)'} />
+              <text x={n.x + 14} y={70} fill="#102c2a" font-size="13" font-weight="650" font-family="var(--font-mono)">pid {n.pid}</text>
+              <text x={n.x + 14} y={89} fill={n.root ? '#b63850' : '#a54b0e'} font-size="10.5">{n.label}</text>
             </g>
           ))}
-          <path d="M188,75 L162,75" stroke="#fb923c" stroke-width="2" stroke-dasharray="4 4" marker-end="url(#bf-arrow)" class="dg-flow-dash" />
-          <path d="M358,75 L332,75" stroke="#fb923c" stroke-width="2" stroke-dasharray="4 4" marker-end="url(#bf-arrow)" class="dg-flow-dash" />
-          <text x={260} y={130} text-anchor="middle" fill="#7d8aa5" font-size="10.5">arrows point from a waiting session to the session it waits for</text>
+          <path d="M188,75 L162,75" stroke="#c45b17" stroke-width="2" stroke-dasharray="4 4" marker-end="url(#bf-arrow)" class="dg-flow-dash" />
+          <path d="M358,75 L332,75" stroke="#c45b17" stroke-width="2" stroke-dasharray="4 4" marker-end="url(#bf-arrow)" class="dg-flow-dash" />
+          <text x={260} y={130} text-anchor="middle" fill="#627570" font-size="10.5">arrows point from a waiting session to the session it waits for</text>
         </svg>
       </div>
     </article>
@@ -99,7 +99,7 @@ const destinations = [
         <p class="eyebrow">Anomaly detection</p>
         <h3 id="f-anomaly" class="mt-3 text-2xl font-semibold tracking-tight text-fg sm:text-3xl">Compared with its own history</h3>
         <p class="mt-4 leading-relaxed text-fg-muted">Each statement has a baseline — median and MAD by hour of day, from five-minute rollups. Rules flag slower per call, more calls, more load, more I/O, different rows per call, possible N+1, and statements slow <em>while they run</em>. Each finding has an explainable impact score and a confidence about the data.</p>
-        <p class="mt-4 rounded-xl border border-amber-400/25 bg-amber-400/[0.05] p-4 text-sm leading-relaxed text-amber-50/85">Evidence around an anomaly — waits, changes, server log events — is correlated into ranked <strong class="text-amber-100">hypotheses</strong>. They are never presented as confirmed causes, and LockLens never runs <code class="font-mono">EXPLAIN ANALYZE</code>.</p>
+        <p class="mt-4 rounded-xl border border-amber-400/25 bg-amber-400/[0.05] p-4 text-sm leading-relaxed text-amber-900">Evidence around an anomaly — waits, changes, server log events — is correlated into ranked <strong class="text-amber-900">hypotheses</strong>. They are never presented as confirmed causes, and LockLens never runs <code class="font-mono">EXPLAIN ANALYZE</code>.</p>
         <a href={url('/docs/features/query-performance/')} class="mt-6 inline-block text-sm text-accent hover:underline">Query performance intelligence →</a>
       </div>
       <div class="panel p-5"><BaselineChart client:visible /></div>
@@ -182,26 +182,26 @@ const destinations = [
         <h3 id="f-repl" class="mt-3 text-2xl font-semibold tracking-tight text-fg">Primaries, standbys, slots and lag</h3>
         <p class="mt-3 text-sm leading-relaxed text-fg-muted">The replication topology with replay lag per standby, slots and the WAL they retain, and standby receive/replay state. Rules flag replicas behind by 64 MiB or more and slots retaining 1 GiB or more.</p>
         <svg viewBox="0 0 520 300" class="mt-6 w-full" role="img" aria-label="Illustrative replication topology: one primary streaming to three standbys with replay lag 0.2, 1.1 and 72 MiB; the third exceeds the 64 MiB threshold">
-          <defs><marker id="rp-a" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M1,1 L9,5 L1,9 z" fill="#a78bfa" /></marker></defs>
-          <rect x="16" y="118" width="150" height="62" rx="12" fill="#0d1528" stroke="#22d3ee" stroke-opacity="0.6" />
-          <text x="32" y="145" fill="#f1f5f9" font-size="13" font-weight="650">primary</text>
-          <text x="32" y="164" fill="#8796b0" font-size="10.5" font-family="var(--font-mono)">WAL 6.4 MB/s</text>
+          <defs><marker id="rp-a" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M1,1 L9,5 L1,9 z" fill="#7954b3" /></marker></defs>
+          <rect x="16" y="118" width="150" height="62" rx="12" fill="#ffffff" stroke="#087f5b" stroke-opacity="0.6" />
+          <text x="32" y="145" fill="#183b35" font-size="13" font-weight="650">primary</text>
+          <text x="32" y="164" fill="#627570" font-size="10.5" font-family="var(--font-mono)">WAL 6.4 MB/s</text>
           {[
             { y: 22, name: 'standby-1', lag: 0.2 },
             { y: 118, name: 'standby-2', lag: 1.1 },
             { y: 214, name: 'standby-3', lag: 72, bad: true },
           ].map((s, i) => (
             <g>
-              <path d={`M166,149 C230,149 240,${s.y + 31} 300,${s.y + 31}`} fill="none" stroke="#a78bfa" stroke-width="2" stroke-dasharray="2 4" marker-end="url(#rp-a)" class="dg-flow-dash" />
-              <rect x="304" y={s.y} width="200" height="62" rx="12" fill="#0d1528" stroke={s.bad ? '#fbbf24' : 'rgba(148,163,184,0.3)'} />
-              <text x="318" y={s.y + 22} fill="#f1f5f9" font-size="12" font-weight="600">{s.name}</text>
-              <text x="490" y={s.y + 22} text-anchor="end" fill={s.bad ? '#fcd34d' : '#a3b1c9'} font-size="10.5" font-family="var(--font-mono)">{s.lag} MiB</text>
+              <path d={`M166,149 C230,149 240,${s.y + 31} 300,${s.y + 31}`} fill="none" stroke="#7954b3" stroke-width="2" stroke-dasharray="2 4" marker-end="url(#rp-a)" class="dg-flow-dash" />
+              <rect x="304" y={s.y} width="200" height="62" rx="12" fill="#ffffff" stroke={s.bad ? '#aa7309' : 'rgba(148,163,184,0.3)'} />
+              <text x="318" y={s.y + 22} fill="#183b35" font-size="12" font-weight="600">{s.name}</text>
+              <text x="490" y={s.y + 22} text-anchor="end" fill={s.bad ? '#926208' : '#526764'} font-size="10.5" font-family="var(--font-mono)">{s.lag} MiB</text>
               <rect x="318" y={s.y + 36} width="172" height="6" rx="3" fill="rgba(148,163,184,0.15)" />
-              <rect x="318" y={s.y + 36} width={Math.max(3, (s.lag / 80) * 172)} height="6" rx="3" fill={s.bad ? '#fbbf24' : '#a78bfa'} class="rp-bar" style={`animation-delay:${i * 0.2}s`} />
-              <line x1={318 + (64 / 80) * 172} x2={318 + (64 / 80) * 172} y1={s.y + 32} y2={s.y + 46} stroke="#fbbf24" stroke-opacity="0.8" />
+              <rect x="318" y={s.y + 36} width={Math.max(3, (s.lag / 80) * 172)} height="6" rx="3" fill={s.bad ? '#aa7309' : '#7954b3'} class="rp-bar" style={`animation-delay:${i * 0.2}s`} />
+              <line x1={318 + (64 / 80) * 172} x2={318 + (64 / 80) * 172} y1={s.y + 32} y2={s.y + 46} stroke="#aa7309" stroke-opacity="0.8" />
             </g>
           ))}
-          <text x="16" y="292" fill="#7d8aa5" font-size="10">Illustrative values · bars scale to 80 MiB · tick = 64 MiB default threshold</text>
+          <text x="16" y="292" fill="#627570" font-size="10">Illustrative values · bars scale to 80 MiB · tick = 64 MiB default threshold</text>
         </svg>
         <a href={url('/docs/features/replication/')} class="mt-4 inline-block text-sm text-accent hover:underline">Replication monitoring →</a>
       </article>

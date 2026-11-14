@@ -28,7 +28,7 @@ const ogImage = new URL(url('/og.png'), Astro.site);
     <meta name="description" content={description} />
     <link rel="canonical" href={canonical} />
     {noindex && <meta name="robots" content="noindex" />}
-    <meta name="theme-color" content="#05080f" />
+    <meta name="theme-color" content="#ffffff" />
     <link rel="icon" href={url('/favicon.svg')} type="image/svg+xml" />
     <link rel="sitemap" href={url('/sitemap-index.xml')} />
 
@@ -57,6 +57,24 @@ const ogImage = new URL(url('/og.png'), Astro.site);
     <script>
       // Reveal-on-scroll for elements marked data-reveal (content is visible without JS).
       const els = document.querySelectorAll('[data-reveal]');
+      const motionToggle = document.querySelector<HTMLButtonElement>('[data-motion-toggle]');
+      motionToggle?.addEventListener('click', () => {
+        const paused = document.documentElement.classList.toggle('motion-paused');
+        motionToggle.setAttribute('aria-pressed', String(paused));
+        motionToggle.textContent = paused ? 'Resume decorative motion ▷' : 'Pause decorative motion Ⅱ';
+      });
+      const progress = document.querySelector<HTMLElement>('.scroll-progress');
+      let pending = false;
+      const updateProgress = () => {
+        const max = document.documentElement.scrollHeight - window.innerHeight;
+        if (progress) progress.style.transform = `scaleX(${max > 0 ? Math.min(1, Math.max(0, window.scrollY / max)) : 0})`;
+        pending = false;
+      };
+      window.addEventListener('scroll', () => {
+        if (!pending) { pending = true; requestAnimationFrame(updateProgress); }
+      }, { passive: true });
+      window.addEventListener('resize', updateProgress);
+      updateProgress();
       if ('IntersectionObserver' in window && els.length) {
         const io = new IntersectionObserver(
           (entries) => {

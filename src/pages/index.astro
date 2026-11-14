@@ -1,200 +1,40 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Hero from '../components/landing/Hero.astro';
-import Problem from '../components/landing/Problem.astro';
-import Showcase from '../components/landing/Showcase.astro';
-import Features from '../components/landing/Features.astro';
-import SectionHeader from '../components/SectionHeader.astro';
+import Shot from '../components/Shot.astro';
 import Code from '../components/Code.astro';
-import InternalArchitecture from '../islands/InternalArchitecture';
-import ProductionTopology from '../islands/ProductionTopology';
-import IncidentStory from '../islands/IncidentStory';
 import { SITE, url } from '../lib/site';
-
-const jsonLd = {
-  '@context': 'https://schema.org',
-  '@type': 'SoftwareApplication',
-  name: 'LockLens',
-  applicationCategory: 'DeveloperApplication',
-  operatingSystem: 'Linux (Docker images for amd64 and arm64)',
-  description: SITE.description,
-  license: 'https://opensource.org/licenses/MIT',
-  codeRepository: SITE.repo,
-  offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
-};
-
-const steps = [
-  { n: '01', title: 'Grant a read-only role', body: 'A login role with pg_read_all_stats is enough — no superuser. pg_stat_statements is optional but recommended.' },
-  { n: '02', title: 'Collect on a schedule', body: 'One worker per target runs read-only collectors in READ ONLY transactions with timeouts, faster while there is a problem.' },
-  { n: '03', title: 'Analyse and record', body: 'Counters become rates, activity becomes a blocking graph, rules produce findings, and trigger rules open incidents with evidence.' },
-  { n: '04', title: 'Notify and investigate', body: 'Incidents go to Slack, webhooks, email or Alertmanager. Engineers open the incident and follow the evidence.' },
+const capabilities = [
+ ['01', 'Find the blocker.', 'Follow the chain to the session holding everything up. See who is waiting, for how long, and why.', 'blocking-analysis', '↳'],
+ ['02', 'Know what changed.', 'Compare each statement with its own history. Spot regressions without treating every workload the same.', 'query-performance', '⌁'],
+ ['03', 'Keep the evidence.', 'Capture the sessions, blocking graph, and timeline around an incident. Investigate even after it is over.', 'incidents', '◎'],
 ];
-
-const lab = `git clone https://github.com/Huy-8bit/locklens.git && cd locklens
-make lab-up                      # first build takes a few minutes
-# open http://127.0.0.1:8080 — admin / locklens-lab-admin
-make lab SCENARIO=chain          # an A → B → C blocking chain for 3 minutes
-make lab-down                    # remove the lab and its data`;
-
-const compose = `git clone https://github.com/Huy-8bit/locklens.git && cd locklens
-make up      # creates deploy/.env with random secrets and prints the admin password
-make down    # stop (data is kept)`;
-
-const docker = `export LOCKLENS_MASTER_KEY="$(openssl rand -base64 32)"   # keep it: it encrypts stored connection strings
-
-docker network create locklens
-docker run -d --name locklens-store --network locklens \\
-  -e POSTGRES_USER=locklens -e POSTGRES_PASSWORD=change-me -e POSTGRES_DB=locklens \\
-  -v locklens-store:/var/lib/postgresql timescale/timescaledb:2.30.2-pg18 \\
-  postgres -c shared_preload_libraries=timescaledb -c timescaledb.telemetry_level=off
-
-docker run -d --name locklens-backend --network locklens \\
-  -e LOCKLENS_STORE_DSN='postgres://locklens:change-me@locklens-store:5432/locklens?sslmode=disable' \\
-  -e LOCKLENS_MASTER_KEY \\
-  -e LOCKLENS_ADMIN_PASSWORD='choose-a-long-password' \\
-  -e LOCKLENS_COOKIE_SECURE=false \\
-  -e LOCKLENS_TRUSTED_PROXIES=locklens-frontend \\
-  johnnynguyen882/locklens-backend:latest
-
-docker run -d --name locklens-frontend --network locklens -p 127.0.0.1:8080:8080 \\
-  -e LOCKLENS_BACKEND_URL=http://locklens-backend:8080 \\
-  johnnynguyen882/locklens-frontend:latest`;
-
-const role = `CREATE ROLE locklens_observer LOGIN PASSWORD '…';
-GRANT pg_read_all_stats TO locklens_observer;`;
+const command = `git clone https://github.com/Huy-8bit/locklens.git\ncd locklens\nmake lab-up`;
 ---
-<BaseLayout title="LockLens" current="home" jsonLd={jsonLd}>
-  <main id="main">
-    <Hero />
-    <Problem />
-    <Showcase />
-
-    <!-- Interactive architecture preview -->
-    <section class="relative border-t border-line py-24 sm:py-28" aria-labelledby="arch-title">
-      <div class="mx-auto max-w-[1320px] px-4 sm:px-6">
-        <SectionHeader id="arch-title" eyebrow="Inside LockLens" title="Follow the data from a PostgreSQL view to an alert" lead="A single Go process — collectors, rules, incident recorder and API are modules inside it, not separately deployed services — plus an nginx frontend and LockLens’ own PostgreSQL store. Press play, or click any component." />
-        <div class="mt-12"><InternalArchitecture client:visible variant="preview" /></div>
-      </div>
-    </section>
-
-    <Features />
-
-    <!-- Production integration -->
-    <section class="relative border-t border-line py-24 sm:py-28" aria-labelledby="prod-title">
-      <div class="pointer-events-none absolute inset-x-0 top-0 h-[600px] bg-[radial-gradient(ellipse_at_top,rgba(34,211,238,0.08),transparent_65%)]" aria-hidden="true"></div>
-      <div class="relative mx-auto max-w-[1320px] px-4 sm:px-6">
-        <SectionHeader id="prod-title" eyebrow="In production" title="How does LockLens fit into a real production system?" lead="Out of band. Requests keep flowing from clients to services to PostgreSQL through your own infrastructure; LockLens opens its own read-only connections to each server and never sits on the request path." />
-        <div class="mt-12"><ProductionTopology client:visible initialMode="cluster" /></div>
-        <p class="mt-6 text-sm text-fg-muted">More modes, deep links and deployment boundaries in the <a class="text-accent hover:underline" href={url('/architecture/#production')}>architecture explorer</a>.</p>
-      </div>
-    </section>
-
-    <!-- Incident demo -->
-    <section id="incident-demo" class="relative scroll-mt-16 border-t border-line py-24 sm:py-28" aria-labelledby="demo-title">
-      <div class="mx-auto max-w-[1320px] px-4 sm:px-6">
-        <SectionHeader id="demo-title" eyebrow="Interactive demo" title="What happens when PostgreSQL becomes a bottleneck?" lead="One transaction holds row locks for too long. Watch the waits spread through an illustrative system while LockLens samples the database, detects the persistent chain, and records an incident." />
-        <div class="mt-12"><IncidentStory client:visible /></div>
-      </div>
-    </section>
-
-    <!-- How it works -->
-    <section class="relative border-t border-line py-24 sm:py-28" aria-labelledby="how-title">
-      <div class="mx-auto grid max-w-[1320px] gap-12 px-4 sm:px-6 lg:grid-cols-[1fr_1.1fr]">
-        <div>
-          <SectionHeader id="how-title" eyebrow="How it works" title="Observe-only, by construction" lead="Connections set default_transaction_read_only=on and every collection runs in a READ ONLY transaction. There is no code path that cancels or terminates backends, changes settings, or runs DDL or DML on your databases." />
-          <div class="mt-8" data-reveal>
-            <Code code={role} lang="sql" title="The role LockLens needs" />
-          </div>
-          <p class="mt-4 text-sm text-fg-muted">Then paste its connection string in <strong class="text-fg">Settings → Instances → Add instance</strong>. Connection strings are encrypted at rest with AES-256-GCM and never returned by the API.</p>
-        </div>
-        <ol class="relative grid content-start gap-4">
-          <span class="absolute bottom-6 left-[27px] top-6 w-px bg-gradient-to-b from-accent/50 via-accent-violet/40 to-transparent" aria-hidden="true"></span>
-          {steps.map((s, i) => (
-            <li class="panel relative flex gap-5 p-5" data-reveal style={`transition-delay:${i * 80}ms`}>
-              <span class="relative z-10 grid size-9 shrink-0 place-items-center rounded-xl border border-accent/40 bg-ink-900 font-mono text-xs text-accent">{s.n}</span>
-              <div>
-                <h3 class="font-semibold text-fg">{s.title}</h3>
-                <p class="mt-1 text-sm leading-relaxed text-fg-muted">{s.body}</p>
-              </div>
-            </li>
-          ))}
-        </ol>
-      </div>
-    </section>
-
-    <!-- Quick start -->
-    <section id="quick-start" class="relative scroll-mt-16 border-t border-line py-24 sm:py-28" aria-labelledby="qs-title">
-      <div class="mx-auto max-w-[1100px] px-4 sm:px-6">
-        <SectionHeader id="qs-title" eyebrow="Quick start" title="Running in minutes" lead="Requires Docker with Compose v2. Everything binds to 127.0.0.1 by default." center />
-        <div class="mt-10" data-tabs>
-          <div role="tablist" aria-label="Installation method" class="mx-auto flex w-fit max-w-full gap-1 overflow-x-auto rounded-2xl border border-line bg-ink-900/70 p-1">
-            {[['lab', 'Try the demo lab'], ['compose', 'From the repository'], ['docker', 'docker run']].map(([id, label], i) => (
-              <button type="button" role="tab" id={`qs-tab-${id}`} aria-controls={`qs-${id}`} aria-selected={i === 0 ? 'true' : 'false'} tabindex={i === 0 ? 0 : -1} class="showcase-tab shrink-0 rounded-xl px-3.5 py-2 text-sm text-fg-muted transition-colors hover:text-fg">{label}</button>
-            ))}
-          </div>
-          <div class="mt-6">
-            <div role="tabpanel" id="qs-lab" aria-labelledby="qs-tab-lab">
-              <p class="mb-4 text-center text-sm text-fg-muted">A PostgreSQL primary, three streaming standbys and a background workload, with fake local-only credentials.</p>
-              <Code code={lab} lang="sh" title="Demo lab" />
-            </div>
-            <div role="tabpanel" id="qs-compose" aria-labelledby="qs-tab-compose" hidden>
-              <p class="mb-4 text-center text-sm text-fg-muted">Starts the backend, the frontend and LockLens’ own store; add your databases in the UI.</p>
-              <Code code={compose} lang="sh" title="Docker Compose" />
-            </div>
-            <div role="tabpanel" id="qs-docker" aria-labelledby="qs-tab-docker" hidden>
-              <p class="mb-4 text-center text-sm text-fg-muted">Use the same released tag (X.Y.Z) for both images in production, and put LockLens behind HTTPS (then drop LOCKLENS_COOKIE_SECURE).</p>
-              <Code code={docker} lang="sh" title="docker run" />
-            </div>
-          </div>
-        </div>
-        <div class="mt-8 flex flex-wrap justify-center gap-3">
-          <a href={url('/docs/getting-started/')} class="btn btn-primary">Read the quickstart</a>
-          <a href={url('/docs/deployment/')} class="btn btn-ghost">Deployment guide</a>
-        </div>
-      </div>
-    </section>
-
-    <!-- Open source -->
-    <section class="relative border-t border-line py-24 sm:py-28" aria-labelledby="oss-title">
-      <div class="mx-auto grid max-w-[1320px] gap-10 px-4 sm:px-6 lg:grid-cols-[1.1fr_1fr]">
-        <SectionHeader id="oss-title" eyebrow="Open source" title="MIT licensed. Built in the open." lead="A Go backend (API, collectors, CLI) and a React frontend, with integration and browser test suites that run against real PostgreSQL 14 through 18.">
-          <div class="mt-8 flex flex-wrap gap-3">
-            <a href={SITE.repo} rel="noopener noreferrer" class="btn btn-ghost">Star on GitHub ↗</a>
-          </div>
-        </SectionHeader>
-        <div class="grid gap-3 sm:grid-cols-2" data-reveal>
-          {[
-            ['backend/', 'Go: collectors, rules, incidents, API, CLI, log agent'],
-            ['web/', 'React + TypeScript UI and its nginx image'],
-            ['deploy/', 'Compose files, observability rules, Grafana dashboard'],
-            ['docs/', 'The Markdown this website’s documentation is built from'],
-          ].map(([p, d]) => (
-            <a href={`${SITE.repo}/tree/main/${p}`} rel="noopener noreferrer" class="panel block p-4 transition-colors hover:border-line-strong">
-              <span class="font-mono text-sm text-accent">{p}</span>
-              <span class="mt-1 block text-sm text-fg-muted">{d}</span>
-            </a>
-          ))}
-          <div class="rounded-2xl border border-amber-400/25 bg-amber-400/[0.05] p-4 sm:col-span-2">
-            <p class="text-sm font-medium text-amber-100">Project status</p>
-            <p class="mt-1 text-sm leading-relaxed text-fg-muted">LockLens is young. Its test suites pass against PostgreSQL 14–18 in a local lab, but it has not yet been run in production environments, and performance figures in the docs are lab measurements, not guarantees. See the <a class="text-accent hover:underline" href={url('/docs/deployment/limitations/')}>limitations</a>.</p>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- Final CTA -->
-    <section class="relative overflow-hidden border-t border-line py-28" aria-labelledby="cta-title">
-      <div class="pointer-events-none absolute inset-0 bg-grid mask-radial opacity-70" aria-hidden="true"></div>
-      <div class="pointer-events-none absolute left-1/2 top-1/2 h-[420px] w-[900px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[radial-gradient(closest-side,rgba(34,211,238,0.14),transparent)]" aria-hidden="true"></div>
-      <div class="relative mx-auto max-w-3xl px-4 text-center" data-reveal>
-        <h2 id="cta-title" class="text-[clamp(2rem,4.5vw,3.25rem)] font-semibold leading-[1.08] tracking-[-0.03em]">Next time PostgreSQL slows down, <span class="text-gradient">have the evidence.</span></h2>
-        <p class="mt-5 text-lg text-fg-muted">Start the lab, create a blocking chain, and watch LockLens explain it.</p>
-        <div class="mt-8 flex flex-wrap justify-center gap-3">
-          <a href={url('/docs/getting-started/')} class="btn btn-primary">Get started</a>
-          <a href={url('/architecture/')} class="btn btn-ghost">Explore the architecture</a>
-          <a href={url('/docs/')} class="btn btn-ghost">Read the docs</a>
-        </div>
-      </div>
-    </section>
-  </main>
+<BaseLayout title="LockLens" current="home">
+ <main id="main" class="new-home">
+  <Hero />
+  <section class="editorial intro" aria-labelledby="problem-title">
+   <div class="section-kicker" data-reveal><span>01 / THE BIGGER PICTURE</span><span>OBSERVABILITY, WITH CONTEXT</span></div>
+   <div class="intro-grid"><h2 id="problem-title" data-reveal>Your database has<br />a story to tell.<br /><em>See the whole picture.</em></h2><div data-reveal><p class="large-copy">Metrics show the spike.<br />LockLens shows what’s behind it.</p><p>Bring queries, blocking chains, and incident evidence into one place. Spend less time piecing together what happened, and more time understanding your PostgreSQL.</p><a class="editorial-link" href={url('/docs/')} >Meet LockLens <span>↗</span></a></div></div>
+  </section>
+  <section class="product-stage" aria-labelledby="showcase-title">
+   <div class="editorial">
+    <div class="section-kicker" data-reveal><span>02 / ONE CONNECTED VIEW</span><span class="live-label">● YOUR POSTGRESQL, IN FOCUS</span></div>
+    <div class="stage-heading" data-reveal><h2 id="showcase-title">Less noise.<br /><em>More clarity.</em></h2><p>Your fleet. Your queries. Your next investigation.<br />A shared view of what matters.</p></div>
+    <div class="product-window" data-reveal><div class="window-label"><span>LOCKLENS / FLEET OVERVIEW</span><span>LAB SCREENSHOT ↗</span></div><Shot name="overview.png" alt="LockLens fleet overview with PostgreSQL health, throughput, and active incidents" eager widths={[640,1100,1440]} /></div>
+    <div class="stage-bottom"><span>From the LockLens lab · PostgreSQL primary + three standbys</span><a href={url('/docs/getting-started/ui-guide/')}>Explore the workspace ↗</a></div>
+   </div>
+  </section>
+  <section id="features" class="editorial capabilities" aria-labelledby="features-title">
+   <div class="section-kicker" data-reveal><span>03 / BUILT FOR THE INVESTIGATION</span><span>FOLLOW THE SIGNAL</span></div>
+   <h2 id="features-title" data-reveal>From “it’s slow”<br /><em>to “here’s why.”</em></h2>
+   <div class="capability-grid">{capabilities.map(([n,title,body,slug,icon],i)=><a class="capability" href={url(`/docs/features/${slug}/`)} data-reveal style={`transition-delay:${i*90}ms`}><div class="cap-top"><span>{n}</span><span>↗</span></div><div class={`cap-art art-${i}`} aria-hidden="true"><span>{icon}</span><i></i><i></i></div><h3>{title}</h3><p>{body}</p><span class="cap-read">Explore capability →</span></a>)}</div>
+  </section>
+  <section id="incident-demo" class="investigation-band">
+   <div class="editorial investigation-grid"><div data-reveal><p class="section-kicker">04 / WATCH IT UNFOLD</p><h2>One lock.<br />A chain reaction.<br /><em>A clear answer.</em></h2><p>Watch a transaction hold a lock, sessions start to wait, and LockLens record the evidence. Step through the story at your own pace.</p><a class="btn btn-primary" href={url('/architecture/#incident')}>Launch interactive demo <span>↗</span></a></div><div class="chain-scene" data-reveal aria-label="Illustrative blocking chain"><div class="chain-caption">ILLUSTRATIVE / BLOCKING CHAIN</div><div class="chain-node root"><span>01</span><div>Root blocker<small>Idle in transaction</small></div><b>●</b></div><div class="chain-wire"></div><div class="chain-node waiter"><span>02</span><div>Waiting session<small>Blocked by session 01</small></div><b>↳</b></div><div class="chain-wire"></div><div class="chain-node waiter second"><span>03</span><div>Waiting session<small>Blocked by session 02</small></div><b>↳</b></div><div class="chain-result">↳ Follow the chain. Find the root.</div></div></div>
+  </section>
+  <section class="editorial principle" aria-labelledby="arch-title"><div class="section-kicker" data-reveal><span>05 / DESIGNED TO OBSERVE</span><span>YOUR DATABASE STAYS YOURS</span></div><div class="intro-grid"><h2 id="arch-title" data-reveal>A clearer view.<br /><em>A lighter touch.</em></h2><div data-reveal><p class="large-copy">Read-only. Out of band.<br />Open source.</p><p>LockLens connects alongside your applications. It observes PostgreSQL without sitting in the request path, changing settings, or automatically terminating sessions.</p><a class="editorial-link" href={url('/architecture/')}>Explore architecture <span>↗</span></a></div></div><div class="principle-strip" data-reveal><div><strong>14–18</strong><span>PostgreSQL versions</span></div><div><strong>MIT</strong><span>Open-source license</span></div><div><strong>Read-only</strong><span>By construction</span></div></div></section>
+  <section id="quick-start" class="start-section"><div class="editorial start-grid"><div data-reveal><p class="section-kicker">YOUR NEXT INVESTIGATION STARTS HERE</p><h2>See it.<br /><em>Understand it.</em></h2><p>Start a local lab with Docker Compose.<br />Create a blocking chain. Follow the evidence.</p><a class="btn btn-primary" href={url('/docs/getting-started/')}>Get started <span>↗</span></a><a class="start-github" href={SITE.repo}>View on GitHub ↗</a></div><div data-reveal><Code code={command} lang="sh" title="Start your local lab"/><p class="lab-note">Requires Docker Compose v2. First build takes a few minutes.</p><p class="project-note">Built in the open, still early. Tested in a local lab; production use and performance are not yet validated. <a href={url('/docs/deployment/limitations/')}>Read the limitations ↗</a></p></div></div></section>
+ </main>
 </BaseLayout>

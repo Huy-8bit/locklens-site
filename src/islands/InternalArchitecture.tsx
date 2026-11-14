@@ -112,7 +112,7 @@ export default function InternalArchitecture({ variant = 'full' }: Props) {
               <DiagramGroup key={g.id} id={DEFS} rect={g.rect} label={g.label} sublabel={g.sublabel} tone={g.tone} dashed={g.dashed} badge={g.badge} emphasis={activeGroups.has(g.id)} />
             ))}
             {COLUMN_CAPTIONS.map((c) => (
-              <text key={c.text} x={c.x} y={c.y} fill="#6b7a96" fontSize={10} fontWeight={600} letterSpacing="0.16em">
+              <text key={c.text} x={c.x} y={c.y} fill="#627570" fontSize={10} fontWeight={600} letterSpacing="0.16em">
                 {c.text}
               </text>
             ))}
@@ -126,7 +126,7 @@ export default function InternalArchitecture({ variant = 'full' }: Props) {
           </svg>
 
           {sel && (
-            <aside className="absolute inset-y-3 right-3 z-20 w-[min(380px,46%)] overflow-y-auto rounded-2xl border border-line-strong bg-ink-900/95 p-5 shadow-2xl shadow-black/50 backdrop-blur-md" aria-label={`${sel.title} details`}>
+            <aside className="absolute inset-y-3 right-3 z-20 w-[min(380px,46%)] overflow-y-auto rounded-2xl border border-line-strong bg-ink-900/95 p-5 shadow-2xl shadow-emerald-950/10 backdrop-blur-md" aria-label={`${sel.title} details`}>
               <DetailsPanel title={sel.title} subtitle={sel.subtitle} details={sel.details} onClose={() => setSelected(null)} />
             </aside>
           )}
@@ -181,7 +181,7 @@ function StepNarration({ step, compact }: { step: number; compact?: boolean }) {
         Step {step + 1} of {STEPS.length}
       </p>
       <h3 className={`mt-2 font-semibold text-fg ${compact ? 'text-sm' : 'text-lg'}`}>{s.title}</h3>
-      <p className={`mt-1 font-medium text-cyan-100/90 ${compact ? 'text-xs' : 'text-sm'}`}>{s.summary}</p>
+      <p className={`mt-1 font-medium text-accent ${compact ? 'text-xs' : 'text-sm'}`}>{s.summary}</p>
       {!compact && <p className="mt-3 text-sm leading-relaxed text-fg-muted">{s.detail}</p>}
     </div>
   );

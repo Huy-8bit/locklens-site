@@ -25,9 +25,9 @@ const SVC_X = 420;
 const SVC_W = 200;
 
 const STATE_STYLE: Record<Session['state'], { fill: string; stroke: string; text: string; label: string }> = {
-  active: { fill: 'rgba(52,211,153,0.12)', stroke: 'rgba(52,211,153,0.45)', text: '#6ee7b7', label: 'active' },
-  idle: { fill: 'rgba(148,163,184,0.08)', stroke: 'rgba(148,163,184,0.3)', text: '#94a3b8', label: 'idle' },
-  waiting: { fill: 'rgba(251,146,60,0.14)', stroke: 'rgba(251,146,60,0.6)', text: '#fdba74', label: 'waiting' },
+  active: { fill: 'rgba(52,211,153,0.12)', stroke: 'rgba(52,211,153,0.45)', text: '#157052', label: 'active' },
+  idle: { fill: 'rgba(148,163,184,0.08)', stroke: 'rgba(148,163,184,0.3)', text: '#73867f', label: 'idle' },
+  waiting: { fill: 'rgba(251,146,60,0.14)', stroke: 'rgba(251,146,60,0.6)', text: '#a54b0e', label: 'waiting' },
 };
 
 function isRoot(scene: Scene, pid: number) {
@@ -86,7 +86,7 @@ export default function IncidentStory() {
           <rect width={W} height={H} fill={`url(#${DEFS}-grid)`} />
 
           {/* Application side */}
-          <text x={24} y={30} fill="#7d8aa5" fontSize={11} fontWeight={650} letterSpacing="0.1em">ILLUSTRATIVE APPLICATION</text>
+          <text x={24} y={30} fill="#627570" fontSize={11} fontWeight={650} letterSpacing="0.1em">ILLUSTRATIVE APPLICATION</text>
           <DiagramEdge defsId={DEFS} route={routes['c-gw']} kind="app" state={started ? 'active' : 'normal'} animate={animate} particles={2} speed={2.2} />
           {SERVICES.filter((s) => s.id !== 'batch').map((s) => (
             <DiagramEdge key={s.id} defsId={DEFS} route={routes[`gw-${s.id}`]} kind="app" state={started && scene.services[s.id].status === 'ok' ? 'active' : 'normal'} animate={animate} particles={1} speed={2.4} />
@@ -99,9 +99,9 @@ export default function IncidentStory() {
               const idle = sess.state === 'idle';
               return (
                 <g key={`${s.id}-${pid}`} style={{ opacity: idle ? 0.25 : 1, transition: 'opacity 500ms' }}>
-                  <path d={r.d} fill="none" stroke={waiting ? '#fb923c' : '#94a3b8'} strokeWidth={waiting ? 2 : 1.4} strokeOpacity={waiting ? 0.9 : 0.55} strokeDasharray={waiting ? '3 5' : undefined} style={{ transition: 'stroke 500ms' }} />
+                  <path d={r.d} fill="none" stroke={waiting ? '#c45b17' : '#73867f'} strokeWidth={waiting ? 2 : 1.4} strokeOpacity={waiting ? 0.9 : 0.55} strokeDasharray={waiting ? '3 5' : undefined} style={{ transition: 'stroke 500ms' }} />
                   {started && !idle && !waiting && animate && (
-                    <circle r={2.6} fill="#cbd5e1">
+                    <circle r={2.6} fill="#48615b">
                       <animateMotion dur="1.8s" repeatCount="indefinite" path={r.d} />
                     </circle>
                   )}
@@ -130,9 +130,9 @@ export default function IncidentStory() {
           })}
 
           {/* PostgreSQL */}
-          <rect x={dbRect.x} y={dbRect.y} width={dbRect.w} height={dbRect.h} rx={18} fill="rgba(15,23,42,0.55)" stroke="rgba(34,211,238,0.35)" />
-          <text x={dbRect.x + 20} y={dbRect.y + 26} fill="#67e8f9" fontSize={11.5} fontWeight={650} letterSpacing="0.08em">ORDERS-DB · POSTGRESQL PRIMARY</text>
-          <text x={dbRect.x + 20} y={dbRect.y + 44} fill="#7d8aa5" fontSize={10.5}>client sessions as pg_stat_activity shows them</text>
+          <rect x={dbRect.x} y={dbRect.y} width={dbRect.w} height={dbRect.h} rx={18} fill="rgba(235,242,234,0.55)" stroke="rgba(8,127,91,0.35)" />
+          <text x={dbRect.x + 20} y={dbRect.y + 26} fill="#087f5b" fontSize={11.5} fontWeight={650} letterSpacing="0.08em">ORDERS-DB · POSTGRESQL PRIMARY</text>
+          <text x={dbRect.x + 20} y={dbRect.y + 44} fill="#627570" fontSize={10.5}>client sessions as pg_stat_activity shows them</text>
           {ROW_ORDER.map((pid) => {
             const s = scene.sessions.find((x) => x.pid === pid)!;
             const y = rowY(pid);
@@ -142,16 +142,16 @@ export default function IncidentStory() {
             const pw = pill.length * 6.1 + 18;
             return (
               <g key={pid} transform={`translate(${ROW.x}, ${y})`}>
-                <rect width={ROW.w} height={ROW.h} rx={10} fill={root ? 'rgba(251,113,133,0.12)' : '#0d1528'} stroke={root ? '#fb7185' : st.stroke} strokeWidth={root ? 1.6 : 1} style={{ transition: 'all 500ms' }} />
-                {root && <rect x={-3} y={-3} width={ROW.w + 6} height={ROW.h + 6} rx={13} fill="none" stroke="#fb7185" strokeOpacity={0.5} strokeWidth={5} filter={`url(#${DEFS}-glow)`} className="dg-pulse" />}
-                <text x={14} y={23} fill="#f1f5f9" fontSize={12.5} fontWeight={650} className="mono">pid {pid}</text>
-                <text x={90} y={23} fill="#9aa8c1" fontSize={11}>{s.app}</text>
+                <rect width={ROW.w} height={ROW.h} rx={10} fill={root ? 'rgba(251,113,133,0.12)' : '#ffffff'} stroke={root ? '#cb4560' : st.stroke} strokeWidth={root ? 1.6 : 1} style={{ transition: 'all 500ms' }} />
+                {root && <rect x={-3} y={-3} width={ROW.w + 6} height={ROW.h + 6} rx={13} fill="none" stroke="#cb4560" strokeOpacity={0.5} strokeWidth={5} filter={`url(#${DEFS}-glow)`} className="dg-pulse" />}
+                <text x={14} y={23} fill="#183b35" fontSize={12.5} fontWeight={650} className="mono">pid {pid}</text>
+                <text x={90} y={23} fill="#526764" fontSize={11}>{s.app}</text>
                 <g transform={`translate(${ROW.w - 12}, 10)`}>
-                  <rect x={-pw} width={pw} height={18} rx={9} fill={root ? 'rgba(251,113,133,0.18)' : st.fill} stroke={root ? '#fb7185' : st.stroke} style={{ transition: 'all 500ms' }} />
-                  <text x={-pw / 2} y={12.5} textAnchor="middle" fill={root ? '#fda4af' : st.text} fontSize={10} fontWeight={600}>{pill}</text>
+                  <rect x={-pw} width={pw} height={18} rx={9} fill={root ? 'rgba(251,113,133,0.18)' : st.fill} stroke={root ? '#cb4560' : st.stroke} style={{ transition: 'all 500ms' }} />
+                  <text x={-pw / 2} y={12.5} textAnchor="middle" fill={root ? '#b63850' : st.text} fontSize={10} fontWeight={600}>{pill}</text>
                 </g>
-                <text x={14} y={44} fill="#7d8aa5" fontSize={10} className="mono">{truncate(s.query, 38)}</text>
-                <text x={ROW.w - 12} y={44} textAnchor="end" fill={s.state === 'waiting' ? '#fdba74' : '#8796b0'} fontSize={10} className="mono">{s.detail}</text>
+                <text x={14} y={44} fill="#627570" fontSize={10} className="mono">{truncate(s.query, 38)}</text>
+                <text x={ROW.w - 12} y={44} textAnchor="end" fill={s.state === 'waiting' ? '#a54b0e' : '#627570'} fontSize={10} className="mono">{s.detail}</text>
               </g>
             );
           })}
@@ -165,19 +165,19 @@ export default function IncidentStory() {
               const bulge = 22 + Math.abs(y2 - y1) * 0.05;
               return (
                 <g key={`w-${s.pid}`}>
-                  <path d={`M${x},${y1} C${x + bulge},${y1} ${x + bulge},${y2} ${x + 2},${y2}`} fill="none" stroke="#fb923c" strokeWidth={1.8} strokeDasharray="4 3" className="dg-flow-dash" markerEnd={`url(#${DEFS}-arrow-alert)`} />
+                  <path d={`M${x},${y1} C${x + bulge},${y1} ${x + bulge},${y2} ${x + 2},${y2}`} fill="none" stroke="#c45b17" strokeWidth={1.8} strokeDasharray="4 3" className="dg-flow-dash" markerEnd={`url(#${DEFS}-arrow-alert)`} />
                 </g>
               );
             })}
 
           {/* LockLens */}
-          <text x={1116} y={30} fill="#67e8f9" fontSize={11} fontWeight={650} letterSpacing="0.1em">LOCKLENS · OUT OF BAND</text>
+          <text x={1116} y={30} fill="#087f5b" fontSize={11} fontWeight={650} letterSpacing="0.1em">LOCKLENS · OUT OF BAND</text>
           <DiagramEdge defsId={DEFS} route={routes['db-ll']} kind="collect" state={started ? 'active' : 'normal'} animate={animate} speed={burst ? 0.9 : 2.2} particles={burst ? 3 : 1} />
           <DiagramNode id="ll" defsId={DEFS} rect={llRect} title="locklens server" subtitle={scene.sampling} icon={icon('Radar')} tone="cyan" state={started && scene.incident?.state === 'open' ? 'active' : 'normal'} compact />
           <g transform="translate(1116, 136)">
-            <rect width={264} height={248} rx={14} fill="#0b1222" stroke="rgba(148,163,184,0.22)" />
-            <text x={14} y={24} fill="#e2e8f0" fontSize={12} fontWeight={600}>Blocking graph</text>
-            <text x={14} y={40} fill="#7d8aa5" fontSize={10} className="mono">edges from pg_blocking_pids()</text>
+            <rect width={264} height={248} rx={14} fill="#ffffff" stroke="rgba(148,163,184,0.22)" />
+            <text x={14} y={24} fill="#24443e" fontSize={12} fontWeight={600}>Blocking graph</text>
+            <text x={14} y={40} fill="#627570" fontSize={10} className="mono">edges from pg_blocking_pids()</text>
             <g transform="translate(14, 58)">
               <BlockingTreeSvg scene={scene} started={started} />
             </g>
@@ -198,16 +198,16 @@ export default function IncidentStory() {
               const st = STATE_STYLE[s.state];
               const root = started && isRoot(scene, pid);
               return (
-                <li key={pid} className="rounded-lg border px-3 py-2" style={{ borderColor: root ? '#fb7185' : st.stroke, background: root ? 'rgba(251,113,133,0.08)' : undefined }}>
+                <li key={pid} className="rounded-lg border px-3 py-2" style={{ borderColor: root ? '#cb4560' : st.stroke, background: root ? 'rgba(251,113,133,0.08)' : undefined }}>
                   <div className="flex items-center gap-2 text-sm">
                     <span className="font-mono font-semibold text-fg">{pid}</span>
                     <span className="text-xs text-fg-muted">{s.app}</span>
-                    <span className="ml-auto rounded-full px-2 text-[0.68rem]" style={{ color: root ? '#fda4af' : st.text, background: root ? 'rgba(251,113,133,0.15)' : st.fill }}>
+                    <span className="ml-auto rounded-full px-2 text-[0.68rem]" style={{ color: root ? '#b63850' : st.text, background: root ? 'rgba(251,113,133,0.15)' : st.fill }}>
                       {root ? 'root blocker' : st.label}
                     </span>
                   </div>
                   <p className="mt-0.5 truncate font-mono text-[0.68rem] text-fg-subtle">{s.query}</p>
-                  <p className="font-mono text-[0.68rem]" style={{ color: s.blockedBy ? '#fdba74' : '#8796b0' }}>
+                  <p className="font-mono text-[0.68rem]" style={{ color: s.blockedBy ? '#a54b0e' : '#627570' }}>
                     {s.detail}
                     {s.blockedBy ? ` · blocked by ${s.blockedBy}` : ''}
                   </p>
@@ -269,7 +269,7 @@ export default function IncidentStory() {
               </ol>
               {scene.hypotheses && (
                 <div className="mt-4 rounded-lg border border-amber-400/25 bg-amber-400/[0.05] p-3">
-                  <p className="text-[0.68rem] font-semibold uppercase tracking-[0.12em] text-amber-200/90">Possible explanations — not confirmed</p>
+                  <p className="text-[0.68rem] font-semibold uppercase tracking-[0.12em] text-amber-800">Possible explanations — not confirmed</p>
                   <ul className="mt-1.5 list-disc space-y-1 pl-4 text-[0.8rem] text-fg-muted">
                     {scene.hypotheses.map((h) => <li key={h}>{h}</li>)}
                   </ul>
@@ -309,7 +309,7 @@ function BlockingTreeSvg({ scene, started }: { scene: Scene; started: boolean })
   }
   if (!rows.length)
     return (
-      <text x={0} y={20} fill="#6b7a96" fontSize={11}>
+      <text x={0} y={20} fill="#627570" fontSize={11}>
         {started && scene.id === 'recovery' ? 'No blocking. Waiters acquired their locks.' : 'No blocking edges.'}
       </text>
     );
@@ -323,10 +323,10 @@ function BlockingTreeSvg({ scene, started }: { scene: Scene; started: boolean })
         const parentIndex = rows.findIndex((r) => r.s.pid === s.blockedBy);
         return (
           <g key={s.pid} style={{ transition: 'opacity 400ms' }}>
-            {parentIndex >= 0 && <path d={`M${x - 16},${parentIndex * 34 + 24} V${y + 12} H${x - 2}`} fill="none" stroke="#fb923c" strokeOpacity={0.7} strokeWidth={1.4} />}
-            <rect x={x} y={y} width={root ? 220 : 200 - depth * 6} height={24} rx={7} fill={root ? 'rgba(251,113,133,0.15)' : 'rgba(251,146,60,0.1)'} stroke={root ? '#fb7185' : 'rgba(251,146,60,0.5)'} />
-            <text x={x + 9} y={y + 16} fill="#f1f5f9" fontSize={11} fontWeight={600} className="mono">{s.pid}</text>
-            <text x={x + 48} y={y + 16} fill={root ? '#fda4af' : '#fdba74'} fontSize={10}>
+            {parentIndex >= 0 && <path d={`M${x - 16},${parentIndex * 34 + 24} V${y + 12} H${x - 2}`} fill="none" stroke="#c45b17" strokeOpacity={0.7} strokeWidth={1.4} />}
+            <rect x={x} y={y} width={root ? 220 : 200 - depth * 6} height={24} rx={7} fill={root ? 'rgba(251,113,133,0.15)' : 'rgba(251,146,60,0.1)'} stroke={root ? '#cb4560' : 'rgba(251,146,60,0.5)'} />
+            <text x={x + 9} y={y + 16} fill="#183b35" fontSize={11} fontWeight={600} className="mono">{s.pid}</text>
+            <text x={x + 48} y={y + 16} fill={root ? '#b63850' : '#a54b0e'} fontSize={10}>
               {root ? `root · blocks ${total} in total` : `${s.app} · ${s.detail.replace('Lock · ', 'waits ')}`}
             </text>
           </g>
@@ -341,20 +341,20 @@ function IncidentCardSvg({ scene, started }: { scene: Scene; started: boolean })
   const open = inc?.state === 'open';
   return (
     <g>
-      <rect width={264} height={176} rx={14} fill={open ? 'rgba(251,113,133,0.07)' : '#0b1222'} stroke={open ? 'rgba(251,113,133,0.55)' : inc ? 'rgba(52,211,153,0.45)' : 'rgba(148,163,184,0.22)'} style={{ transition: 'all 500ms' }} />
-      <text x={14} y={24} fill="#e2e8f0" fontSize={12} fontWeight={600}>Incident</text>
+      <rect width={264} height={176} rx={14} fill={open ? 'rgba(251,113,133,0.07)' : '#ffffff'} stroke={open ? 'rgba(251,113,133,0.55)' : inc ? 'rgba(52,211,153,0.45)' : 'rgba(148,163,184,0.22)'} style={{ transition: 'all 500ms' }} />
+      <text x={14} y={24} fill="#24443e" fontSize={12} fontWeight={600}>Incident</text>
       {inc ? (
         <>
-          <text x={250} y={24} textAnchor="end" fill={open ? '#fda4af' : '#6ee7b7'} fontSize={10.5} fontWeight={650}>{open ? 'OPEN · warning' : 'RESOLVED'}</text>
-          <text x={14} y={50} fill="#f1f5f9" fontSize={11.5} fontWeight={600}>#{inc.id} Blocking chain rooted at</text>
-          <text x={14} y={66} fill="#f1f5f9" fontSize={11.5} fontWeight={600}>pid 4127 persists (3 blocked)</text>
-          <text x={14} y={92} fill="#8796b0" fontSize={10.5} className="mono">rule blocking.long_chain v1</text>
-          <text x={14} y={110} fill="#8796b0" fontSize={10.5} className="mono">opened {inc.opened} · {inc.duration}</text>
-          <text x={14} y={128} fill="#8796b0" fontSize={10.5} className="mono">{scene.timeline.length} events recorded</text>
-          <text x={14} y={156} fill={open ? '#fcd34d' : '#6ee7b7'} fontSize={10.5}>{open ? '→ notification: opened (if a channel matches)' : '→ evidence kept · export JSON / HTML'}</text>
+          <text x={250} y={24} textAnchor="end" fill={open ? '#b63850' : '#157052'} fontSize={10.5} fontWeight={650}>{open ? 'OPEN · warning' : 'RESOLVED'}</text>
+          <text x={14} y={50} fill="#183b35" fontSize={11.5} fontWeight={600}>#{inc.id} Blocking chain rooted at</text>
+          <text x={14} y={66} fill="#183b35" fontSize={11.5} fontWeight={600}>pid 4127 persists (3 blocked)</text>
+          <text x={14} y={92} fill="#627570" fontSize={10.5} className="mono">rule blocking.long_chain v1</text>
+          <text x={14} y={110} fill="#627570" fontSize={10.5} className="mono">opened {inc.opened} · {inc.duration}</text>
+          <text x={14} y={128} fill="#627570" fontSize={10.5} className="mono">{scene.timeline.length} events recorded</text>
+          <text x={14} y={156} fill={open ? '#926208' : '#157052'} fontSize={10.5}>{open ? '→ notification: opened (if a channel matches)' : '→ evidence kept · export JSON / HTML'}</text>
         </>
       ) : (
-        <text x={14} y={52} fill="#6b7a96" fontSize={11}>No open incident</text>
+        <text x={14} y={52} fill="#627570" fontSize={11}>No open incident</text>
       )}
     </g>
   );
@@ -371,8 +371,8 @@ function SampleChart({ upto }: { upto: number }) {
   const pts = SAMPLES.slice(0, upto + 1);
   const last = pts[pts.length - 1];
   const panels = [
-    { key: 'blocked', title: 'Blocked sessions', color: '#fb923c', max: 4, ticks: [0, 2, 4], fmt: (v: number) => String(v), val: (p: (typeof SAMPLES)[number]) => p.blocked, stepped: true },
-    { key: 'wait', title: 'Longest lock wait', color: '#a78bfa', max: 120, ticks: [0, 60, 120], fmt: (v: number) => `${v}s`, val: (p: (typeof SAMPLES)[number]) => p.maxWait, stepped: false },
+    { key: 'blocked', title: 'Blocked sessions', color: '#c45b17', max: 4, ticks: [0, 2, 4], fmt: (v: number) => String(v), val: (p: (typeof SAMPLES)[number]) => p.blocked, stepped: true },
+    { key: 'wait', title: 'Longest lock wait', color: '#7954b3', max: 120, ticks: [0, 60, 120], fmt: (v: number) => `${v}s`, val: (p: (typeof SAMPLES)[number]) => p.maxWait, stepped: false },
   ];
   return (
     <svg viewBox={`0 0 ${w} ${ph * 2 + 78}`} className="mt-3 w-full" role="img" aria-label={`Up to ${last.label}: ${last.blocked} blocked sessions; longest lock wait ${last.maxWait} seconds.`}>
@@ -388,23 +388,23 @@ function SampleChart({ upto }: { upto: number }) {
           .join(' ');
         return (
           <g key={pn.key}>
-            <text x={pad.l} y={top - 4} fill="#cbd5e1" fontSize={9.5} fontWeight={600}>{pn.title}</text>
-            <text x={w - pad.r} y={top - 4} textAnchor="end" fill="#cbd5e1" fontSize={9.5} className="mono">{pn.fmt(pn.val(last))}</text>
+            <text x={pad.l} y={top - 4} fill="#48615b" fontSize={9.5} fontWeight={600}>{pn.title}</text>
+            <text x={w - pad.r} y={top - 4} textAnchor="end" fill="#48615b" fontSize={9.5} className="mono">{pn.fmt(pn.val(last))}</text>
             {pn.ticks.map((t) => (
               <g key={t}>
                 <line x1={pad.l} x2={w - pad.r} y1={y(t)} y2={y(t)} stroke="rgba(148,163,184,0.12)" />
-                <text x={pad.l - 5} y={y(t) + 3} textAnchor="end" fill="#6b7a96" fontSize={8.5}>{pn.fmt(t)}</text>
+                <text x={pad.l - 5} y={y(t) + 3} textAnchor="end" fill="#627570" fontSize={8.5}>{pn.fmt(t)}</text>
               </g>
             ))}
             <path d={d} fill="none" stroke={pn.color} strokeWidth={2} strokeLinejoin="round" />
-            {pn.key === 'blocked' && pts.map((p) => <circle key={p.t} cx={x(p.t)} cy={y(p.blocked)} r={1.7} fill={p.blocked ? '#fb923c' : '#64748b'} />)}
-            <line x1={x(last.t)} x2={x(last.t)} y1={top} y2={top + ph} stroke="#22d3ee" strokeOpacity={0.5} />
+            {pn.key === 'blocked' && pts.map((p) => <circle key={p.t} cx={x(p.t)} cy={y(p.blocked)} r={1.7} fill={p.blocked ? '#c45b17' : '#64748b'} />)}
+            <line x1={x(last.t)} x2={x(last.t)} y1={top} y2={top + ph} stroke="#087f5b" strokeOpacity={0.5} />
           </g>
         );
       })}
       {['14:01:20', '14:02:40', '14:04:04'].map((l, i) => {
         const s = SAMPLES.find((p) => p.label === l)!;
-        return <text key={l} x={x(s.t)} y={ph * 2 + 74} textAnchor={i === 0 ? 'start' : i === 2 ? 'end' : 'middle'} fill="#6b7a96" fontSize={9}>{l}</text>;
+        return <text key={l} x={x(s.t)} y={ph * 2 + 74} textAnchor={i === 0 ? 'start' : i === 2 ? 'end' : 'middle'} fill="#627570" fontSize={9}>{l}</text>;
       })}
     </svg>
   );

@@ -47,7 +47,7 @@ test('mobile navigation menu and docs drawer', async ({ page }) => {
   await page.goto('/docs/architecture/');
   await page.getByRole('button', { name: 'Docs menu' }).click();
   const sidebar = page.getByRole('complementary', { name: 'Documentation' });
-  await expect(sidebar.getByRole('link', { name: 'Collection pipeline' })).toBeInViewport();
+  await expect(sidebar.getByRole('link', { name: 'PostgreSQL observation & permissions' })).toBeInViewport();
   await page.keyboard.press('Escape');
   await page.getByRole('button', { name: 'Open menu' }).click();
   await expect(page.locator('#mobile-menu')).toBeVisible();

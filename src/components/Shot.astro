@@ -5,7 +5,7 @@ interface Props { name: string; alt: string; caption?: string; class?: string; e
 const { name, alt, caption, class: cls = '', eager = false, widths = [640, 960, 1440] } = Astro.props;
 const img = screenshot(name);
 ---
-<figure class:list={['overflow-hidden rounded-xl border border-line-strong bg-ink-900 shadow-2xl shadow-black/40', cls]}>
+<figure class:list={['overflow-hidden rounded-xl border border-line-strong bg-ink-900 shadow-2xl shadow-emerald-950/10', cls]}>
   <div class="flex items-center gap-1.5 border-b border-line px-3 py-2" aria-hidden="true">
     <span class="size-2 rounded-full bg-ink-600"></span><span class="size-2 rounded-full bg-ink-600"></span><span class="size-2 rounded-full bg-ink-600"></span>
   </div>

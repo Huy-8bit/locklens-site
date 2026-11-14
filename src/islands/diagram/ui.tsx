@@ -115,7 +115,7 @@ export function DetailsPanel({ title, subtitle, details, onClose, illustrative }
           {details.schedule}
         </p>
       )}
-      {details.note && <p className="rounded-lg border border-amber-400/25 bg-amber-400/[0.06] px-3 py-2 text-[0.8rem] leading-relaxed text-amber-100/85">{details.note}</p>}
+      {details.note && <p className="rounded-lg border border-amber-400/25 bg-amber-400/[0.06] px-3 py-2 text-[0.8rem] leading-relaxed text-amber-900/85">{details.note}</p>}
       {details.refs && details.refs.length > 0 && (
         <div>
           <p className="text-[0.7rem] font-semibold uppercase tracking-[0.12em] text-fg-subtle">Implementation</p>
@@ -133,7 +133,7 @@ export function DetailsPanel({ title, subtitle, details, onClose, illustrative }
       )}
       <div className="flex flex-wrap gap-2 pt-1">
         {(details.docs ?? []).map((d) => (
-          <a key={d.href + d.label} href={siteUrl(d.href)} className="inline-flex items-center gap-1.5 rounded-lg border border-accent/30 bg-accent/[0.07] px-2.5 py-1.5 text-xs font-medium text-cyan-100 transition-colors hover:border-accent/60">
+          <a key={d.href + d.label} href={siteUrl(d.href)} className="inline-flex items-center gap-1.5 rounded-lg border border-accent/30 bg-accent/[0.07] px-2.5 py-1.5 text-xs font-medium text-accent transition-colors hover:border-accent/60">
             <BookOpen size={12} aria-hidden />
             {d.label}
           </a>

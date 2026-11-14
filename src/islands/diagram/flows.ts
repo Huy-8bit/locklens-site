@@ -13,13 +13,13 @@ export interface FlowStyle {
 
 export const FLOWS: Record<FlowKind, FlowStyle> = {
   app: {
-    color: '#94a3b8',
+    color: '#73867f',
     width: 1.6,
     label: 'Application traffic',
     description: 'Requests and SQL from your services. Never passes through LockLens.',
   },
   collect: {
-    color: '#22d3ee',
+    color: '#087f5b',
     dash: '7 5',
     width: 1.7,
     label: 'Read-only collection',
@@ -32,26 +32,26 @@ export const FLOWS: Record<FlowKind, FlowStyle> = {
     description: 'Calls inside the single locklens server process.',
   },
   store: {
-    color: '#34d399',
+    color: '#14865d',
     width: 1.8,
     label: 'Monitoring store I/O',
     description: 'Writes and reads of LockLens’ own PostgreSQL / TimescaleDB database.',
   },
   api: {
-    color: '#60a5fa',
+    color: '#2870b5',
     width: 1.7,
     label: 'UI & API',
     description: 'Browser ↔ frontend ↔ backend over HTTP (REST and server-sent events).',
   },
   alert: {
-    color: '#fbbf24',
+    color: '#aa7309',
     dash: '9 3 2 3',
     width: 1.7,
     label: 'Alerts & telemetry',
     description: 'Notifications and metric exports leaving LockLens.',
   },
   repl: {
-    color: '#a78bfa',
+    color: '#7954b3',
     dash: '2 4',
     width: 2,
     label: 'PostgreSQL replication',

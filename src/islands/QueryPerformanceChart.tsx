@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react';
 
 // Illustrative workload: statements per type over one hour, as the Queries
 // page classifies them from pg_stat_statements. Deterministic data.
-// Colours: validated categorical slots 1–4 (dark surface #0d1528, worst CVD ΔE 8.4).
+// Colours: validated categorical slots 1–4 (dark surface #ffffff, worst CVD ΔE 8.4).
 const SERIES = [
   { id: 'SELECT', color: '#3987e5' },
   { id: 'INSERT', color: '#d95926' },
@@ -96,16 +96,16 @@ export default function QueryPerformanceChart() {
           {ticks.map((t) => (
             <g key={t}>
               <line x1={pad.l} x2={w - pad.r} y1={y(t)} y2={y(t)} stroke="rgba(148,163,184,0.12)" />
-              <text x={pad.l - 8} y={y(t) + 3.5} textAnchor="end" fill="#8796b0" fontSize={10}>{fmt(t)}</text>
+              <text x={pad.l - 8} y={y(t) + 3.5} textAnchor="end" fill="#627570" fontSize={10}>{fmt(t)}</text>
             </g>
           ))}
           {[0, 15, 30, 45, 59].map((i) => (
-            <text key={i} x={x(i)} y={h - 8} textAnchor="middle" fill="#8796b0" fontSize={10}>{`14:${String(i).padStart(2, '0')}`}</text>
+            <text key={i} x={x(i)} y={h - 8} textAnchor="middle" fill="#627570" fontSize={10}>{`14:${String(i).padStart(2, '0')}`}</text>
           ))}
           {metric === 'time' && (
             <g>
-              <line x1={x(38)} x2={x(38)} y1={pad.t} y2={h - pad.b} stroke="#a78bfa" strokeDasharray="3 3" />
-              <text x={x(38) + 5} y={pad.t + 10} fill="#c4b5fd" fontSize={10}>change: index dropped (example)</text>
+              <line x1={x(38)} x2={x(38)} y1={pad.t} y2={h - pad.b} stroke="#7954b3" strokeDasharray="3 3" />
+              <text x={x(38) + 5} y={pad.t + 10} fill="#6944a1" fontSize={10}>change: index dropped (example)</text>
             </g>
           )}
           {visible.map((s) => {
@@ -113,7 +113,7 @@ export default function QueryPerformanceChart() {
             return (
               <g key={s.id}>
                 <path d={d} fill="none" stroke={s.color} strokeWidth={2} strokeLinejoin="round" strokeLinecap="round" />
-                <text x={w - pad.r + 6} y={endLabels[s.id]} fill="#cbd5e1" fontSize={10} className="font-mono">{s.id}</text>
+                <text x={w - pad.r + 6} y={endLabels[s.id]} fill="#48615b" fontSize={10} className="font-mono">{s.id}</text>
               </g>
             );
           })}
@@ -121,7 +121,7 @@ export default function QueryPerformanceChart() {
             <g>
               <line x1={x(hover)} x2={x(hover)} y1={pad.t} y2={h - pad.b} stroke="rgba(226,232,240,0.35)" />
               {visible.map((s) => (
-                <circle key={s.id} cx={x(hover)} cy={y(DATA[hover][metric][s.id])} r={4} fill={s.color} stroke="#0d1528" strokeWidth={2} />
+                <circle key={s.id} cx={x(hover)} cy={y(DATA[hover][metric][s.id])} r={4} fill={s.color} stroke="#ffffff" strokeWidth={2} />
               ))}
             </g>
           )}

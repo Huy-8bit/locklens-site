@@ -323,7 +323,7 @@ export default function ProductionTopology({ initialMode = 'cluster', compact = 
   const copy = MODE_COPY[mode];
   const phaseCaption = PHASES.find((p) => p.id === phase)?.caption;
 
-  const serverColor: Record<string, string> = { 'll-a': '#22d3ee', 'll-b': '#f472b6', 'll-c': '#a3e635' };
+  const serverColor: Record<string, string> = { 'll-a': '#087f5b', 'll-b': '#f472b6', 'll-c': '#a3e635' };
 
   return (
     <div ref={wrapRef} className="pt-root">
@@ -403,7 +403,7 @@ export default function ProductionTopology({ initialMode = 'cluster', compact = 
 
         <div className="relative">
           {phase !== 'all' && (
-            <p className="pointer-events-none absolute bottom-4 left-1/2 z-10 -translate-x-1/2 rounded-full border border-accent/40 bg-ink-900/95 px-4 py-2 text-sm text-cyan-100 shadow-lg shadow-black/40" aria-live="polite">
+            <p className="pointer-events-none absolute bottom-4 left-1/2 z-10 -translate-x-1/2 rounded-full border border-accent/40 bg-ink-900/95 px-4 py-2 text-sm text-accent shadow-lg shadow-emerald-950/10" aria-live="polite">
               {phaseCaption}
             </p>
           )}
@@ -483,7 +483,7 @@ export default function ProductionTopology({ initialMode = 'cluster', compact = 
           </svg>
 
           {sel && (
-            <aside className="absolute inset-y-3 right-3 z-20 w-[min(370px,44%)] overflow-y-auto rounded-2xl border border-line-strong bg-ink-900/95 p-5 shadow-2xl shadow-black/50 backdrop-blur-md" aria-label={`${sel.title} details`}>
+            <aside className="absolute inset-y-3 right-3 z-20 w-[min(370px,44%)] overflow-y-auto rounded-2xl border border-line-strong bg-ink-900/95 p-5 shadow-2xl shadow-emerald-950/10 backdrop-blur-md" aria-label={`${sel.title} details`}>
               <DetailsPanel title={sel.at[mode]?.title ?? sel.title} subtitle={sel.at[mode]?.subtitle ?? sel.subtitle} details={sel.details} illustrative={sel.illustrative && sel.layer !== 'db'} onClose={() => setSelected(null)} />
             </aside>
           )}
@@ -526,7 +526,7 @@ export default function ProductionTopology({ initialMode = 'cluster', compact = 
         </div>
         <div className="flex flex-col gap-4">
           <div className="panel border-amber-400/20 p-5">
-            <p className="text-[0.7rem] font-semibold uppercase tracking-[0.14em] text-amber-200/80">Accuracy note</p>
+            <p className="text-[0.7rem] font-semibold uppercase tracking-[0.14em] text-amber-800">Accuracy note</p>
             <p className="mt-2 text-sm leading-relaxed text-fg-muted">{copy.caveat}</p>
           </div>
           {mode === 'ha' && (
@@ -591,7 +591,7 @@ function MobileTopology({ mode }: { mode: Mode }) {
                 <p className="text-[0.65rem] font-semibold uppercase tracking-[0.14em] text-fg-subtle">{label}</p>
                 <div className="mt-1 flex flex-wrap gap-1.5">
                   {ns.map((n) => (
-                    <span key={n.id} className={`chip ${layer === 'db' ? 'border-accent/35 text-cyan-100' : ''}`}>
+                    <span key={n.id} className={`chip ${layer === 'db' ? 'border-accent/35 text-accent' : ''}`}>
                       {title(n)}
                     </span>
                   ))}
@@ -603,7 +603,7 @@ function MobileTopology({ mode }: { mode: Mode }) {
         </ol>
       </section>
 
-      <div className="flex items-center gap-2 px-2 text-xs text-cyan-100/90">
+      <div className="flex items-center gap-2 px-2 text-xs text-accent">
         <svg width="22" height="6" aria-hidden="true"><line x1="1" y1="3" x2="21" y2="3" stroke={FLOWS.collect.color} strokeWidth="2" strokeDasharray={FLOWS.collect.dash} /></svg>
         LockLens reads {dbs.length === 1 ? 'the PostgreSQL server' : `each of the ${dbs.length} PostgreSQL servers`} over its own read-only connection{dbs.length === 1 ? '' : 's'}
       </div>
@@ -632,7 +632,7 @@ function MobileTopology({ mode }: { mode: Mode }) {
         </ul>
         {out.length > 0 && (
           <>
-            <p className="mt-4 text-[0.65rem] font-semibold uppercase tracking-[0.14em] text-amber-200/80">Alerts & telemetry (configured destinations)</p>
+            <p className="mt-4 text-[0.65rem] font-semibold uppercase tracking-[0.14em] text-amber-800">Alerts & telemetry (configured destinations)</p>
             <div className="mt-1.5 flex flex-wrap gap-1.5">
               {out.map((n) => (
                 <span key={n.id} className="chip">

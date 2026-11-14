@@ -6,14 +6,14 @@ export type NodeState = 'normal' | 'active' | 'visited' | 'dim' | 'hidden';
 export type Tone = 'cyan' | 'blue' | 'violet' | 'emerald' | 'amber' | 'slate' | 'rose' | 'orange';
 
 export const TONES: Record<Tone, { fg: string; bg: string; ring: string }> = {
-  cyan: { fg: '#67e8f9', bg: 'rgba(34,211,238,0.12)', ring: '#22d3ee' },
-  blue: { fg: '#93c5fd', bg: 'rgba(96,165,250,0.13)', ring: '#60a5fa' },
-  violet: { fg: '#c4b5fd', bg: 'rgba(167,139,250,0.14)', ring: '#a78bfa' },
-  emerald: { fg: '#6ee7b7', bg: 'rgba(52,211,153,0.13)', ring: '#34d399' },
-  amber: { fg: '#fcd34d', bg: 'rgba(251,191,36,0.13)', ring: '#fbbf24' },
-  slate: { fg: '#cbd5e1', bg: 'rgba(148,163,184,0.12)', ring: '#94a3b8' },
-  rose: { fg: '#fda4af', bg: 'rgba(251,113,133,0.15)', ring: '#fb7185' },
-  orange: { fg: '#fdba74', bg: 'rgba(251,146,60,0.15)', ring: '#fb923c' },
+  cyan: { fg: '#087f5b', bg: 'rgba(8,127,91,0.12)', ring: '#087f5b' },
+  blue: { fg: '#2464a2', bg: 'rgba(96,165,250,0.13)', ring: '#2870b5' },
+  violet: { fg: '#6944a1', bg: 'rgba(167,139,250,0.14)', ring: '#7954b3' },
+  emerald: { fg: '#157052', bg: 'rgba(52,211,153,0.13)', ring: '#14865d' },
+  amber: { fg: '#926208', bg: 'rgba(251,191,36,0.13)', ring: '#aa7309' },
+  slate: { fg: '#48615b', bg: 'rgba(148,163,184,0.12)', ring: '#73867f' },
+  rose: { fg: '#b63850', bg: 'rgba(251,113,133,0.15)', ring: '#cb4560' },
+  orange: { fg: '#a54b0e', bg: 'rgba(251,146,60,0.15)', ring: '#c45b17' },
 };
 
 type Icon = ComponentType<SVGProps<SVGSVGElement> & { size?: number | string; strokeWidth?: number | string }>;
@@ -31,12 +31,12 @@ export function DiagramDefs({ id }: { id: string }) {
         </marker>
       ))}
       <linearGradient id={`${id}-node`} x1="0" y1="0" x2="0" y2="1">
-        <stop offset="0" stopColor="#152039" />
-        <stop offset="1" stopColor="#0d1528" />
+        <stop offset="0" stopColor="#ffffff" />
+        <stop offset="1" stopColor="#ffffff" />
       </linearGradient>
       <linearGradient id={`${id}-group`} x1="0" y1="0" x2="0" y2="1">
-        <stop offset="0" stopColor="rgba(30,41,72,0.38)" />
-        <stop offset="1" stopColor="rgba(15,23,42,0.22)" />
+        <stop offset="0" stopColor="rgba(221,234,218,0.38)" />
+        <stop offset="1" stopColor="rgba(235,242,234,0.22)" />
       </linearGradient>
       <filter id={`${id}-glow`} x="-30%" y="-30%" width="160%" height="160%">
         <feGaussianBlur stdDeviation="7" result="b" />
@@ -97,7 +97,7 @@ export const DiagramGroup = memo(function DiagramGroup({
         {label.toUpperCase()}
       </text>
       {sublabel && (
-        <text x={rect.x + 18} y={rect.y + 40} fill="#7d8aa5" fontSize={10.5}>
+        <text x={rect.x + 18} y={rect.y + 40} fill="#627570" fontSize={10.5}>
           {sublabel}
         </text>
       )}
@@ -135,7 +135,7 @@ export interface DiagramNodeProps {
   children?: ReactNode;
 }
 
-const STATUS_COLOR = { ok: '#34d399', wait: '#fb923c', blocker: '#fb7185', down: '#64748b' } as const;
+const STATUS_COLOR = { ok: '#14865d', wait: '#c45b17', blocker: '#cb4560', down: '#64748b' } as const;
 
 export const DiagramNode = memo(function DiagramNode({
   id,
@@ -187,7 +187,7 @@ export const DiagramNode = memo(function DiagramNode({
         height={rect.h}
         rx={12}
         fill={`url(#${defsId}-node)`}
-        stroke={selected ? '#e0f2fe' : active ? t.ring : state === 'visited' ? 'rgba(148,163,184,0.38)' : 'rgba(148,163,184,0.26)'}
+        stroke={selected ? '#087f5b' : active ? t.ring : state === 'visited' ? 'rgba(148,163,184,0.38)' : 'rgba(148,163,184,0.26)'}
         strokeWidth={active ? 1.6 : 1}
       />
       {IconCmp && (
@@ -196,18 +196,18 @@ export const DiagramNode = memo(function DiagramNode({
           <IconCmp x={(iconSize - 16) / 2} y={(iconSize - 16) / 2} width={16} height={16} color={t.fg} strokeWidth={1.8} aria-hidden="true" />
         </g>
       )}
-      <text x={IconCmp ? (compact ? 44 : 52) : 14} y={subtitle ? rect.h / 2 - 3 : rect.h / 2 + 4.5} fill="#eef2f8" fontSize={compact ? 12 : 13} fontWeight={600}>
+      <text x={IconCmp ? (compact ? 44 : 52) : 14} y={subtitle ? rect.h / 2 - 3 : rect.h / 2 + 4.5} fill="#183b35" fontSize={compact ? 12 : 13} fontWeight={600}>
         {title}
       </text>
       {subtitle && (
-        <text x={IconCmp ? (compact ? 44 : 52) : 14} y={rect.h / 2 + 13} fill="#8796b0" fontSize={compact ? 10 : 10.5} className="mono">
+        <text x={IconCmp ? (compact ? 44 : 52) : 14} y={rect.h / 2 + 13} fill="#627570" fontSize={compact ? 10 : 10.5} className="mono">
           {subtitle}
         </text>
       )}
       {badge && (
         <g transform={`translate(${rect.w - 8}, -9)`}>
-          <rect x={-(badge.length * 5.7 + 14)} width={badge.length * 5.7 + 14} height={17} rx={8.5} fill="#0b1120" stroke="rgba(148,163,184,0.35)" />
-          <text x={-(badge.length * 5.7 + 14) / 2} y={11.8} textAnchor="middle" fill="#a3b1c9" fontSize={9.5} fontWeight={600} letterSpacing="0.02em">
+          <rect x={-(badge.length * 5.7 + 14)} width={badge.length * 5.7 + 14} height={17} rx={8.5} fill="#f3f6f2" stroke="rgba(148,163,184,0.35)" />
+          <text x={-(badge.length * 5.7 + 14) / 2} y={11.8} textAnchor="middle" fill="#526764" fontSize={9.5} fontWeight={600} letterSpacing="0.02em">
             {badge}
           </text>
         </g>
@@ -278,8 +278,8 @@ export const DiagramEdge = memo(function DiagramEdge({
       )}
       {label && (
         <g transform={`translate(${lx}, ${ly})`} style={{ opacity: active ? 1 : 0.85 }}>
-          <rect x={-lw / 2} y={-9} width={lw} height={18} rx={9} fill="#0a1020" stroke={f.color} strokeOpacity={active ? 0.6 : 0.3} />
-          <text textAnchor="middle" y={3.6} fill={active ? '#f1f5f9' : '#a3b1c9'} fontSize={10} fontWeight={550}>
+          <rect x={-lw / 2} y={-9} width={lw} height={18} rx={9} fill="#f7faf6" stroke={f.color} strokeOpacity={active ? 0.6 : 0.3} />
+          <text textAnchor="middle" y={3.6} fill={active ? '#183b35' : '#526764'} fontSize={10} fontWeight={550}>
             {label}
           </text>
         </g>

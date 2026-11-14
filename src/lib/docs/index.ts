@@ -189,18 +189,18 @@ export function getRelated(slug: string, limit = 3) {
 let highlighterPromise: Promise<Highlighter> | undefined;
 const LANGS = ['bash', 'sh', 'shell', 'sql', 'json', 'yaml', 'go', 'ts', 'js', 'dotenv', 'ini', 'html', 'nginx', 'dockerfile', 'diff', 'make'];
 function highlighter() {
-  highlighterPromise ??= createHighlighter({ themes: ['github-dark-default'], langs: LANGS });
+  highlighterPromise ??= createHighlighter({ themes: ['github-light'], langs: LANGS });
   return highlighterPromise;
 }
 
 const MERMAID_THEME = {
-  bg: '#0b1120',
-  fg: '#e2e8f0',
+  bg: '#f3f6f2',
+  fg: '#24443e',
   line: '#475569',
-  accent: '#22d3ee',
-  muted: '#94a3b8',
-  surface: '#111a2e',
-  border: '#334155',
+  accent: '#087f5b',
+  muted: '#73867f',
+  surface: '#edf2ed',
+  border: '#becdc3',
   font: 'Inter Variable, Inter, sans-serif',
   transparent: true,
 };
@@ -329,7 +329,7 @@ export async function renderDoc(entry: DocEntry, resolveImage: ImageResolver): P
           return SKIP;
         }
         const known = hl.getLoadedLanguages().includes(lang);
-        const hast = hl.codeToHast(text, { lang: known ? lang : 'text', theme: 'github-dark-default' });
+        const hast = hl.codeToHast(text, { lang: known ? lang : 'text', theme: 'github-light' });
         const pre = hast.children[0] as Element;
         pre.properties = { ...pre.properties, tabIndex: 0 };
         parent.children[index] = el('div', { className: ['code-block'], dataLang: lang }, [el('span', { className: ['code-lang'] }, [{ type: 'text', value: lang }]), pre]);
