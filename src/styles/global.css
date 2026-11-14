@@ -740,3 +740,27 @@ a.panel:hover { transform: translateY(-4px); border-color: #8cb574; box-shadow: 
 .motion-paused .cap-art i,.motion-paused .chain-wire { animation-play-state:paused; }
 @media(max-width:900px) { .intro-grid,.investigation-grid,.start-grid { gap:40px; }.capability { padding-inline:18px; }.new-home .editorial { padding:72px 24px; } }
 @media(max-width:640px) { .new-home .editorial { padding:64px 20px; }.section-kicker { margin-bottom:30px; font-size:9px; }.section-kicker > span:last-child { display:none; }.intro-grid,.investigation-grid,.start-grid { grid-template-columns:1fr; gap:36px; }.stage-heading { display:block; }.stage-heading p { margin-top:24px; }.stage-bottom { flex-direction:column; font-size:10px; }.capability-grid { grid-template-columns:1fr; margin-top:40px; }.capability,.capability:first-child,.capability:last-child { padding:26px 0; border-left:0; border-bottom:1px solid #dce5dc; }.cap-art { height:150px; }.cap-read { margin-top:20px; }.chain-scene { padding:24px 18px; }.chain-node { padding:15px; gap:12px; }.principle-strip strong { font-size:24px; }.principle-strip > div { padding-left:12px; }.principle-strip span { font-size:10px; }.window-label { font-size:7px; }.product-window { padding:6px; } }
+
+/* The opening is a single statement, with the illustration as a quiet backdrop. */
+.statement-hero { background:#fafcf7; overflow:hidden; position:relative; }
+.statement-content { text-align:center; max-width:1100px; padding:84px 24px 40px; margin:auto; position:relative; z-index:1; }
+.statement-badge { display:inline-flex; align-items:center; gap:12px; font:10px var(--font-mono); letter-spacing:.08em; color:#526764; }
+.statement-content h1 { font-size:clamp(3.5rem,7.3vw,7rem); line-height:1.04; letter-spacing:-.065em; font-weight:500; margin:30px 0 24px; }
+.statement-content h1 > span { color:#087f5b; }
+.statement-description { font-size:17px; line-height:1.75; color:#526764; }
+.statement-actions { display:flex; justify-content:center; align-items:center; gap:30px; margin-top:28px; }
+.statement-actions .btn { height:52px; gap:32px; }
+.signal-landscape { max-width:1400px; height:240px; margin:0 auto; position:relative; display:grid; grid-template-columns:1fr 210px 1fr; align-items:center; gap:80px; padding-inline:100px; }
+.signal-routes { position:absolute; width:100%; height:100%; inset:0; fill:none; stroke:#d6e5cc; stroke-width:1; }
+.signal-particles { stroke:#7daf65; stroke-width:2; stroke-dasharray:10 180; animation:signal-travel 8s linear infinite; }
+@keyframes signal-travel { to { stroke-dashoffset:-760; } }
+.signal-label { position:relative; justify-self:center; padding:10px 14px; background:#fafcf7; font:9px var(--font-mono); letter-spacing:.12em; color:#6c8164; text-align:center; }
+.signal-core { position:relative; display:flex; align-items:center; flex-direction:column; justify-content:center; height:158px; border:1px solid #c2dbad; background:#edf8e3; border-radius:12px; box-shadow:0 0 0 10px #fafcf7,0 0 0 11px #deead5; }
+.core-mark { font-size:46px; color:#087f5b; line-height:1; margin-bottom:10px; }
+.signal-core strong { font-weight:550; font-size:21px; letter-spacing:-.04em; }.signal-core > span:last-child { font-size:10px; color:#627570; margin-top:4px; }
+.statement-bottom { max-width:1176px; margin:auto; border-top:1px solid #dce5dc; display:flex; justify-content:space-between; gap:20px; padding:20px 0; font:9px var(--font-mono); color:#627570; letter-spacing:.04em; }.statement-bottom i { font-style:normal; margin-inline:12px; }.statement-bottom button:hover { color:#087f5b; }
+.motion-paused .signal-particles { animation-play-state:paused; }
+.marketing-header nav { max-width:1240px; }.marketing-header [data-search-open].xl\:flex { display:none; }.marketing-header [data-search-open].xl\:hidden { display:inline-flex; border:0; background:transparent; }.marketing-header a[aria-label='LockLens on GitHub'] { border:0; background:transparent; }.marketing-header .btn-primary { height:40px; padding-inline:22px; }.marketing-header nav > ul { margin-left:auto; }.marketing-header nav > div { margin-left:24px; }
+@media(max-width:1000px) { .statement-bottom { margin-inline:24px; }.signal-landscape { gap:24px; padding-inline:30px; }.marketing-header nav > div { margin-left:auto; } }
+@media(max-width:640px) { .statement-content { padding:58px 20px 20px; }.statement-content h1 { font-size:clamp(2.5rem,8.7vw,3.5rem); margin-top:25px; }.statement-badge { font-size:8px; gap:8px; letter-spacing:0; }.statement-description { font-size:14px; }.statement-actions { gap:18px; }.statement-actions .btn { gap:15px; padding-inline:16px; font-size:12px; }.statement-actions .hero-text-link { gap:10px; font-size:12px; }.signal-landscape { height:210px; grid-template-columns:1fr 150px 1fr; gap:8px; padding-inline:12px; }.signal-label { font-size:7px; padding:6px; line-height:1.8; letter-spacing:0; }.signal-core { height:130px; }.signal-core strong { font-size:18px; }.statement-bottom { flex-direction:column; align-items:center; font-size:8px; gap:14px; margin-inline:20px; }.statement-bottom i { margin-inline:5px; } }
+@media(prefers-reduced-motion:reduce) { .signal-particles { animation:none; } }

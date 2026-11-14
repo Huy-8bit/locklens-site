@@ -1,39 +1,21 @@
 ---
-import { getImage } from 'astro:assets';
-import HeroScene from '../../islands/HeroScene';
-import { screenshot } from '../../lib/images';
 import { SITE, url } from '../../lib/site';
-const incident = screenshot('incident.png');
-const shot = await getImage({ src: incident, width: 960, format: 'webp', quality: 80 });
 const technologies = ['PostgreSQL', 'Go', 'React', 'Docker', 'Prometheus', 'Grafana', 'OpenTelemetry'];
 ---
-<section class="hero-section" aria-labelledby="hero-title">
-  <div class="hero-grid" aria-hidden="true"></div>
-  <div class="hero-layout">
-    <div class="hero-copy">
-      <a href={SITE.repo} rel="noopener noreferrer" class="hero-announcement hero-enter">
-        <span class="status-dot"></span> OPEN SOURCE. OPEN POSSIBILITIES. <span aria-hidden="true">↗</span>
-      </a>
-      <h1 id="hero-title" class="hero-enter">See beyond<br /><span class="hero-accent">PostgreSQL</span>{' '}<br />metrics<span class="hero-period">.</span></h1>
-      <p class="hero-description hero-enter">Less guesswork. More answers.<br />Trace blocking chains, understand slow queries, and turn database incidents into evidence.</p>
-      <div class="hero-actions hero-enter">
-        <a href={url('/#features')} class="btn btn-primary">Explore LockLens <span aria-hidden="true">↗</span></a>
-        <a href={url('/architecture/')} class="hero-text-link">View architecture <span aria-hidden="true">→</span></a>
-      </div>
-      <div class="hero-meta hero-enter"><span>MIT licensed</span><span>Read-only by design</span><span>PostgreSQL 14–18</span></div>
-    </div>
-    <div class="hero-visual hero-enter">
-      <div class="orbit orbit-one" aria-hidden="true"></div>
-      <div class="orbit orbit-two" aria-hidden="true"></div>
-      <div class="visual-heading"><span class="status-dot"></span> FROM SIGNAL TO UNDERSTANDING <span>01 / LIVE</span></div>
-      <div class="hero-scene-wrap">
-        <HeroScene client:idle screenshot={{ src: shot.src, width: 960, height: Math.round((incident.height * 960) / incident.width) }} />
-      </div>
-      <div class="hero-floating-note" aria-hidden="true"><span>↳</span><div>Find the root.<br /><strong>Keep the evidence.</strong></div><span class="note-spark">✳</span></div>
-      <div class="visual-footer"><span>YOUR DATABASE. A CLEARER PICTURE.</span><span aria-hidden="true">↓</span></div>
-    </div>
-  </div>
-  <div class="hero-bottom"><a href="#problem-title">A little visibility changes everything <span aria-hidden="true">↓</span></a><button type="button" data-motion-toggle aria-pressed="false">Pause decorative motion <span aria-hidden="true">Ⅱ</span></button></div>
+<section class="statement-hero" aria-labelledby="hero-title">
+ <div class="statement-content">
+  <a href={SITE.repo} class="statement-badge hero-enter"><span class="status-dot"></span> OPEN-SOURCE POSTGRESQL OBSERVABILITY <span aria-hidden="true">↗</span></a>
+  <h1 id="hero-title" class="hero-enter">See beyond<br /><span>PostgreSQL metrics.</span></h1>
+  <p class="statement-description hero-enter">Every slowdown has a story.<br />Connect the signals. Find the cause. Keep the evidence.</p>
+  <div class="statement-actions hero-enter"><a href={url('/#features')} class="btn btn-primary">Explore LockLens <span aria-hidden="true">↗</span></a><a href={url('/architecture/')} class="hero-text-link">View architecture <span aria-hidden="true">→</span></a></div>
+ </div>
+ <div class="signal-landscape hero-enter" role="img" aria-label="Illustration: PostgreSQL signals flow through LockLens into incident evidence">
+  <svg class="signal-routes" viewBox="0 0 1200 240" preserveAspectRatio="none" aria-hidden="true"><path d="M0 25H170Q220 25 220 75V105Q220 120 260 120H940Q980 120 980 105V75Q980 25 1030 25H1200 M0 120H1200 M0 215H170Q220 215 220 165V135Q220 120 260 120H940Q980 120 980 135V165Q980 215 1030 215H1200"/><path class="signal-particles" d="M0 25H170Q220 25 220 75V105Q220 120 260 120H940Q980 120 980 105V75Q980 25 1030 25H1200 M0 120H1200 M0 215H170Q220 215 220 165V135Q220 120 260 120H940Q980 120 980 135V165Q980 215 1030 215H1200"/></svg>
+  <div class="signal-label">FROM SCATTERED SIGNALS</div>
+  <div class="signal-core"><span class="core-mark" aria-hidden="true">◎</span><strong>LockLens</strong><span>Clarity, connected.</span></div>
+  <div class="signal-label">TO A CLEARER PICTURE</div>
+ </div>
+ <div class="statement-bottom"><span>READ-ONLY BY DESIGN <i>·</i> MIT LICENSED <i>·</i> POSTGRESQL 14–18</span><button type="button" data-motion-toggle aria-pressed="false">Pause decorative motion <span aria-hidden="true">Ⅱ</span></button></div>
 </section>
 <div class="tech-band" aria-label="Built with and integrates with PostgreSQL, Go, React, Docker, Prometheus, Grafana, and OpenTelemetry">
   <div class="tech-band-label">BUILT FOR<br /><strong>YOUR STACK</strong></div>

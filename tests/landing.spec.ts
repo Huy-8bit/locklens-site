@@ -36,20 +36,20 @@ test.describe('landing page', () => {
     await expect(page.locator('#quick-start').getByRole('link', { name: 'Get started' })).toHaveAttribute('href', '/docs/getting-started/');
   });
 
-  test('hero animation plays and can be paused', async ({ page }) => {
+  test('decorative motion can be paused and resumed', async ({ page }) => {
     await page.goto('/');
-    const pause = page.getByRole('button', { name: 'Pause hero animation' });
-    await expect(pause).toBeVisible();
-    await expect(page.locator('svg[aria-label^="Animation: Other sessions wait"]')).toBeVisible({ timeout: 9000 });
-    await pause.click();
-    await expect(page.getByRole('button', { name: 'Play hero animation' })).toBeVisible();
+    await page.getByRole('button', { name: 'Pause decorative motion' }).click();
+    await expect(page.locator('.signal-particles')).toHaveCSS('animation-play-state', 'paused');
+    await page.getByRole('button', { name: 'Resume decorative motion' }).click();
+    await expect(page.locator('.signal-particles')).toHaveCSS('animation-play-state', 'running');
   });
 
-  test('reduced motion shows the composed hero state without autoplay', async ({ browser }) => {
+  test('reduced motion retains the hero without autoplay', async ({ browser }) => {
     const ctx = await browser.newContext({ reducedMotion: 'reduce' });
     const page = await ctx.newPage();
     await page.goto('/');
-    await expect(page.locator('svg[aria-label^="Animation: Blocking graph"]')).toBeVisible();
+    await expect(page.locator('.signal-landscape')).toBeVisible();
+    await expect(page.locator('.signal-particles')).toHaveCSS('animation-name', 'none');
     await ctx.close();
   });
 });

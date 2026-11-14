@@ -6,7 +6,7 @@ const { current } = Astro.props;
 const isCurrent = (href: string) =>
   (current === 'architecture' && href.startsWith('/architecture')) || (current === 'docs' && href.startsWith('/docs'));
 ---
-<header class="site-header sticky top-0 z-50 h-[var(--header-h)] border-b border-line bg-ink-950/75 backdrop-blur-xl supports-[backdrop-filter]:bg-ink-950/60">
+<header class:list={[current === 'home' && 'marketing-header', "site-header sticky top-0 z-50 h-[var(--header-h)] border-b border-line bg-ink-950/75 backdrop-blur-xl supports-[backdrop-filter]:bg-ink-950/60"]}>
   <div class="scroll-progress" aria-hidden="true"></div>
   <nav class="mx-auto flex h-full max-w-[1320px] items-center gap-4 px-4 sm:px-6" aria-label="Main">
     <a href={url('/')} class="flex shrink-0 items-center gap-2.5 font-semibold tracking-tight text-fg" aria-label="LockLens home">
