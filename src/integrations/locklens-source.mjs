@@ -3,7 +3,7 @@
 // reloads the dev server when repository Markdown changes. In dev it also
 // builds a Pagefind search index from the dev server's own docs pages, so
 // search works without a production build.
-import { copyFileSync, existsSync, mkdirSync, readdirSync, rmSync, statSync } from 'node:fs';
+import { copyFileSync, createReadStream, existsSync, mkdirSync, readdirSync, statSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { resolveRepoRoot } from '../lib/source.mjs';
@@ -27,11 +27,14 @@ function syncImages(repoRoot, outDir, logger) {
   return copied;
 }
 
+const MIME = { '.js': 'text/javascript', '.json': 'application/json', '.css': 'text/css', '.wasm': 'application/wasm' };
+
 /**
  * Dev only: crawl /docs/ on the running dev server and write a Pagefind index
- * to public/pagefind/ (git-ignored), which Vite serves like the production index.
+ * to .astro/pagefind-dev/, which the dev server serves at <base>/pagefind/.
+ * public/ is never touched, so production builds are unaffected.
  */
-async function buildDevSearchIndex(origin, base, publicDir, logger) {
+async function buildDevSearchIndex(origin, base, indexDir, logger) {
   const { createIndex, close } = await import('pagefind');
   const prefix = base.replace(/\/$/, '');
   const home = await fetch(`${origin}${prefix}/docs/`).then((r) => r.text());
@@ -45,7 +48,7 @@ async function buildDevSearchIndex(origin, base, publicDir, logger) {
     await index.addHTMLFile({ url: p.slice(prefix.length) || '/', content: await res.text() });
     added++;
   }
-  await index.writeFiles({ outputPath: path.join(publicDir, 'pagefind') });
+  await index.writeFiles({ outputPath: indexDir });
   await close();
   logger.info(`dev search index: ${added} docs page(s) indexed`);
 }
@@ -60,10 +63,6 @@ export function locklensSource() {
         logger.info(`documentation source: ${repoRoot}`);
         syncImages(repoRoot, outDir, logger);
 
-        if (command === 'build') {
-          // The dev server's search index must not leak into dist/; Pagefind writes the real one after the build.
-          rmSync(path.join(fileURLToPath(config.publicDir), 'pagefind'), { recursive: true, force: true });
-        }
         if (command !== 'dev') return;
         const watched = [path.join(repoRoot, 'docs'), path.join(repoRoot, 'CONTRIBUTING.md'), path.join(repoRoot, 'SECURITY.md')];
         updateConfig({
@@ -72,7 +71,17 @@ export function locklensSource() {
               {
                 name: 'locklens-docs-watch',
                 configureServer(server) {
-                  const publicDir = fileURLToPath(config.publicDir);
+                  const indexDir = path.join(fileURLToPath(config.root), '.astro', 'pagefind-dev');
+                  const route = `${config.base.replace(/\/$/, '')}/pagefind/`;
+                  server.middlewares.use((req, res, next) => {
+                    const url = (req.url ?? '').split('?')[0];
+                    if (!url.startsWith(route)) return next();
+                    const file = path.join(indexDir, url.slice(route.length));
+                    if (!file.startsWith(indexDir) || !existsSync(file) || !statSync(file).isFile()) return next();
+                    res.setHeader('Content-Type', MIME[path.extname(file)] ?? 'application/octet-stream');
+                    res.setHeader('Cache-Control', 'no-store');
+                    createReadStream(file).pipe(res);
+                  });
                   let timer;
                   let running = false;
                   const scheduleIndex = (delay) => {
@@ -82,7 +91,7 @@ export function locklensSource() {
                       if (!origin || running) return scheduleIndex(2000);
                       running = true;
                       try {
-                        await buildDevSearchIndex(origin, config.base, publicDir, logger);
+                        await buildDevSearchIndex(origin, config.base, indexDir, logger);
                       } catch (err) {
                         logger.warn(`dev search index failed: ${err.message}`);
                       } finally {
