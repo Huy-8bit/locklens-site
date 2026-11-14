@@ -301,11 +301,11 @@ export const NODES: ArchNode[] = [
     },
   },
   {
-    id: 'telemetry', title: 'Telemetry export', subtitle: 'Prometheus · OTLP', icon: 'Rss', tone: 'amber', rect: { x: col.c3, y: row(3), w: W, h: H },
+    id: 'telemetry', title: 'Metrics export', subtitle: 'Prometheus metrics', icon: 'Rss', tone: 'amber', rect: { x: col.c3, y: row(3), w: W, h: H },
     details: {
       kind: 'domain/telemetry',
       purpose: 'Exports the monitored instances’ metrics from the live views of the instances this server collects.',
-      data: ['GET /metrics/targets (token of scope metrics) in Prometheus format', 'OTLP/HTTP push every 60 s when LOCKLENS_OTLP_ENDPOINT is set'],
+      data: ['GET /metrics/targets (token of scope metrics) in Prometheus format'],
       note: 'Exported counters are running totals of what LockLens observed; they restart at zero after a LockLens restart.',
       docs: [docs('Integrations', 'deployment/integrations')],
     },
@@ -374,20 +374,12 @@ export const NODES: ArchNode[] = [
     },
   },
   {
-    id: 'prometheus', title: 'Prometheus · Grafana', subtitle: 'scrapes /metrics/targets', icon: 'ChartLine', tone: 'amber', rect: { x: col.out, y: 504, w: 282, h: H },
+    id: 'prometheus', title: 'Prometheus', subtitle: 'scrapes /metrics/targets', icon: 'ChartLine', tone: 'amber', rect: { x: col.out, y: 504, w: 282, h: H },
     details: {
       kind: 'Pulled by your Prometheus',
-      purpose: 'Every series carries target and environment labels. The repository ships alerting rules and a Grafana dashboard built on these metrics.',
-      refs: ['deploy/observability/locklens-rules.yml', 'deploy/observability/grafana/locklens-instances.json'],
+      purpose: 'Every series carries target and environment labels. The repository ships alerting rules built on these metrics.',
+      refs: ['deploy/observability/locklens-rules.yml'],
       docs: [docs('Integrations', 'deployment/integrations')],
-    },
-  },
-  {
-    id: 'otlp', title: 'OpenTelemetry collector', subtitle: 'OTLP/HTTP push', icon: 'Satellite', tone: 'amber', badge: 'optional', rect: { x: col.out, y: 588, w: 282, h: H - 4 },
-    details: {
-      kind: 'Pushed when LOCKLENS_OTLP_ENDPOINT is set',
-      purpose: 'The same metrics every 60 s over OTLP/HTTP (JSON): gauges as gauges, counters as cumulative monotonic sums.',
-      docs: [docs('OpenTelemetry', 'deployment/integrations')],
     },
   },
 ];
@@ -427,7 +419,6 @@ export const EDGES: ArchEdge[] = [
   { id: 'e-notify-chan', from: 'notifier', to: 'channels', kind: 'alert', opts: { from: 'r', to: 'l' } },
   { id: 'e-notify-am', from: 'notifier', to: 'alertmanager', kind: 'alert', opts: { from: 'r', to: 'l', fromOffset: 12 } },
   { id: 'e-tel-prom', from: 'telemetry', to: 'prometheus', kind: 'alert', label: 'scraped', labelOffset: { x: 6, y: 6 }, opts: { from: 'r', to: 'l' } },
-  { id: 'e-tel-otlp', from: 'telemetry', to: 'otlp', kind: 'alert', label: 'push', labelOffset: { x: 10, y: 22 }, opts: { from: 'r', to: 'l', fromOffset: 12 } },
   { id: 'e-agent-api', from: 'log-agent', to: 'api', kind: 'alert', label: 'log events (token)', labelOffset: { x: -300, y: 0 }, opts: { from: 'b', to: 'r', toOffset: -14, via: [{ x: 154, y: 818 }, { x: 1120, y: 818 }, { x: 1120, y: 129 }] } },
 ];
 
@@ -485,8 +476,8 @@ export const STEPS: ArchStep[] = [
     id: 'notify',
     title: 'Detect & notify',
     summary: 'Rules open incidents and notifications go to supported destinations.',
-    detail: 'Incident events (opened, escalated, resolved, reminders) go to Slack, webhooks, email or Alertmanager, filtered by severity, environment, rule and instance, and held back by silences and maintenance windows. Metrics are exported to Prometheus (pulled) and OTLP (pushed). The optional log agent ships server log events in.',
-    nodes: ['recorder', 'notifier', 'channels', 'alertmanager', 'telemetry', 'prometheus', 'otlp', 'log-agent', 'api'],
-    edges: ['e-rec-notify', 'e-notify-chan', 'e-notify-am', 'e-tel-prom', 'e-tel-otlp', 'e-agent-api'],
+    detail: 'Incident events (opened, escalated, resolved, reminders) go to Slack, webhooks, email or Alertmanager, filtered by severity, environment, rule and instance, and held back by silences and maintenance windows. Metrics are exported to Prometheus (pulled). The optional log agent ships server log events in.',
+    nodes: ['recorder', 'notifier', 'channels', 'alertmanager', 'telemetry', 'prometheus', 'log-agent', 'api'],
+    edges: ['e-rec-notify', 'e-notify-chan', 'e-notify-am', 'e-tel-prom', 'e-agent-api'],
   },
 ];

@@ -6,12 +6,12 @@ export type NodeState = 'normal' | 'active' | 'visited' | 'dim' | 'hidden';
 export type Tone = 'cyan' | 'blue' | 'violet' | 'emerald' | 'amber' | 'slate' | 'rose' | 'orange';
 
 export const TONES: Record<Tone, { fg: string; bg: string; ring: string }> = {
-  cyan: { fg: 'var(--diagram-cyan, #087a9e)', bg: 'rgba(8,127,91,0.12)', ring: '#087f5b' },
+  cyan: { fg: 'var(--diagram-cyan, #087a9e)', bg: 'rgba(45,104,218,0.08)', ring: '#487be2' },
   blue: { fg: 'var(--diagram-blue, #346db6)', bg: 'rgba(96,165,250,0.13)', ring: '#2870b5' },
   violet: { fg: 'var(--diagram-violet, #7154af)', bg: 'rgba(167,139,250,0.14)', ring: '#7954b3' },
   emerald: { fg: 'var(--diagram-emerald, #147c77)', bg: 'rgba(52,211,153,0.13)', ring: '#14865d' },
   amber: { fg: 'var(--diagram-amber, #956608)', bg: 'rgba(251,191,36,0.13)', ring: '#aa7309' },
-  slate: { fg: 'var(--diagram-slate, #566c88)', bg: 'rgba(148,163,184,0.12)', ring: '#73867f' },
+  slate: { fg: 'var(--diagram-slate, #566c88)', bg: 'rgba(148,163,184,0.12)', ring: '#8998af' },
   rose: { fg: 'var(--diagram-rose, #b63850)', bg: 'rgba(251,113,133,0.15)', ring: '#cb4560' },
   orange: { fg: 'var(--diagram-orange, #a54b0e)', bg: 'rgba(251,146,60,0.15)', ring: '#c45b17' },
 };
@@ -19,7 +19,7 @@ export const TONES: Record<Tone, { fg: string; bg: string; ring: string }> = {
 type Icon = ComponentType<SVGProps<SVGSVGElement> & { size?: number | string; strokeWidth?: number | string }>;
 
 /* ------------------------------------------------------------------ */
-/* Shared <defs>: arrowheads per flow kind, glow filter, node fill     */
+/* Shared arrowheads and restrained surface fills.                    */
 /* ------------------------------------------------------------------ */
 
 export function DiagramDefs({ id }: { id: string }) {
@@ -32,11 +32,11 @@ export function DiagramDefs({ id }: { id: string }) {
       ))}
       <linearGradient id={`${id}-node`} x1="0" y1="0" x2="0" y2="1">
         <stop offset="0" stopColor="var(--diagram-node, #fff)" />
-        <stop offset="1" stopColor="var(--diagram-node, #fff)" />
+        <stop offset="1" stopColor="var(--diagram-node-bottom, #f7f9ff)" />
       </linearGradient>
       <linearGradient id={`${id}-group`} x1="0" y1="0" x2="0" y2="1">
         <stop offset="0" stopColor="var(--diagram-group, #f3f6fb)" />
-        <stop offset="1" stopColor="var(--diagram-group, #f3f6fb)" />
+        <stop offset="1" stopColor="var(--diagram-group-bottom, #fafbff)" />
       </linearGradient>
       <filter id={`${id}-glow`} x="-30%" y="-30%" width="160%" height="160%">
         <feGaussianBlur stdDeviation="7" result="b" />
@@ -93,7 +93,7 @@ export const DiagramGroup = memo(function DiagramGroup({
         strokeDasharray={dashed ? '5 5' : undefined}
         style={{ transition: 'stroke 300ms, stroke-opacity 300ms' }}
       />
-      <text x={rect.x + 18} y={rect.y + 24} fill={t.fg} fontSize={11.5} fontWeight={650} letterSpacing="0.08em">
+      <text x={rect.x + 18} y={rect.y + 24} fill={t.fg} fontSize={11} fontWeight={600} letterSpacing="0.07em">
         {label.toUpperCase()}
       </text>
       {sublabel && (
@@ -187,7 +187,7 @@ export const DiagramNode = memo(function DiagramNode({
         height={rect.h}
         rx={8}
         fill={`url(#${defsId}-node)`}
-        stroke={selected ? '#087f5b' : active ? t.ring : state === 'visited' ? 'rgba(148,163,184,0.38)' : 'rgba(148,163,184,0.26)'}
+        stroke={selected ? '#2448ff' : active ? t.ring : state === 'visited' ? 'rgba(148,163,184,0.38)' : 'rgba(148,163,184,0.26)'}
         strokeWidth={active ? 1.6 : 1}
       />
       {IconCmp && (

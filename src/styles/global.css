@@ -57,6 +57,8 @@
   --diagram-text: #172b45;
   --diagram-muted: #65758c;
   --diagram-node: #ffffff;
+  --diagram-node-bottom: #f7f9ff;
+  --diagram-group-bottom: #fafbff;
   --diagram-group: #f3f6fb;
   --diagram-border: #c9d5e4;
 }
@@ -662,6 +664,7 @@ a.panel:hover { transform: translateY(-4px); border-color: #78b3d1; box-shadow: 
   --color-accent:#9baaff; --color-accent-blue:#6ca0ff;
   --diagram-text:#eaf2ff; --diagram-muted:#a4b5cd; --diagram-node:#101d30;
   --diagram-group:#0e1929; --diagram-border:#30445e;
+  --diagram-node-bottom:#14213a; --diagram-group-bottom:#101b2e;
   --diagram-cyan:#43cdee; --diagram-blue:#7aabff; --diagram-emerald:#49c9b5;
   --diagram-violet:#b5a0ed; --diagram-slate:#9baec7; --diagram-amber:#e8bc67;
   --diagram-rose:#f1859c; --diagram-orange:#efab71;

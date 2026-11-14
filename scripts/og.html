@@ -28,18 +28,36 @@
       <linearGradient id="sc-top" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#dceaff"/><stop offset=".45" stop-color="#7daaff"/><stop offset="1" stop-color="#3157f0"/></linearGradient>
       <linearGradient id="sc-edge"><stop stop-color="#fff"/><stop offset="1" stop-color="#749aff"/></linearGradient>
       <radialGradient id="sc-shadow"><stop stop-color="#1538a1" stop-opacity=".26"/><stop offset="1" stop-color="#1538a1" stop-opacity="0"/></radialGradient>
+      <linearGradient id="sc-silk" x1="0" y1="0" x2=".9" y2="1"><stop stop-color="#f5f5ff"/><stop offset=".18" stop-color="#c8d4ff"/><stop offset=".4" stop-color="#6886ee"/><stop offset=".55" stop-color="#eff4ff"/><stop offset=".72" stop-color="#b6b6ed"/><stop offset="1" stop-color="#3b5fe3"/></linearGradient>
+      <linearGradient id="sc-silk-front" x1="0" y1="0" x2="1" y2=".6"><stop stop-color="#edf2ff" stop-opacity=".6"/><stop offset=".24" stop-color="#a6b8f6"/><stop offset=".46" stop-color="#f7f9ff"/><stop offset=".68" stop-color="#91a9ee"/><stop offset="1" stop-color="#4b5bd6" stop-opacity=".75"/></linearGradient>
+      <linearGradient id="sc-crystal" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#fff" stop-opacity=".95"/><stop offset=".45" stop-color="#cedfff" stop-opacity=".25"/><stop offset="1" stop-color="#7d9ce8" stop-opacity=".6"/></linearGradient>
+      <linearGradient id="sc-metal" x1="0" y1="0" x2="1" y2="0"><stop stop-color="#e9f1ff"/><stop offset=".22" stop-color="#98b9ff"/><stop offset=".55" stop-color="#fff"/><stop offset=".78" stop-color="#a9a9f4"/><stop offset="1" stop-color="#3e5fd3"/></linearGradient>
+      <radialGradient id="sc-atmosphere"><stop stop-color="#c4d5ff" stop-opacity=".65"/><stop offset=".7" stop-color="#e6eaff" stop-opacity=".3"/><stop offset="1" stop-color="#f7f9ff" stop-opacity="0"/></radialGradient>
     </defs>
-    <!-- A folded ribbon and an isometric plane establish a continuous visual language. -->
-    <path class="sc-ribbon-back" d="M-40 570L252 404V205L842-128V75L436 307V469L60 690Z" fill="url(#sc-ribbon)"/>
-    <path d="M-40 570L252 404V205L842-128M252 404L436 307" fill="none" stroke="#f4f7ff" stroke-opacity=".8"/>
+    <ellipse cx="476" cy="321" rx="340" ry="280" fill="url(#sc-atmosphere)"/>
+    <!-- The rear and front faces of one continuous observation ribbon. -->
+    <g class="sc-ribbon-back">
+      <path d="M761 22C512-90 376 30 400 147C424 260 694 218 729 328L680 395C663 280 335 303 309 156C282 5 532-85 761 22Z" fill="url(#sc-silk)" opacity=".8"/>
+      <path d="M761 22C512-90 376 30 400 147C424 260 694 218 729 328" fill="none" stroke="#fff" stroke-opacity=".9" stroke-width="1.3"/>
+      <path d="M761 22C553-48 380 14 357 102C312 270 661 248 704 361" fill="none" stroke="#dce4ff" stroke-opacity=".4"/>
+    </g>
     <path d="M62 437L428 226L794 437L428 648Z" fill="url(#sc-floor)" opacity=".75"/>
     <g stroke="#fff" stroke-opacity=".55" fill="none"><path d="M123 472L489 261M184 507L550 296M245 542L611 331M306 577L672 366M367 612L733 401M123 402L489 613M184 367L550 578M245 332L611 543M306 297L672 508M367 262L733 473"/></g>
     <ellipse cx="470" cy="449" rx="174" ry="70" fill="url(#sc-shadow)"/>
     <g class="sc-back-pane"><path d="M474 115Q474 102 486 95L611 24Q623 17 623 32V342L474 428Z" fill="url(#sc-glass)" stroke="url(#sc-edge)" stroke-width="1"/><path d="M474 151L623 65M474 194L623 108" stroke="#e7efff" stroke-opacity=".35"/></g>
+    <g class="sc-plinth">
+      <path d="M320 425L467 341L613 425V452L467 536L320 452Z" fill="url(#sc-crystal)" stroke="#c7d6f7"/>
+      <path d="M320 425L467 510L613 425M467 510V536" fill="none" stroke="#fff" stroke-width="1.4"/>
+      <path d="M343 425L467 354L590 425L467 496Z" fill="none" stroke="#fff" stroke-opacity=".6"/>
+    </g>
     <g class="sc-database">
+      <path d="M369 245V389C369 436 565 436 565 389V245" fill="url(#sc-crystal)" stroke="#e4ecff" stroke-width="1.4"/>
       <path d="M377 340V389C377 416 557 416 557 389V340Z" fill="url(#sc-face)"/><ellipse cx="467" cy="340" rx="90" ry="29" fill="url(#sc-top)"/><path d="M377 387C377 420 557 420 557 387" stroke="#82b3ff" fill="none"/>
       <path d="M377 294V343C377 370 557 370 557 343V294Z" fill="url(#sc-face)"/><ellipse cx="467" cy="294" rx="90" ry="29" fill="url(#sc-top)"/><path d="M377 341C377 374 557 374 557 341" stroke="#82b3ff" fill="none"/>
       <path d="M377 248V297C377 324 557 324 557 297V248Z" fill="url(#sc-face)"/><ellipse cx="467" cy="248" rx="90" ry="29" fill="url(#sc-top)" stroke="#d4e8ff" stroke-width="1.2"/>
+      <ellipse cx="467" cy="247" rx="90" ry="29" fill="none" stroke="url(#sc-metal)" stroke-width="3"/>
+      <ellipse cx="467" cy="245" rx="75" ry="21" fill="none" stroke="#e9f2ff" stroke-opacity=".45"/>
+      <path d="M390 272V387M397 276V394" stroke="#b6d4ff" stroke-opacity=".25"/>
       <text x="467" y="290" text-anchor="middle" fill="white" font-size="20" font-weight="600" letter-spacing="-.6">PostgreSQL</text>
       <path d="M446 345h42m-42 5h30" stroke="#d0e3ff" stroke-linecap="round" opacity=".6"/>
     </g>
@@ -47,6 +65,13 @@
       <path d="M124 317Q124 304 136 297L278 215Q290 208 290 223V401Q290 414 278 421L136 503Q124 510 124 495Z" fill="url(#sc-glass)" stroke="url(#sc-edge)" stroke-width="1.2"/>
       <g transform="matrix(1,-.577,0,1,146,340)"><text fill="#2637a0" font-size="11" font-weight="600">DATABASE ACTIVITY</text><path d="M0 95H123" stroke="#fff" stroke-opacity=".8"/><g fill="#e6f1ff"><rect x="5" y="63" width="12" height="27" rx="1"/><rect x="28" y="49" width="12" height="41" rx="1"/><rect x="51" y="35" width="12" height="55" rx="1"/><rect x="74" y="45" width="12" height="45" rx="1"/><rect x="97" y="16" width="12" height="74" rx="1"/></g></g>
     </g>
+    <g class="sc-ribbon-front">
+      <path d="M-25 591C65 321 157 330 292 426C408 509 662 474 680 395L729 328C810 505 475 599 290 482C149 393 77 421-25 591Z" fill="url(#sc-silk-front)" opacity=".9"/>
+      <path d="M-25 591C65 321 157 330 292 426C408 509 662 474 680 395" fill="none" stroke="#fff" stroke-width="1.5"/>
+      <path d="M-25 591C79 377 160 374 291 456C445 553 716 480 709 367" fill="none" stroke="#f1f5ff" stroke-opacity=".45"/>
+      <path d="M-25 591C77 421 149 393 290 482C475 599 810 505 729 328" fill="none" stroke="#7d8cde" stroke-opacity=".35"/>
+    </g>
+    <g fill="none" stroke="#8294c8" stroke-width=".8"><path d="M328 180V205Q328 215 341 219L377 231"/><path d="M615 185V219Q615 229 602 233L557 247"/><path d="M533 523H497Q485 523 482 512L469 466"/></g>
     <g class="sc-signal-paths" fill="none"><path d="M290 368L338 396L377 374M557 288L615 255V185M469 418V462L573 522" stroke="#5d7df1" stroke-width="1.4" stroke-dasharray="3 6"/><path class="signal-particles" d="M290 368L338 396L377 374M557 288L615 255V185M469 418V462L573 522" stroke="#2448ff" stroke-width="2.5"/></g>
     <g class="sc-label sc-label-query" transform="translate(249 134)"><rect width="158" height="46" rx="23" fill="#fff" stroke="#d8e1ff"/><path d="m19 17 6 6-6 6m12 0h8" fill="none" stroke="#2448ff" stroke-width="2"/><text x="51" y="29" fill="#10152d" font-size="14" font-weight="600">Queries</text></g>
     <g class="sc-label sc-label-lock" transform="translate(567 139)"><rect width="152" height="46" rx="23" fill="#fff" stroke="#d8e1ff"/><rect x="22" y="21" width="13" height="12" rx="2" fill="none" stroke="#2448ff" stroke-width="2"/><path d="M25 21v-4a4 4 0 0 1 8 0v4" fill="none" stroke="#2448ff" stroke-width="2"/><text x="48" y="29" fill="#10152d" font-size="14" font-weight="600">Blocking</text></g>

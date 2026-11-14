@@ -40,7 +40,7 @@ const boundaries = [
   { from: 'Frontend', to: 'Backend', port: '8080', note: 'Proxies /api/ and /metrics/targets. Never exposes /metrics.', kind: 'api' as FlowKind },
   { from: 'Backend', to: 'Monitored PostgreSQL', port: '5432 (your servers)', note: 'Read-only role, READ ONLY transactions, 1–5 connections per target.', kind: 'collect' as FlowKind },
   { from: 'Backend', to: 'Monitoring store', port: '5432 (LockLens’ own)', note: 'Read/write. Never one of the monitored databases.', kind: 'store' as FlowKind },
-  { from: 'Backend', to: 'Slack · webhooks · SMTP · Alertmanager · OTLP', port: 'outbound HTTPS / SMTP', note: 'Only destinations you configure. Link-local and metadata addresses refused.', kind: 'alert' as FlowKind },
+  { from: 'Backend', to: 'Slack · webhooks · SMTP · Alertmanager', port: 'outbound HTTPS / SMTP', note: 'Only destinations you configure. Link-local and metadata addresses refused.', kind: 'alert' as FlowKind },
   { from: 'Prometheus', to: 'Frontend or backend', port: '/metrics/targets (token) · /metrics', note: 'Pull. Scrape every server when running several.', kind: 'alert' as FlowKind },
   { from: 'Log agent (optional)', to: 'Backend', port: 'POST /api/v1/ingest/logs', note: 'Token of scope ingest. Never connects to PostgreSQL.', kind: 'alert' as FlowKind },
 ];

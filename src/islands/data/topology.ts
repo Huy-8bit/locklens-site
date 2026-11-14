@@ -293,21 +293,12 @@ export const NODES: TopoNode[] = [
     },
   },
   {
-    id: 'prometheus', layer: 'external', title: 'Prometheus · Grafana', subtitle: '/metrics/targets', icon: 'ChartLine', tone: 'amber', badge: 'optional',
+    id: 'prometheus', layer: 'external', title: 'Prometheus', subtitle: '/metrics/targets', icon: 'ChartLine', tone: 'amber', badge: 'optional',
     at: { fleet: { x: 1250, y: 720 } },
     details: {
       kind: 'Pulled by your Prometheus',
-      purpose: 'Instance metrics with target and environment labels; ready alerting rules and a Grafana dashboard ship in deploy/observability.',
+      purpose: 'Instance metrics with target and environment labels; ready-to-use alerting rules are available.',
       note: 'With several servers, scrape every server: each exports the instances it collects.',
-      docs: [docs('Integrations', 'deployment/integrations')],
-    },
-  },
-  {
-    id: 'otlp', layer: 'external', title: 'OpenTelemetry', subtitle: 'OTLP/HTTP push', icon: 'Satellite', tone: 'amber', badge: 'optional',
-    at: { fleet: { x: 1250, y: 790 } },
-    details: {
-      kind: 'OTLP metrics push',
-      purpose: 'The same metrics pushed every 60 s to an OpenTelemetry collector when LOCKLENS_OTLP_ENDPOINT is set.',
       docs: [docs('Integrations', 'deployment/integrations')],
     },
   },
@@ -404,7 +395,6 @@ export const EDGES: TopoEdge[] = [
   { id: 't-alerts-ha', from: 'll-c', to: 'alerts', kind: 'alert', modes: ['ha'] },
   { id: 't-am', from: 'll-a', to: 'alertmanager', kind: 'alert', modes: ['fleet'] },
   { id: 't-prom', from: 'll-a', to: 'prometheus', kind: 'alert', modes: ['fleet'], label: 'scraped' },
-  { id: 't-otlp', from: 'll-a', to: 'otlp', kind: 'alert', modes: ['fleet'] },
 ];
 
 export interface ModeCopy {
@@ -443,7 +433,7 @@ export const MODE_COPY: Record<Mode, ModeCopy> = {
     lead: 'Many services, independent PostgreSQL clusters, and your existing observability stack. LockLens is one more consumer of PostgreSQL statistics — never a proxy.',
     points: [
       'Instances are grouped by environment; per-environment and per-instance rule overrides apply.',
-      'Incidents go to Slack, webhooks, email or Alertmanager; metrics to Prometheus (/metrics/targets) or OTLP.',
+      'Incidents go to Slack, webhooks, email or Alertmanager; metrics to Prometheus (/metrics/targets).',
       'LockLens sees database sessions labelled by user and application_name — it does not trace requests across services.',
     ],
     caveat: 'Tested locally with up to 20 targets on one machine. Larger fleets have not been measured.',

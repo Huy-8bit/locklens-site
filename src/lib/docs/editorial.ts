@@ -19,10 +19,30 @@ export const DOC_INTROS: Record<string, string> = {
   'features/explorer-and-sql': 'Explore database objects and use the opt-in, read-only SQL workspace with execution limits.',
   deployment: 'Deploy the backend, frontend, and monitoring store, then configure networking, HTTPS, and persistent data.',
   'deployment/high-availability': 'Run several LockLens servers against one monitoring store and understand collection ownership and failover.',
-  'deployment/integrations': 'Connect LockLens with Prometheus, Grafana, Alertmanager, and OpenTelemetry.',
+  'deployment/integrations': 'Connect LockLens with Prometheus and Alertmanager.',
   'deployment/security': 'Review database permissions, authentication, encryption, network boundaries, and security limitations.',
   'deployment/security-policy': 'Learn how to report a security vulnerability and what information to include.',
   'deployment/limitations': 'Review known constraints, unsupported scenarios, and the scope of current validation.',
   'reference/api': 'Reference for HTTP endpoints, authentication, request parameters, and responses.',
   'reference/cli': 'Reference for command-line usage, connection settings, and inspection commands.',
 };
+
+/** Keep upstream documentation synchronized while curating the website integration scope. */
+export function publishedMarkdown(markdown: string, slug: string): string {
+  if (slug === 'getting-started/ui-guide') {
+    return markdown.replace('the top bar like in Grafana:', 'the top bar:');
+  }
+  if (slug === 'deployment/integrations') {
+    return markdown
+      .replace(/^## OpenTelemetry\r?\n[\s\S]*?(?=^## |$(?![\s\S]))/m, '')
+      .replace(/^\| (?:OpenTelemetry|Grafana).*\r?\n/gm, '')
+      .replace(/\[deploy\/observability\/grafana\/locklens-instances\.json\][\s\S]*?filters\.\r?\n/g, '')
+      .replace(/\(and anything that scrapes its format:[^)]*\)/g, '(and compatible scrapers)');
+  }
+  if (slug === 'getting-started/configuration') {
+    return markdown
+      .replace(/^\|.*LOCKLENS_OTLP_.*\r?\n/gm, '')
+      .replace('Prometheus, Alertmanager, and OpenTelemetry', 'Prometheus and Alertmanager');
+  }
+  return markdown;
+}

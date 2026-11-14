@@ -22,7 +22,7 @@ Monitoring path (separate)
   PostgreSQL ◄── read-only queries ── locklens server ──► monitoring store
                                             │
                                             ├──► web UI (through the frontend)
-                                            └──► Slack · webhooks · email · Alertmanager · Prometheus · OTLP
+                                            └──► Slack · webhooks · email · Alertmanager · Prometheus
 ```
 
 Consequences:
@@ -47,7 +47,6 @@ Consequences:
 | Browser | Frontend (nginx) | UI and `/api/` on one origin | The frontend proxies `/api/` to the backend |
 | `locklens server` | Slack, webhooks, SMTP, Alertmanager | Incident notifications | Configured as notification channels |
 | Prometheus | Frontend or backend `/metrics/targets` | Metrics of the monitored instances | Needs an API token of scope `metrics` |
-| `locklens server` | OpenTelemetry collector (optional) | OTLP/HTTP metrics push | `LOCKLENS_OTLP_ENDPOINT` |
 | `locklens agent` (optional, on the DB host) | `locklens server` `/api/v1/ingest/logs` | Server log events | Never connects to PostgreSQL |
 | Deploy pipeline (optional) | `POST /api/v1/changes` | Report deploys and migrations | Token of scope `events` |
 

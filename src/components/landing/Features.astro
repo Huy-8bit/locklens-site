@@ -26,8 +26,6 @@ const destinations = [
   { name: 'Email', how: 'SMTP with STARTTLS or TLS, up to 20 recipients', dir: 'push' },
   { name: 'Alertmanager', how: '/api/v2/alerts → your existing receivers', dir: 'push' },
   { name: 'Prometheus', how: 'GET /metrics/targets with a metrics token', dir: 'pull' },
-  { name: 'Grafana', how: 'Dashboard JSON on the Prometheus metrics', dir: '—' },
-  { name: 'OpenTelemetry', how: 'OTLP/HTTP metrics push every 60 s', dir: 'push' },
   { name: 'REST API', how: 'Read tokens for scripts; deploy events from pipelines', dir: 'pull' },
 ];
 ---

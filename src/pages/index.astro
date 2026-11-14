@@ -6,7 +6,7 @@ import Showcase from '../components/landing/Showcase.astro';
 import Shot from '../components/Shot.astro';
 import Code from '../components/Code.astro';
 import SignalComparison from '../islands/SignalComparison';
-import InvestigationExperience from '../islands/InvestigationExperience';
+import InvestigationJourney from '../islands/InvestigationJourney';
 import BaselineChart from '../islands/BaselineChart';
 import { SITE, url } from '../lib/site';
 const command = `git clone https://github.com/Huy-8bit/locklens.git\ncd locklens\nmake lab-up`;
@@ -25,7 +25,7 @@ const command = `git clone https://github.com/Huy-8bit/locklens.git\ncd locklens
       <div class="premium-container">
         <div class="section-index" data-reveal><span>02 / FOLLOW THE INVESTIGATION</span><span>INTERACTIVE PRODUCT STORY</span></div>
         <div class="split-heading"><h2 id="experience-title" data-reveal>From the first wait<br/>to the <em>full picture.</em></h2><div data-reveal><p>Follow one transaction through a growing blocking chain, a triggered rule, and a recorded incident. The same sessions stay in view as the story unfolds.</p><a class="premium-link" href={url('/architecture/#incident')}>Launch interactive demo <span>↗</span></a></div></div>
-        <InvestigationExperience client:visible={{ rootMargin: "400px" }} />
+        <InvestigationJourney client:visible={{ rootMargin: "400px" }} />
         <p class="visual-caption">A deterministic simulation of LockLens’ documented rules. Illustrative values; no connection to your databases.</p>
       </div>
     </section>

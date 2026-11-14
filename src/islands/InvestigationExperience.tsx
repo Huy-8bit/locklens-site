@@ -31,7 +31,7 @@ const chartPath = SAMPLES.map(
     `${i ? "L" : "M"}${((s.t / SAMPLES.at(-1)!.t) * 620).toFixed(1)},${(82 - s.blocked * 22).toFixed(1)}`,
 ).join(" ");
 
-export default function InvestigationExperience() {
+export default function InvestigationExperience({ guidedScene, guidedRevision }: { guidedScene?: number; guidedRevision?: number } = {}) {
   const root = useRef<HTMLDivElement>(null);
   const inView = useInView(root, "0px");
   const reduced = useReducedMotion();
@@ -54,6 +54,11 @@ export default function InvestigationExperience() {
     const timer = window.setTimeout(() => setStep((s) => s + 1), 4400);
     return () => clearTimeout(timer);
   }, [playing, step, inView, pageVisible, reduced]);
+  useEffect(() => {
+    if (guidedScene === undefined) return;
+    setPlaying(false);
+    setStep(guidedScene);
+  }, [guidedScene, guidedRevision]);
   const scene = SCENES[step];
   const sample = SAMPLES[scene.sampleIndex];
   const selected = scene.sessions.filter((s) => pids.includes(s.pid));
@@ -62,7 +67,7 @@ export default function InvestigationExperience() {
     setStep((s) => Math.min(SCENES.length - 1, s + 1));
   };
   return (
-    <div ref={root} className="investigation-experience">
+    <div ref={root} className="investigation-experience" data-scene={step}>
       <div className="experience-topbar">
         <span>
           <Database size={15} aria-hidden /> orders-db <i>/</i> Investigation
@@ -216,7 +221,7 @@ export default function InvestigationExperience() {
                 return (
                   <g
                     key={s.pid}
-                    transform={`translate(${p.x},${p.y})`}
+                    style={{ transform: `translate(${p.x}px, ${p.y + (step === 0 ? (s.pid % 2 ? 18 : -16) : 0)}px)`, transition: reduced ? "none" : "transform 900ms cubic-bezier(.22,1,.36,1)" }}
                     className={rootBlocker ? "experience-root" : ""}
                   >
                     <rect

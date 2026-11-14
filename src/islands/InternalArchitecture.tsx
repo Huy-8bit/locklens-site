@@ -158,7 +158,7 @@ function groupOf(id: string) {
   if (id === 'node-exporter' || id === 'log-agent') return 'g-host';
   if (id === 'store') return 'g-store';
   if (id === 'ui' || id === 'frontend') return 'g-ui';
-  if (['channels', 'alertmanager', 'prometheus', 'otlp'].includes(id)) return 'g-out';
+  if (['channels', 'alertmanager', 'prometheus'].includes(id)) return 'g-out';
   return 'g-server';
 }
 
@@ -196,7 +196,7 @@ const MOBILE_GROUPS: { id: string; label: string; nodes: string[] }[] = [
   { id: 'g-serve', label: 'locklens server · serve & deliver', nodes: ['api', 'auth', 'notifier', 'telemetry', 'cluster', 'jobs'] },
   { id: 'g-store', label: 'Monitoring store', nodes: ['store'] },
   { id: 'g-ui', label: 'Presentation', nodes: ['ui', 'frontend'] },
-  { id: 'g-out', label: 'Alerts & integrations', nodes: ['channels', 'alertmanager', 'prometheus', 'otlp'] },
+  { id: 'g-out', label: 'Alerts & integrations', nodes: ['channels', 'alertmanager', 'prometheus'] },
 ];
 
 function MobileGuide({ step }: { step: number }) {

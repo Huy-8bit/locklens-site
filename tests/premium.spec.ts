@@ -130,7 +130,7 @@ test("overview selection, flow controls, deep dive and topology keyboard", async
   expect(errors).toEqual([]);
 });
 
-for (const width of [768, 1024])
+for (const width of [390, 768, 1024, 1920])
   test(`tablet and laptop layouts at ${width}px`, async ({ page }) => {
     await page.setViewportSize({ width, height: 1024 });
     for (const route of [
@@ -181,4 +181,34 @@ test('investigation pauses offscreen under CPU throttling', async ({ page }) => 
   await expect(root.locator('.scene-announcement')).not.toHaveText(pausedScene!, { timeout: 7000 });
   await root.getByRole('button', { name: 'Pause investigation' }).click();
   await session.detach();
+});
+
+
+test("published integrations preserve Prometheus and omit removed destinations", async ({ page }) => {
+  for (const route of ['/docs/deployment/integrations/', '/docs/getting-started/configuration/', '/docs/architecture/production-topology/', '/docs/getting-started/ui-guide/']) {
+    await page.goto(route);
+    const content = page.locator('main');
+    await expect(content).not.toContainText(/OpenTelemetry|Grafana|OTLP/i);
+    if (!route.includes('ui-guide')) await expect(content).toContainText('Prometheus');
+  }
+  await page.goto('/architecture/');
+  await page.getByRole('tab', { name: 'Microservices fleet', exact: true }).click();
+  await expect(page.locator('main')).not.toContainText(/OpenTelemetry|Grafana|OTLP/i);
+});
+
+test("scroll narrative shares one workspace and manual controls take over", async ({ page }) => {
+  await page.goto('/#incident-demo');
+  const journey = page.locator('.investigation-journey');
+  await expect(journey).toHaveAttribute('data-guided', 'true');
+  const workspace = await journey.locator('.investigation-experience').elementHandle();
+  await journey.locator('[data-chapter="2"]').scrollIntoViewIfNeeded();
+  await expect(journey.locator('.investigation-experience')).toHaveAttribute('data-scene', '4');
+  await journey.getByRole('button', { name: '06 Recovery' }).click();
+  await expect(journey).toHaveAttribute('data-guided', 'false');
+  await journey.locator('.journey-chapters').getByRole('button', { name: '01 Observe' }).click();
+  await expect(journey.locator('.investigation-experience')).toHaveAttribute('data-scene', '0');
+  expect(await workspace!.evaluate(el => el.isConnected)).toBe(true);
+  await journey.getByRole('button', { name: '06 Recovery' }).click();
+  await journey.locator('.journey-chapters').getByRole('button', { name: '01 Observe' }).click();
+  await expect(journey.locator('.investigation-experience')).toHaveAttribute('data-scene', '0');
 });

@@ -21,7 +21,7 @@ import type { Element, ElementContent, Root as HastRoot } from 'hast';
 import { createHighlighter, type Highlighter } from 'shiki';
 import { renderMermaidSVG } from 'beautiful-mermaid';
 import { resolveRepoRoot, githubUrl } from '../source.mjs';
-import { DOC_INTROS } from './editorial';
+import { DOC_INTROS, publishedMarkdown } from './editorial';
 import { ANCHOR_ALIASES, DOCS_MANIFEST, type ManifestGroup } from './manifest';
 
 const SITE_GUIDES_DIR = path.resolve(process.cwd(), 'content', 'guides');
@@ -232,7 +232,7 @@ export async function renderDoc(entry: DocEntry, resolveImage: ImageResolver): P
   const all = getAllDocs();
   const byPath = new Map(all.map((d) => [d.virtualPath, d]));
   // Site guides are addressed as docs/<name>.md; repository files by their real path.
-  const markdown = readFileSync(entry.absPath, 'utf8');
+  const markdown = publishedMarkdown(readFileSync(entry.absPath, 'utf8'), entry.slug);
   const hl = await highlighter();
   const toc: TocItem[] = [];
   const sourceRefs = new Map<string, string>();

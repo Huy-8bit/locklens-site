@@ -60,7 +60,6 @@ export const OVERVIEW_GROUPS = [
       "alertmanager",
       "telemetry",
       "prometheus",
-      "otlp",
     ],
     representative: "notifier",
     rect: { x: 777, y: 65, w: 190, h: 74 },
