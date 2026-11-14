@@ -2,7 +2,7 @@ import { REPO_URL } from './source.mjs';
 
 export const SITE = {
   name: 'LockLens',
-  tagline: 'Find the culprit behind every PostgreSQL slowdown',
+  tagline: 'The new lens for PostgreSQL monitoring',
   description:
     'LockLens is open-source incident investigation for PostgreSQL: it names the root blocker of a blocking chain, flags statements that got slower than their own baseline, and keeps the evidence of every incident. Self-hosted and MIT licensed.',
   repo: REPO_URL,
