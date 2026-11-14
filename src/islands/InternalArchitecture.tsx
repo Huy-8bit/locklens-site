@@ -189,7 +189,7 @@ function StepNarration({ step, compact }: { step: number; compact?: boolean }) {
 }
 
 const MOBILE_GROUPS: { id: string; label: string; nodes: string[] }[] = [
-  { id: 'g-target', label: 'Monitored PostgreSQL (read-only)', nodes: ['t-sessions', 't-statements', 't-counters', 't-replication', 't-catalog'] },
+  { id: 'g-target', label: 'Monitored PostgreSQL', nodes: ['t-sessions', 't-statements', 't-counters', 't-replication', 't-catalog'] },
   { id: 'g-host', label: 'Database host (optional)', nodes: ['node-exporter', 'log-agent'] },
   { id: 'g-collect', label: 'locklens server · collect', nodes: ['registry', 'manager', 'collectors', 'deltas', 'live', 'writer'] },
   { id: 'g-analyse', label: 'locklens server · analyse', nodes: ['graph', 'rules', 'recorder', 'insight', 'optimizer', 'changes'] },

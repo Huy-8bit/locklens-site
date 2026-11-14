@@ -97,7 +97,7 @@ test("overview selection, flow controls, deep dive and topology keyboard", async
     root.getByRole("button", { name: "Deep Dive", exact: true }),
   ).toBeEnabled();
   await root
-    .getByRole("button", { name: /Read-only collection.*Show details/ })
+    .getByRole("button", { name: /^Collection — .*Show details/ })
     .click();
   await expect(root.getByRole("complementary")).toContainText(
     "Included components",

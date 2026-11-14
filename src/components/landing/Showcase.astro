@@ -8,13 +8,13 @@ const tabs = [
   { id: 'queries', label: 'Queries', img: 'queries.png', alt: 'Queries classified by statement type over time', text: 'Every statement from pg_stat_statements, classified by type, with rate, time and rows over time.' },
   { id: 'incident', label: 'Incident', img: 'incident.png', alt: 'An incident: what happened, who blocks whom, the sessions when it started', text: 'What happened, the root blocker, the sessions at the moment it started, and the full timeline.' },
   { id: 'optimize', label: 'Optimize', img: 'optimize.png', alt: 'Optimize: recommendations ranked by benefit', text: 'Recommendations from each database’s schema and workload, ranked by benefit, with evidence and the SQL to apply.' },
-  { id: 'sql', label: 'SQL editor', img: 'sql.png', alt: 'SQL editor with an execution plan graph', text: 'Opt-in, read-only SQL with an execution-plan graph — off by default and never with an administrative role.' },
+  { id: 'sql', label: 'SQL editor', img: 'sql.png', alt: 'SQL editor with an execution plan graph', text: 'An opt-in SQL editor with an execution-plan graph — off by default, and never with an administrative role.' },
 ];
 ---
 <section class="relative border-t border-line py-24 sm:py-28" aria-labelledby="showcase-title">
   <div class="pointer-events-none absolute inset-x-0 top-0 h-[600px] bg-[radial-gradient(ellipse_at_top,rgba(59,130,246,0.10),transparent_65%)]" aria-hidden="true"></div>
   <div class="relative mx-auto max-w-[1320px] px-4 sm:px-6">
-    <SectionHeader id="showcase-title" eyebrow="The product" title="One investigation surface for your whole fleet" lead="Real screenshots from the LockLens lab: a PostgreSQL primary with three streaming standbys and a background workload." center />
+    <SectionHeader id="showcase-title" eyebrow="The product" title="This is what you’ll be looking at." lead="Real screenshots from the LockLens lab — a PostgreSQL primary, three streaming standbys and a background workload. No mockups." center />
 
     <div class="mt-12" data-tabs>
       <div role="tablist" aria-label="Product screens" class="mx-auto flex max-w-full gap-1 overflow-x-auto rounded-2xl border border-line bg-ink-900/70 p-1 [scrollbar-width:none] md:w-fit">

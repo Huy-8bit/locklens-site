@@ -90,7 +90,7 @@ const exampleDetails = (purpose: string, extra?: string): NodeDetails => ({
 
 const pgDetails = (role: string, extra: string): NodeDetails => ({
   kind: `Monitored target · ${role}`,
-  purpose: `${extra} LockLens connects to it with its own read-only role and a pool of 1–5 connections, separately from application traffic.`,
+  purpose: `${extra} LockLens connects to it with its own monitoring role and a pool of 1–5 connections, separately from application traffic.`,
   data: ['Sessions, locks and blocking (pg_stat_activity, pg_blocking_pids())', 'Statement statistics (pg_stat_statements, optional)', 'Database counters, replication, settings and catalog'],
   note: 'The PostgreSQL server is real infrastructure you run; the name is an example. Each server (primary or standby) is its own LockLens target.',
   docs: [docs('PostgreSQL observation', 'architecture/postgresql-observation'), docs('Replication monitoring', 'features/replication')],
@@ -213,7 +213,7 @@ export const NODES: TopoNode[] = [
     },
     details: {
       kind: 'LockLens · backend image',
-      purpose: 'One Go process: one worker per target running read-only collectors on a schedule, the rules engine and incident recorder, notifications, metric exports, and the REST + SSE API.',
+      purpose: 'One Go process: one worker per target running collectors on a schedule, the rules engine and incident recorder, notifications, metric exports, and the REST + SSE API.',
       data: ['Global limit LOCKLENS_MAX_CONCURRENT_COLLECTIONS (default 4)', 'A slow or failing target only affects its own worker', 'Tested locally with up to 20 targets on one machine; larger fleets not yet measured'],
       note: 'Out of band: if LockLens stops, applications keep working; LockLens’ own history gets a gap.',
       docs: [docs('Architecture', 'architecture'), docs('Collectors', 'architecture/collectors')],
@@ -331,7 +331,7 @@ export const GROUPS: TopoGroup[] = [
     at: { fleet: { x: 970, y: 368, w: 490, h: 106 }, ha: { x: 970, y: 368, w: 490, h: 106 } },
   },
   {
-    id: 'grp-ll', label: 'LockLens · out of band', sublabel: 'observes PostgreSQL; never in the request path', tone: 'cyan', badge: 'read-only',
+    id: 'grp-ll', label: 'LockLens · out of band', sublabel: 'observes PostgreSQL; never in the request path', tone: 'cyan', badge: 'observer',
     at: {
       single: { x: 250, y: 456, w: 1010, h: 150 },
       cluster: { x: 540, y: 548, w: 600, h: 274 },
@@ -375,7 +375,7 @@ export const EDGES: TopoEdge[] = [
   { id: 'r-c1', from: 'pg-commerce', to: 'pg-commerce-r1', kind: 'repl', modes: ['cluster', ...BIG] },
   { id: 'r-c2', from: 'pg-commerce', to: 'pg-commerce-r2', kind: 'repl', modes: ['cluster', ...BIG] },
   { id: 'r-p1', from: 'pg-payments', to: 'pg-payments-r1', kind: 'repl', modes: BIG },
-  // Monitoring: LockLens' own read-only connections, one target per server
+  // Monitoring: LockLens' own connections, one target per server
   { id: 'm-commerce', from: 'pg-commerce', to: 'll-a', kind: 'collect', modes: ALL, monitor: { lane: 'primary', serverByMode: { ha: 'll-a' } } },
   { id: 'm-commerce-r1', from: 'pg-commerce-r1', to: 'll-a', kind: 'collect', modes: ['cluster', ...BIG], monitor: { lane: 'replica', serverByMode: { ha: 'll-a' } } },
   { id: 'm-commerce-r2', from: 'pg-commerce-r2', to: 'll-a', kind: 'collect', modes: ['cluster', ...BIG], monitor: { lane: 'replica', serverByMode: { ha: 'll-c' } } },
@@ -411,7 +411,7 @@ export const MODE_COPY: Record<Mode, ModeCopy> = {
     lead: 'One application, one PostgreSQL server, one LockLens deployment (backend, frontend, store) and one dashboard.',
     points: [
       'Create a role with pg_read_all_stats and paste its connection string in Settings → Instances.',
-      'The application keeps talking to PostgreSQL exactly as before; LockLens opens its own small read-only pool.',
+      'The application keeps talking to PostgreSQL exactly as before; LockLens opens its own small connection pool.',
       'make up starts the backend, frontend and store with random secrets on 127.0.0.1.',
     ],
     caveat: 'Collection has a cost: catalog queries on a schedule, and pg_blocking_pids() briefly locks the lock manager per waiting backend.',

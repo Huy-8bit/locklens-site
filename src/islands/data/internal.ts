@@ -57,7 +57,7 @@ const col = { tgt: 44, c1: 354, c2: 610, c3: 866, out: 1172 };
 const row = (i: number) => 114 + i * 84;
 
 export const GROUPS: ArchGroup[] = [
-  { id: 'g-target', label: 'Monitored PostgreSQL', sublabel: 'read-only role · pg_read_all_stats', rect: { x: 24, y: 48, w: 260, h: 514 }, tone: 'cyan' },
+  { id: 'g-target', label: 'Monitored PostgreSQL', sublabel: 'monitoring role · pg_read_all_stats', rect: { x: 24, y: 48, w: 260, h: 514 }, tone: 'cyan' },
   { id: 'g-host', label: 'Database host', sublabel: 'optional agents', rect: { x: 24, y: 578, w: 260, h: 214 }, tone: 'slate', dashed: true },
   { id: 'g-server', label: 'locklens server', sublabel: 'one Go process · modular monolith · backend image', rect: { x: 330, y: 48, w: 780, h: 562 }, tone: 'blue', badge: 'single binary' },
   { id: 'g-store', label: 'Monitoring store', sublabel: 'LockLens’ own database, never a monitored one', rect: { x: 330, y: 636, w: 780, h: 156 }, tone: 'emerald' },
@@ -173,10 +173,10 @@ export const NODES: ArchNode[] = [
     },
   },
   {
-    id: 'collectors', title: 'Collectors', subtitle: 'read-only · scheduled', icon: 'Radar', tone: 'cyan', rect: { x: col.c1, y: row(2), w: W, h: H },
+    id: 'collectors', title: 'Collectors', subtitle: 'scheduled · bounded', icon: 'Radar', tone: 'cyan', rect: { x: col.c1, y: row(2), w: W, h: H },
     details: {
       kind: 'domain/collector, targetdb',
-      purpose: 'Read-only SQL on their own schedules: activity, load, database, statements, replication, tables, table_activity, changes, catalog, host.',
+      purpose: 'Statistics queries on their own schedules: activity, load, database, statements, replication, tables, table_activity, changes, catalog, host.',
       data: ['default_transaction_read_only=on and a READ ONLY transaction for every collection', 'statement_timeout 30 s, lock_timeout 2 s, idle_in_transaction_session_timeout 60 s', 'application_name = locklens; LockLens’ own PIDs are excluded'],
       schedule: 'Adaptive sampling: during a problem, activity every 3 s and statements every 5 s for 10 minutes. A collector over 10% of its interval three times runs less often.',
       refs: ['backend/internal/domain/collector/', 'backend/internal/targetdb/'],
@@ -392,7 +392,7 @@ export const EDGES: ArchEdge[] = [
   { id: 'e-man-col', from: 'manager', to: 'collectors', kind: 'process', label: 'schedule', opts: { from: 'b', to: 't' } },
   { id: 'e-t1', from: 't-sessions', to: 'collectors', kind: 'collect', opts: { from: 'r', to: 'l', toOffset: -18, via: [{ x: 300, y: 143 }, { x: 300, y: 293 }] } },
   { id: 'e-t2', from: 't-statements', to: 'collectors', kind: 'collect', opts: { from: 'r', to: 'l', fromOffset: 12, toOffset: -9, via: [{ x: 308, y: 239 }, { x: 308, y: 302 }] } },
-  { id: 'e-t3', from: 't-counters', to: 'collectors', kind: 'collect', label: 'read-only SQL', labelOffset: { x: -2, y: -14 }, opts: { from: 'r', to: 'l' } },
+  { id: 'e-t3', from: 't-counters', to: 'collectors', kind: 'collect', label: 'stats SQL', labelOffset: { x: -2, y: -14 }, opts: { from: 'r', to: 'l' } },
   { id: 'e-t4', from: 't-replication', to: 'collectors', kind: 'collect', opts: { from: 'r', to: 'l', toOffset: 9, via: [{ x: 308, y: 395 }, { x: 308, y: 320 }] } },
   { id: 'e-t5', from: 't-catalog', to: 'collectors', kind: 'collect', opts: { from: 'r', to: 'l', toOffset: 18, via: [{ x: 300, y: 479 }, { x: 300, y: 329 }] } },
   { id: 'e-host', from: 'node-exporter', to: 'collectors', kind: 'collect', label: 'HTTP scrape', labelOffset: { x: 0, y: 30 }, opts: { from: 'r', to: 'b', toOffset: -80, via: [{ x: 316, y: 653 }, { x: 316, y: 354 }, { x: 384, y: 354 }] } },
@@ -436,14 +436,14 @@ export const STEPS: ArchStep[] = [
     id: 'connect',
     title: 'Connect',
     summary: 'A PostgreSQL target is added to LockLens.',
-    detail: 'An administrator pastes a connection string. The target registry encrypts it (AES-256-GCM), the manager starts a worker with a small read-only pool, and capabilities are detected: version, standby, pg_read_all_stats, pg_stat_statements.',
+    detail: 'An administrator pastes a connection string. The target registry encrypts it (AES-256-GCM), the manager starts a worker with a small connection pool, and capabilities are detected: version, standby, pg_read_all_stats, pg_stat_statements.',
     nodes: ['registry', 'manager', 't-statements', 't-sessions', 't-counters', 't-replication', 't-catalog'],
     edges: ['e-reg-man', 'e-man-tgt'],
   },
   {
     id: 'collect',
     title: 'Collect',
-    summary: 'Read-only queries periodically read PostgreSQL statistics.',
+    summary: 'Scheduled queries periodically read PostgreSQL statistics.',
     detail: 'Each worker runs its collectors one at a time on their own schedules, under a global concurrency limit. Every collection runs in a READ ONLY transaction with statement, lock and idle timeouts. node_exporter is scraped only if configured.',
     nodes: ['manager', 'collectors', 't-sessions', 't-statements', 't-counters', 't-replication', 't-catalog', 'node-exporter'],
     edges: ['e-man-col', 'e-t1', 'e-t2', 'e-t3', 'e-t4', 'e-t5', 'e-host'],

@@ -36,7 +36,7 @@ test('architecture uses guided mobile layouts instead of shrunken canvases', asy
   const ia = page.locator('#internal .ia-root');
   await ia.scrollIntoViewIfNeeded();
   await expect(ia.locator('svg.diagram-svg')).toBeHidden();
-  await expect(ia.getByRole('region', { name: 'Monitored PostgreSQL (read-only)' })).toBeVisible();
+  await expect(ia.getByRole('region', { name: 'Monitored PostgreSQL' })).toBeVisible();
   await ia.getByRole('button', { name: /Collectors/ }).first().click();
   await expect(ia.getByText('READ ONLY transaction', { exact: false }).first()).toBeVisible();
   const pt = page.locator('#production .pt-root');
@@ -64,7 +64,7 @@ test('mobile investigation and architecture details remain interactive', async (
   await page.goto('/architecture/#internal');
   const pipeline = page.locator('.pipeline-explorer');
   await expect(pipeline.getByRole('button', { name: 'Deep Dive', exact: true })).toBeEnabled();
-  await pipeline.getByRole('button', { name: 'Read-only collection Schedules, rates, live state', exact: true }).click();
+  await pipeline.getByRole('button', { name: 'Collection Schedules, rates, live state', exact: true }).click();
   await expect(pipeline.getByRole('complementary')).toContainText('Included components');
   const topology = page.locator('.pt-root');
   await topology.scrollIntoViewIfNeeded();

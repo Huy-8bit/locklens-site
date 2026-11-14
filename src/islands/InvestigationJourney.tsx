@@ -3,10 +3,10 @@ import InvestigationExperience from './InvestigationExperience';
 import { useReducedMotion } from './diagram/hooks';
 
 const chapters = [
-  { title: 'Start with the signals.', label: 'Observe', text: 'Sessions are active. Work is moving. Keep the activity and the query in the same frame before a wait becomes an incident.', scene: 0 },
-  { title: 'Connect the waits.', label: 'Correlate', text: 'The same sessions now form a blocking chain. Follow each waiter back to PID 4127, the transaction holding up the work.', scene: 2 },
-  { title: 'Investigate the cause.', label: 'Investigate', text: 'A rule has opened incident #42. Read the root session, affected queries, and collected observations together.', scene: 4 },
-  { title: 'Keep the full picture.', label: 'Preserve', text: 'The chain clears. Its evidence stays: snapshots, sessions, and a timeline you can return to after recovery.', scene: 5 },
+  { title: 'Everything looks fine.', label: 'Observe', text: 'Requests are flowing and statements are short. One reprice job has held a transaction open for 38 s — nobody needs its rows yet.', scene: 0 },
+  { title: 'Checkout starts to wait.', label: 'Correlate', text: 'Checkout requests queue behind the job’s row locks, and inventory-svc queues behind them. Every waiter leads back to PID 4127.', scene: 2 },
+  { title: 'The rule fires.', label: 'Investigate', text: 'The chain outlasted the threshold, so incident #42 opens: the root session, its query and every waiting session, together.', scene: 4 },
+  { title: 'Fixed. Still on record.', label: 'Preserve', text: 'The chain clears, but the snapshots, sessions and timeline stay — so the post-mortem starts from facts, not memory.', scene: 5 },
 ];
 
 export default function InvestigationJourney() {

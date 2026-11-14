@@ -128,7 +128,7 @@ type Visibility = Record<'app' | 'collect' | 'repl' | 'alert', boolean>;
 type Phase = 'all' | 'app' | 'collect' | 'deliver' | 'alert';
 const PHASES: { id: Phase; caption: string }[] = [
   { id: 'app', caption: '1 · Application traffic flows through your own infrastructure.' },
-  { id: 'collect', caption: '2 · Separately, LockLens reads PostgreSQL statistics over its own read-only connections.' },
+  { id: 'collect', caption: '2 · Separately, LockLens reads PostgreSQL statistics over its own connections.' },
   { id: 'deliver', caption: '3 · It stores history in its own store; engineers read it through the LockLens frontend.' },
   { id: 'alert', caption: '4 · Incidents and metrics leave LockLens only to destinations you configure.' },
 ];
@@ -627,13 +627,13 @@ function MobileTopology({ mode, onSelect }: { mode: Mode; onSelect: (id: string)
 
       <div className="flex items-center gap-2 px-2 text-xs text-accent">
         <svg width="22" height="6" aria-hidden="true"><line x1="1" y1="3" x2="21" y2="3" stroke={FLOWS.collect.color} strokeWidth="2" strokeDasharray={FLOWS.collect.dash} /></svg>
-        LockLens reads {dbs.length === 1 ? 'the PostgreSQL server' : `each of the ${dbs.length} PostgreSQL servers`} over its own read-only connection{dbs.length === 1 ? '' : 's'}
+        LockLens reads {dbs.length === 1 ? 'the PostgreSQL server' : `each of the ${dbs.length} PostgreSQL servers`} over its own connection{dbs.length === 1 ? '' : 's'}
       </div>
 
       <section className="panel border-accent/30 p-4" aria-label="LockLens">
         <div className="flex items-center gap-2">
           <h4 className="text-sm font-semibold text-fg">LockLens · out of band</h4>
-          <span className="chip ml-auto">read-only</span>
+          <span className="chip ml-auto">observer</span>
         </div>
         <ul className="mt-3 space-y-1.5">
           {ll.map((n) => {

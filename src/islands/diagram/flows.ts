@@ -22,7 +22,7 @@ export const FLOWS: Record<FlowKind, FlowStyle> = {
     color: 'var(--flow-monitor, #087a9e)',
     dash: '7 5',
     width: 1.7,
-    label: 'Read-only collection',
+    label: 'Monitoring collection',
     description: 'LockLens’ own connections reading PostgreSQL statistics views on a schedule.',
   },
   process: {

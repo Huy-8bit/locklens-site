@@ -23,7 +23,7 @@ export const OVERVIEW_GROUPS = [
   },
   {
     id: "collection",
-    title: "Read-only collection",
+    title: "Collection",
     subtitle: "Schedules, rates, live state",
     icon: "Radar",
     members: [

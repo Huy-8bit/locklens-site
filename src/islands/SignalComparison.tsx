@@ -175,8 +175,8 @@ export default function SignalComparison() {
       <div className="comparison-summary" aria-live="polite">
         <p>
           {connected
-            ? "The same signals. A connected investigation."
-            : "The signals exist. The connections take work."}
+            ? "Same signals. One story. One culprit."
+            : "Four places to look. Nothing connects them."}
         </p>
         <a href={siteUrl("/docs/features/incidents/")}>
           Follow the evidence <ArrowUpRight size={16} aria-hidden />

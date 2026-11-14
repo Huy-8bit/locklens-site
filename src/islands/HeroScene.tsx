@@ -7,7 +7,7 @@ const PHASES = [
   { ms: 2600, caption: 'Application queries run normally' },
   { ms: 2200, caption: 'pid 4127 updates rows and keeps its transaction open' },
   { ms: 2600, caption: 'Other sessions wait for its row locks' },
-  { ms: 2200, caption: 'LockLens observes PostgreSQL out of band, read-only' },
+  { ms: 2200, caption: 'LockLens observes PostgreSQL out of band' },
   { ms: 3000, caption: 'Blocking graph: root blocker pid 4127, 3 sessions waiting' },
   { ms: 4200, caption: 'The incident keeps the evidence for investigation' },
 ] as const;
@@ -159,7 +159,7 @@ export default function HeroScene({ screenshot }: { screenshot: { src: string; w
                   <animateMotion dur="1.4s" begin={`${k * 0.7}s`} repeatCount="indefinite" path="M458,300 C520,300 560,330 560,384" />
                 </circle>
               ))}
-            <text x={494} y={288} fill="#087f5b" fontSize={9.5} style={{ opacity: observing ? 1 : 0, transition: 'opacity 600ms' }}>read-only</text>
+            <text x={494} y={288} fill="#087f5b" fontSize={9.5} style={{ opacity: observing ? 1 : 0, transition: 'opacity 600ms' }}>observing</text>
             <g transform="translate(494, 388)">
               <rect width={134} height={52} rx={14} fill="#ffffff" stroke={observing ? '#087f5b' : 'rgba(148,163,184,0.3)'} strokeWidth={observing ? 1.6 : 1} style={{ transition: 'stroke 500ms' }} />
               <g transform="translate(12, 13)">

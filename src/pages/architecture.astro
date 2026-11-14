@@ -39,7 +39,7 @@ const maxLog = Math.log(900);
 const boundaries = [
   { from: 'Browser', to: 'Frontend (nginx)', port: '8080 → behind your TLS proxy', note: 'UI and /api/ on one origin. The only component people reach.', kind: 'api' as FlowKind },
   { from: 'Frontend', to: 'Backend', port: '8080', note: 'Proxies /api/ and /metrics/targets. Never exposes /metrics.', kind: 'api' as FlowKind },
-  { from: 'Backend', to: 'Monitored PostgreSQL', port: '5432 (your servers)', note: 'Read-only role, READ ONLY transactions, 1–5 connections per target.', kind: 'collect' as FlowKind },
+  { from: 'Backend', to: 'Monitored PostgreSQL', port: '5432 (your servers)', note: 'Dedicated monitoring role (pg_read_all_stats), 1–5 connections per target.', kind: 'collect' as FlowKind },
   { from: 'Backend', to: 'Monitoring store', port: '5432 (LockLens’ own)', note: 'Read/write. Never one of the monitored databases.', kind: 'store' as FlowKind },
   { from: 'Backend', to: 'Slack · webhooks · SMTP · Alertmanager', port: 'outbound HTTPS / SMTP', note: 'Only destinations you configure. Link-local and metadata addresses refused.', kind: 'alert' as FlowKind },
   { from: 'Prometheus', to: 'Frontend or backend', port: '/metrics/targets (token) · /metrics', note: 'Pull. Scrape every server when running several.', kind: 'alert' as FlowKind },
@@ -74,13 +74,13 @@ const deepLinks = [
       <div class="arch-container arch-hero-grid">
         <div>
           <p class="eyebrow">The architecture</p>
-          <h1 id="arch-h1">Built to observe.<br /><span>Designed to connect.</span></h1>
-          <p class="arch-hero-lead">Your applications talk to PostgreSQL. LockLens observes alongside them — turning database activity into a clear picture of what happened, and why.</p>
+          <h1 id="arch-h1">Under the hood.<br /><span>Out of the way.</span></h1>
+          <p class="arch-hero-lead">Your applications keep talking to PostgreSQL exactly as they do today. LockLens works from the side — sampling activity, evaluating rules, and recording what it finds in a store of its own.</p>
           <div class="arch-hero-actions">
-            <a href="#internal" class="btn btn-primary">Explore the architecture <span aria-hidden="true">↗</span></a>
+            <a href="#internal" class="btn btn-primary">Take the tour <span aria-hidden="true">↗</span></a>
             <a href={url('/docs/architecture/')} class="arch-text-link">Read the overview <span aria-hidden="true">→</span></a>
           </div>
-          <ul class="arch-principles" aria-label="Architecture principles"><li>Read-only collection</li><li>Your infrastructure</li><li>Evidence preserved</li></ul>
+          <ul class="arch-principles" aria-label="Architecture principles"><li>Never in the request path</li><li>Runs on your infrastructure</li><li>Evidence in its own store</li></ul>
         </div>
         <ArchScene />
       </div>
@@ -105,7 +105,7 @@ const deepLinks = [
 
     <section id="internal" class="scroll-mt-28 border-t border-line py-20" aria-labelledby="internal-title">
       <div class="mx-auto max-w-[1240px] px-4 sm:px-6">
-        <SectionHeader id="internal-title" eyebrow="01 / From signal to evidence" title="Every observation has a path." lead="Follow a reading from PostgreSQL through collection, analysis, storage, and incident detection. Select a component to understand its role." />
+        <SectionHeader id="internal-title" eyebrow="01 / From signal to evidence" title="From one sample to an incident." lead="Follow a reading from PostgreSQL through collection, analysis and storage until it becomes a finding — or an incident. Select any component to see what it does." />
         <div class="mt-10"><ArchitecturePipeline client:visible={{ rootMargin: "400px" }} /></div>
       </div>
     </section>
@@ -113,7 +113,7 @@ const deepLinks = [
     <!-- Production -->
     <section id="production" class="scroll-mt-28 border-t border-line py-20" aria-labelledby="production-title">
       <div class="mx-auto max-w-[1240px] px-4 sm:px-6">
-        <SectionHeader id="production-title" eyebrow="02 / In your environment" title="A place alongside your databases." lead="Choose your environment. Follow a connection, select a component, or replay the flow to see how observation stays separate from application traffic." />
+        <SectionHeader id="production-title" eyebrow="02 / In your environment" title="Drop it into the stack you already run." lead="Pick an environment, follow a connection, or replay the flow — LockLens’ own traffic never mixes with your application’s." />
         <div class="mt-10"><ProductionTopology client:visible={{ rootMargin: "400px" }} initialMode="cluster" /></div>
       </div>
     </section>
@@ -124,7 +124,7 @@ const deepLinks = [
     <!-- Collection -->
     <section id="collection" class="scroll-mt-28 py-20" aria-labelledby="collection-title">
       <div class="mx-auto max-w-[1240px] px-4 sm:px-6">
-        <SectionHeader id="collection-title" eyebrow="03 / Collection cadence" title="The right rhythm for every signal." lead="Fast-moving activity is observed frequently; slower metadata changes are checked less often. Per-target schedules, timeouts, and concurrency limits keep collection bounded." />
+        <SectionHeader id="collection-title" eyebrow="03 / Collection cadence" title="Fast where it matters. Patient where it doesn’t." lead="Fast-moving activity is observed frequently; slower metadata changes are checked less often. Per-target schedules, timeouts, and concurrency limits keep collection bounded." />
         <div class="mt-10 overflow-hidden rounded-2xl border border-line">
           <table class="w-full text-left text-sm">
             <caption class="sr-only">Collectors, their default intervals, what they read and produce</caption>
@@ -155,7 +155,7 @@ const deepLinks = [
     <!-- Flows -->
     <section id="flows" class="scroll-mt-28 border-t border-line py-20" aria-labelledby="flows-title">
       <div class="mx-auto max-w-[1240px] px-4 sm:px-6">
-        <SectionHeader id="flows-title" eyebrow="04 / Reading the diagrams" title="A consistent language for every flow." lead="Every diagram on this site uses the same visual language. Colour is never the only cue: each flow also has its own line pattern." />
+        <SectionHeader id="flows-title" eyebrow="04 / Reading the diagrams" title="One visual language for every flow." lead="Every diagram on this site uses the same visual language. Colour is never the only cue: each flow also has its own line pattern." />
         <ul class="mt-10 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
           {(['app', 'collect', 'store', 'api', 'alert', 'repl'] as FlowKind[]).map((k) => (
             <li class="panel p-5">
@@ -174,7 +174,7 @@ const deepLinks = [
     <!-- Incident -->
     <section id="incident" class="scroll-mt-28 border-t border-line py-20" aria-labelledby="incident-title">
       <div class="mx-auto max-w-[1240px] px-4 sm:px-6">
-        <SectionHeader id="incident-title" eyebrow="05 / An incident, step by step" title="From one long transaction to a recorded incident" lead="A deterministic simulation that follows the documented rules: blocked sessions trigger faster sampling, blocking.long_chain fires after 30 s and 3 samples, and the incident resolves after 3 samples without the condition." />
+        <SectionHeader id="incident-title" eyebrow="05 / An incident, step by step" title="Anatomy of an incident." lead="A deterministic simulation that follows the documented rules: blocked sessions trigger faster sampling, blocking.long_chain fires after 30 s and 3 samples, and the incident resolves after 3 samples without the condition." />
         <div class="mt-10"><IncidentStory client:visible /></div>
       </div>
     </section>
@@ -182,7 +182,7 @@ const deepLinks = [
     <!-- Boundaries -->
     <section id="boundaries" class="scroll-mt-28 border-t border-line py-20" aria-labelledby="boundaries-title">
       <div class="mx-auto max-w-[1240px] px-4 sm:px-6">
-        <SectionHeader id="boundaries-title" eyebrow="06 / Connection boundaries" title="What connects to what" lead="Expose the frontend to people, the backend to the frontend and Prometheus, and nothing else. LockLens needs no access to your services, load balancers, or connection poolers." />
+        <SectionHeader id="boundaries-title" eyebrow="06 / Connection boundaries" title="Every port, accounted for." lead="Expose the frontend to people, the backend to the frontend and Prometheus, and nothing else. LockLens needs no access to your services, load balancers, or connection poolers." />
         <ol class="mt-10 grid gap-3">
           {boundaries.map((b) => (
             <li class="panel grid gap-3 p-4 md:grid-cols-[minmax(0,1.3fr)_auto_minmax(0,1fr)] md:items-center">
@@ -203,7 +203,7 @@ const deepLinks = [
     <!-- Security -->
     <section id="security" class="scroll-mt-28 border-t border-line py-20" aria-labelledby="security-title">
       <div class="mx-auto max-w-[1240px] px-4 sm:px-6">
-        <SectionHeader id="security-title" eyebrow="07 / Designed for observation" title="Built to be safe to point at production" />
+        <SectionHeader id="security-title" eyebrow="07 / Production-safe by design" title="Safe to point at production." />
         <ul class="mt-10 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
           {security.map((s) => (
             <li class="panel p-5">
