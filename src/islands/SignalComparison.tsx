@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   Activity,
   Database,
@@ -35,10 +35,69 @@ const signals = [
     Icon: Archive,
   },
 ];
+/** Autoplay timing (ms): first switch after the block comes into view, then how long each state holds. */
+const FIRST_SWITCH = 1200;
+const HOLD_CONNECTED = 6000;
+const HOLD_SCATTERED = 3200;
+
 export default function SignalComparison() {
   const [connected, setConnected] = useState(false);
+  // Plays on its own until the reader picks a state; then the buttons are in control.
+  const [autoplay, setAutoplay] = useState(true);
+  const [cycle, setCycle] = useState<{ key: number; ms: number } | null>(null);
+  const rootRef = useRef<HTMLDivElement>(null);
+  const connectedRef = useRef(connected);
+  connectedRef.current = connected;
+
+  useEffect(() => {
+    const el = rootRef.current;
+    if (!autoplay || !el) return;
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    let timer: number | undefined;
+    let visible = false;
+    let key = 0;
+    const schedule = (ms: number) => {
+      window.clearTimeout(timer);
+      setCycle({ key: ++key, ms });
+      timer = window.setTimeout(() => {
+        if (!visible) return;
+        if (document.documentElement.classList.contains("motion-paused")) {
+          schedule(1000);
+          return;
+        }
+        const next = !connectedRef.current;
+        setConnected(next);
+        if (reduce) {
+          setCycle(null);
+          return;
+        }
+        schedule(next ? HOLD_CONNECTED : HOLD_SCATTERED);
+      }, ms);
+    };
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        visible = entry.isIntersecting;
+        window.clearTimeout(timer);
+        if (visible && !(reduce && connectedRef.current)) schedule(connectedRef.current ? HOLD_CONNECTED : FIRST_SWITCH);
+        else setCycle(null);
+      },
+      { threshold: 0.45 },
+    );
+    io.observe(el);
+    return () => {
+      io.disconnect();
+      window.clearTimeout(timer);
+    };
+  }, [autoplay]);
+
+  const choose = (value: boolean) => {
+    setAutoplay(false);
+    setCycle(null);
+    setConnected(value);
+  };
+
   return (
-    <div className={`signal-comparison ${connected ? "is-connected" : ""}`}>
+    <div ref={rootRef} className={`signal-comparison ${connected ? "is-connected" : ""}`} data-autoplay={autoplay}>
       <div className="comparison-toolbar">
         <div
           className="pill-switch"
@@ -48,18 +107,26 @@ export default function SignalComparison() {
           <button
             type="button"
             aria-pressed={!connected}
-            onClick={() => setConnected(false)}
+            onClick={() => choose(false)}
           >
             Without LockLens
           </button>
           <button
             type="button"
             aria-pressed={connected}
-            onClick={() => setConnected(true)}
+            onClick={() => choose(true)}
           >
             With LockLens
           </button>
         </div>
+        {cycle && (
+          <span
+            key={cycle.key}
+            className="comparison-timer"
+            style={{ animationDuration: `${cycle.ms}ms` }}
+            aria-hidden="true"
+          />
+        )}
         <span className="micro-label">ILLUSTRATIVE WORKFLOW</span>
       </div>
       <div

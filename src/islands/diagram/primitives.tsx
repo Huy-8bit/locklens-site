@@ -38,6 +38,19 @@ export function DiagramDefs({ id }: { id: string }) {
         <stop offset="0" stopColor="var(--diagram-group, #f3f6fb)" />
         <stop offset="1" stopColor="var(--diagram-group-bottom, #fafbff)" />
       </linearGradient>
+      {/* Side faces of the extruded blocks (see DiagramNode / DiagramGroup). */}
+      <linearGradient id={`${id}-side`} x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stopColor="var(--diagram-side-top, #d4def0)" />
+        <stop offset="1" stopColor="var(--diagram-side-bottom, #aebfdd)" />
+      </linearGradient>
+      <linearGradient id={`${id}-side-active`} x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stopColor="#3d7dff" />
+        <stop offset="1" stopColor="#0b3fb0" />
+      </linearGradient>
+      <linearGradient id={`${id}-side-group`} x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stopColor="var(--diagram-group-side-top, #e2e9f5)" />
+        <stop offset="1" stopColor="var(--diagram-group-side-bottom, #c8d5ea)" />
+      </linearGradient>
       <filter id={`${id}-glow`} x="-30%" y="-30%" width="160%" height="160%">
         <feGaussianBlur stdDeviation="7" result="b" />
         <feMerge>
@@ -78,13 +91,22 @@ export const DiagramGroup = memo(function DiagramGroup({
   badge?: string;
 }) {
   const t = TONES[tone];
+  // Solid groups are drawn as a raised platform: the side face fills the bottom GROUP_DEPTH px
+  // of the group's rectangle, so the group keeps its exact footprint.
+  const depth = dashed ? 0 : GROUP_DEPTH;
   return (
-    <g className="dg-node" style={{ opacity }} aria-hidden="true">
+    <g className="dg-node dg-group" style={{ opacity }} aria-hidden="true">
+      {depth > 0 && (
+        <>
+          <rect x={rect.x + 4} y={rect.y + depth + 4} width={rect.w - 4} height={rect.h - depth} rx={12} fill="rgba(10,22,49,0.06)" />
+          <rect x={rect.x} y={rect.y} width={rect.w} height={rect.h} rx={10} fill={`url(#${id}-side-group)`} stroke="rgba(120,144,184,0.35)" />
+        </>
+      )}
       <rect
         x={rect.x}
         y={rect.y}
         width={rect.w}
-        height={rect.h}
+        height={rect.h - depth}
         rx={10}
         fill={`url(#${id}-group)`}
         stroke={emphasis ? t.ring : 'rgba(148,163,184,0.22)'}
@@ -137,6 +159,11 @@ export interface DiagramNodeProps {
 
 const STATUS_COLOR = { ok: '#14865d', wait: '#c45b17', blocker: '#cb4560', down: '#64748b' } as const;
 
+/** Extrusion depths. The side face sits inside the node's rectangle so edges still meet its outline. */
+const NODE_DEPTH = 7;
+const NODE_DEPTH_COMPACT = 5;
+const GROUP_DEPTH = 10;
+
 export const DiagramNode = memo(function DiagramNode({
   id,
   defsId,
@@ -159,6 +186,8 @@ export const DiagramNode = memo(function DiagramNode({
   const active = state === 'active' || selected;
   const iconSize = compact ? 26 : 30;
   const clickable = Boolean(onSelect);
+  const depth = compact ? NODE_DEPTH_COMPACT : NODE_DEPTH;
+  const faceH = rect.h - depth;
   const onKey = (e: KeyboardEvent<SVGGElement>) => {
     if (e.key === 'Enter' || e.key === ' ') {
       e.preventDefault();
@@ -180,27 +209,42 @@ export const DiagramNode = memo(function DiagramNode({
       onClick={clickable ? () => onSelect?.(id) : undefined}
       onKeyDown={clickable ? onKey : undefined}
     >
-      {active && <rect x={-3} y={-3} width={rect.w + 6} height={rect.h + 6} rx={11} fill="none" stroke={t.ring} strokeOpacity={0.16} strokeWidth={2} />}
+      {/* Contact shadow, then the block's side face; the top face (and its content) lifts on hover. */}
+      <rect className="dg-shadow" x={3} y={depth + 3} width={rect.w - 2} height={faceH} rx={10} fill="rgba(10,22,49,0.09)" />
       <rect
-        className="dg-box"
+        className="dg-side"
         width={rect.w}
         height={rect.h}
         rx={8}
-        fill={`url(#${defsId}-node)`}
-        stroke={selected ? '#2448ff' : active ? t.ring : state === 'visited' ? 'rgba(148,163,184,0.38)' : 'rgba(148,163,184,0.26)'}
-        strokeWidth={active ? 1.6 : 1}
+        fill={`url(#${defsId}-${selected ? 'side-active' : 'side'})`}
+        stroke={selected ? '#0b3fb0' : 'rgba(110,134,176,0.45)'}
+        strokeWidth={1}
       />
+      <g className="dg-top">
+      {active && <rect x={-3} y={-3} width={rect.w + 6} height={faceH + 6} rx={11} fill="none" stroke={t.ring} strokeOpacity={0.16} strokeWidth={2} />}
+      <rect
+        className="dg-box"
+        width={rect.w}
+        height={faceH}
+        rx={8}
+        fill={`url(#${defsId}-node)`}
+        stroke={selected ? '#155ef5' : active ? t.ring : state === 'visited' ? 'rgba(120,144,184,0.5)' : 'rgba(120,144,184,0.4)'}
+        strokeWidth={selected || active ? 1.6 : 1}
+      />
+      <rect className="dg-shine" x={1} y={1} width={rect.w - 2} height={Math.min(14, faceH / 3)} rx={7} fill="rgba(255,255,255,0.7)" />
       {IconCmp && (
-        <g transform={`translate(${compact ? 10 : 12}, ${rect.h / 2 - iconSize / 2})`}>
-          <rect width={iconSize} height={iconSize} rx={8} fill={t.bg} stroke={t.ring} strokeOpacity={active ? 0.6 : 0.25} />
+        <g transform={`translate(${compact ? 10 : 12}, ${faceH / 2 - iconSize / 2})`}>
+          <rect y={2.5} width={iconSize} height={iconSize} rx={8} fill={t.ring} fillOpacity={0.28} />
+          <rect width={iconSize} height={iconSize} rx={8} fill="#fff" stroke={t.ring} strokeOpacity={active ? 0.7 : 0.35} />
+          <rect width={iconSize} height={iconSize} rx={8} fill={t.bg} />
           <IconCmp x={(iconSize - 16) / 2} y={(iconSize - 16) / 2} width={16} height={16} color={t.fg} strokeWidth={1.8} aria-hidden="true" />
         </g>
       )}
-      <text x={IconCmp ? (compact ? 44 : 52) : 14} y={subtitle ? rect.h / 2 - 3 : rect.h / 2 + 4.5} fill="var(--diagram-text)" fontSize={compact ? 12 : 13} fontWeight={600}>
+      <text x={IconCmp ? (compact ? 44 : 52) : 14} y={subtitle ? faceH / 2 - 2 : faceH / 2 + 4.5} fill="var(--diagram-text)" fontSize={compact ? 12 : 13} fontWeight={600}>
         {title}
       </text>
       {subtitle && (
-        <text x={IconCmp ? (compact ? 44 : 52) : 14} y={rect.h / 2 + 13} fill="var(--diagram-muted)" fontSize={compact ? 10 : 10.5} >
+        <text x={IconCmp ? (compact ? 44 : 52) : 14} y={faceH / 2 + 13} fill="var(--diagram-muted)" fontSize={compact ? 10 : 10.5} >
           {subtitle}
         </text>
       )}
@@ -217,6 +261,7 @@ export const DiagramNode = memo(function DiagramNode({
         </circle>
       )}
       {children}
+      </g>
     </g>
   );
 });

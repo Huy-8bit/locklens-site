@@ -1,6 +1,7 @@
 ---
 import '../styles/architecture.css';
 import BaseLayout from '../layouts/BaseLayout.astro';
+import ArchScene from '../components/ArchScene.astro';
 import SectionHeader from '../components/SectionHeader.astro';
 import ArchitecturePipeline from '../islands/ArchitecturePipeline';
 import ProductionTopology from '../islands/ProductionTopology';
@@ -81,17 +82,7 @@ const deepLinks = [
           </div>
           <ul class="arch-principles" aria-label="Architecture principles"><li>Read-only collection</li><li>Your infrastructure</li><li>Evidence preserved</li></ul>
         </div>
-        <div class="arch-system" data-ambient aria-label="Applications connect directly to PostgreSQL. LockLens observes separately and preserves incident evidence.">
-          <div class="arch-system-label">YOUR APPLICATION PATH</div>
-          <div class="arch-system-row">
-            <div class="arch-system-node"><span class="arch-node-icon" aria-hidden="true">⌘</span><strong>Applications</strong><small>Your services, as they are</small></div>
-            <span class="arch-system-connector" aria-hidden="true"></span>
-            <div class="arch-system-node"><svg class="arch-node-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><ellipse cx="12" cy="5" rx="8" ry="3"/><path d="M4 5v14c0 4 16 4 16 0V5M4 12c0 4 16 4 16 0"/></svg><strong>PostgreSQL</strong><small>Your production data</small></div>
-          </div>
-          <div class="arch-observe-line"><span>Read-only observations</span><i aria-hidden="true"></i></div>
-          <div class="arch-system-observer"><span class="arch-observer-mark" aria-hidden="true">L</span><div><strong>LockLens</strong><small>Observe. Understand. Investigate.</small></div><span class="arch-system-status">Out of band</span></div>
-          <div class="arch-system-outcomes"><span>Live activity</span><span>Historical context</span><span>Incident evidence</span></div>
-        </div>
+        <ArchScene />
       </div>
     </section>
 
