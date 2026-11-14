@@ -1,0 +1,23 @@
+---
+interface Props { index: number }
+const { index } = Astro.props;
+---
+<svg viewBox="0 0 320 180" class="cap-diagram" fill="none" aria-hidden="true">
+  {index === 0 ? <>
+    <path class="cap-flow" d="M90 90H150Q164 90 164 70V48H226M164 90V132H226" />
+    <rect x="30" y="62" width="65" height="56" rx="8" class="cap-node" />
+    <circle cx="62" cy="90" r="9" class="cap-dot" />
+    <rect x="224" y="26" width="65" height="44" rx="8" class="cap-node" />
+    <rect x="224" y="110" width="65" height="44" rx="8" class="cap-node" />
+    <path d="M246 48h21m-10-6 6 6-6 6M246 132h21m-10-6 6 6-6 6" stroke="currentColor" stroke-width="2" />
+  </> : index === 1 ? <>
+    <path d="M30 35V145H290M30 108H290M30 71H290" class="cap-grid" />
+    <path d="M30 118L60 111 88 119 115 110 145 114 175 106 205 112 235 105 265 110 290 105" class="cap-baseline" />
+    <path d="M30 118L60 111 88 119 115 110 145 114 175 95 205 103 235 57 265 68 290 34" class="cap-trend" />
+    <circle cx="235" cy="57" r="5" class="cap-dot" /><circle cx="235" cy="57" r="13" class="cap-halo" />
+  </> : <>
+    <rect x="64" y="22" width="192" height="136" rx="10" class="cap-node" />
+    <path d="M88 48H230M93 72V134" class="cap-grid" />
+    {[76,102,128].map((y,i)=><g class="cap-event" style={`animation-delay:${i*300}ms`}><circle cx="93" cy={y} r="4" class="cap-dot"/><path d={`M112 ${y}H${i===1?208:226}`} stroke="currentColor" stroke-width="3" opacity=".5"/><path d={`M112 ${y+8}H${i===1?180:190}`} stroke="currentColor" stroke-width="2" opacity=".18"/></g>)}
+  </>}
+</svg>

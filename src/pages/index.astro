@@ -1,17 +1,25 @@
 ---
+import '../styles/landing.css';
 import BaseLayout from '../layouts/BaseLayout.astro';
+import CapabilityArt from '../components/landing/CapabilityArt.astro';
 import Hero from '../components/landing/Hero.astro';
 import Shot from '../components/Shot.astro';
 import Code from '../components/Code.astro';
 import { SITE, url } from '../lib/site';
 const capabilities = [
- ['01', 'Find the blocker.', 'Follow the chain to the session holding everything up. See who is waiting, for how long, and why.', 'blocking-analysis', '↳'],
- ['02', 'Know what changed.', 'Compare each statement with its own history. Spot regressions without treating every workload the same.', 'query-performance', '⌁'],
- ['03', 'Keep the evidence.', 'Capture the sessions, blocking graph, and timeline around an incident. Investigate even after it is over.', 'incidents', '◎'],
+ ['01', 'Find the blocker.', 'Follow the chain to the session holding everything up. See who is waiting, for how long, and why.', 'blocking-analysis'],
+ ['02', 'Know what changed.', 'Compare each statement with its own history. Spot regressions without treating every workload the same.', 'query-performance'],
+ ['03', 'Keep the evidence.', 'Capture the sessions, blocking graph, and timeline around an incident. Investigate even after it is over.', 'incidents'],
 ];
 const command = `git clone https://github.com/Huy-8bit/locklens.git\ncd locklens\nmake lab-up`;
 ---
-<BaseLayout title="LockLens" current="home">
+<BaseLayout title="LockLens" current="home" jsonLd={{
+  '@context': 'https://schema.org', '@type': 'SoftwareApplication', name: SITE.name,
+  applicationCategory: 'DeveloperApplication', operatingSystem: 'Linux (Docker)',
+  description: SITE.description, codeRepository: SITE.repo,
+  license: 'https://opensource.org/licenses/MIT',
+  offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
+}}>
  <main id="main" class="new-home">
   <Hero />
   <section class="editorial intro" aria-labelledby="problem-title">
@@ -29,12 +37,12 @@ const command = `git clone https://github.com/Huy-8bit/locklens.git\ncd locklens
   <section id="features" class="editorial capabilities" aria-labelledby="features-title">
    <div class="section-kicker" data-reveal><span>03 / BUILT FOR THE INVESTIGATION</span><span>FOLLOW THE SIGNAL</span></div>
    <h2 id="features-title" data-reveal>From “it’s slow”<br /><em>to “here’s why.”</em></h2>
-   <div class="capability-grid">{capabilities.map(([n,title,body,slug,icon],i)=><a class="capability" href={url(`/docs/features/${slug}/`)} data-reveal style={`transition-delay:${i*90}ms`}><div class="cap-top"><span>{n}</span><span>↗</span></div><div class={`cap-art art-${i}`} aria-hidden="true"><span>{icon}</span><i></i><i></i></div><h3>{title}</h3><p>{body}</p><span class="cap-read">Explore capability →</span></a>)}</div>
+   <div class="capability-grid">{capabilities.map(([n,title,body,slug],i)=><a class="capability" href={url(`/docs/features/${slug}/`)} data-reveal style={`transition-delay:${i*90}ms`}><div class="cap-top"><span>{n}</span><span>↗</span></div><div class={`cap-art art-${i}`} aria-hidden="true"><CapabilityArt index={i} /></div><h3>{title}</h3><p>{body}</p><span class="cap-read">Explore capability →</span></a>)}</div>
   </section>
-  <section id="incident-demo" class="investigation-band">
-   <div class="editorial investigation-grid"><div data-reveal><p class="section-kicker">04 / WATCH IT UNFOLD</p><h2>One lock.<br />A chain reaction.<br /><em>A clear answer.</em></h2><p>Watch a transaction hold a lock, sessions start to wait, and LockLens record the evidence. Step through the story at your own pace.</p><a class="btn btn-primary" href={url('/architecture/#incident')}>Launch interactive demo <span>↗</span></a></div><div class="chain-scene" data-reveal aria-label="Illustrative blocking chain"><div class="chain-caption">ILLUSTRATIVE / BLOCKING CHAIN</div><div class="chain-node root"><span>01</span><div>Root blocker<small>Idle in transaction</small></div><b>●</b></div><div class="chain-wire"></div><div class="chain-node waiter"><span>02</span><div>Waiting session<small>Blocked by session 01</small></div><b>↳</b></div><div class="chain-wire"></div><div class="chain-node waiter second"><span>03</span><div>Waiting session<small>Blocked by session 02</small></div><b>↳</b></div><div class="chain-result">↳ Follow the chain. Find the root.</div></div></div>
+  <section id="incident-demo" class="investigation-band" aria-labelledby="incident-title">
+   <div class="editorial investigation-grid"><div data-reveal><p class="section-kicker">04 / WATCH IT UNFOLD</p><h2 id="incident-title">One lock.<br />A chain reaction.<br /><em>A clear answer.</em></h2><p>Watch a transaction hold a lock, sessions start to wait, and LockLens record the evidence. Step through the story at your own pace.</p><a class="btn btn-primary" href={url('/architecture/#incident')}>Launch interactive demo <span>↗</span></a></div><div class="chain-scene" data-reveal aria-label="Illustrative blocking chain"><div class="chain-caption">ILLUSTRATIVE / BLOCKING CHAIN</div><div class="chain-node root"><span>01</span><div>Root blocker<small>Idle in transaction</small></div><b>●</b></div><div class="chain-wire"></div><div class="chain-node waiter"><span>02</span><div>Waiting session<small>Blocked by session 01</small></div><b>↳</b></div><div class="chain-wire"></div><div class="chain-node waiter second"><span>03</span><div>Waiting session<small>Blocked by session 02</small></div><b>↳</b></div><div class="chain-result">↳ Follow the chain. Find the root.</div></div></div>
   </section>
   <section class="editorial principle" aria-labelledby="arch-title"><div class="section-kicker" data-reveal><span>05 / DESIGNED TO OBSERVE</span><span>YOUR DATABASE STAYS YOURS</span></div><div class="intro-grid"><h2 id="arch-title" data-reveal>A clearer view.<br /><em>A lighter touch.</em></h2><div data-reveal><p class="large-copy">Read-only. Out of band.<br />Open source.</p><p>LockLens connects alongside your applications. It observes PostgreSQL without sitting in the request path, changing settings, or automatically terminating sessions.</p><a class="editorial-link" href={url('/architecture/')}>Explore architecture <span>↗</span></a></div></div><div class="principle-strip" data-reveal><div><strong>14–18</strong><span>PostgreSQL versions</span></div><div><strong>MIT</strong><span>Open-source license</span></div><div><strong>Read-only</strong><span>By construction</span></div></div></section>
-  <section id="quick-start" class="start-section"><div class="editorial start-grid"><div data-reveal><p class="section-kicker">YOUR NEXT INVESTIGATION STARTS HERE</p><h2>See it.<br /><em>Understand it.</em></h2><p>Start a local lab with Docker Compose.<br />Create a blocking chain. Follow the evidence.</p><a class="btn btn-primary" href={url('/docs/getting-started/')}>Get started <span>↗</span></a><a class="start-github" href={SITE.repo}>View on GitHub ↗</a></div><div data-reveal><Code code={command} lang="sh" title="Start your local lab"/><p class="lab-note">Requires Docker Compose v2. First build takes a few minutes.</p><p class="project-note">Built in the open, still early. Tested in a local lab; production use and performance are not yet validated. <a href={url('/docs/deployment/limitations/')}>Read the limitations ↗</a></p></div></div></section>
+  <section id="quick-start" class="start-section" aria-labelledby="start-title"><div class="editorial start-grid"><div data-reveal><p class="section-kicker">YOUR NEXT INVESTIGATION STARTS HERE</p><h2 id="start-title">See it.<br /><em>Understand it.</em></h2><p>Start a local lab with Docker Compose.<br />Create a blocking chain. Follow the evidence.</p><a class="btn btn-primary" href={url('/docs/getting-started/')}>Get started <span>↗</span></a><a class="start-github" href={SITE.repo}>View on GitHub ↗</a></div><div data-reveal><Code code={command} lang="sh" title="Start your local lab"/><p class="lab-note">Requires Docker Compose v2. First build takes a few minutes.</p><p class="project-note">Built in the open, still early. Tested in a local lab; production use and performance are not yet validated. <a href={url('/docs/deployment/limitations/')}>Read the limitations ↗</a></p></div></div></section>
  </main>
 </BaseLayout>

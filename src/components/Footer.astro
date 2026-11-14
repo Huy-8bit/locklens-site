@@ -33,15 +33,13 @@ const cols = [
 ];
 ---
 <footer class="site-footer relative border-t border-line bg-ink-950">
-  <div class="mx-auto grid max-w-[1320px] gap-10 px-4 py-14 sm:px-6 md:grid-cols-[1.4fr_repeat(3,1fr)]">
-    <div class="max-w-sm">
-      <a href={url('/')} class="flex items-center gap-2.5 font-semibold text-fg"><Logo size={24} /> LockLens</a>
+  <div class="mx-auto grid max-w-[1240px] gap-10 px-5 py-16 sm:px-8 grid-cols-2 md:grid-cols-[1.5fr_repeat(3,1fr)]">
+    <div class="max-w-sm col-span-2 md:col-span-1">
+      <a href={url('/')} class="flex items-center gap-2.5 text-xl font-semibold text-fg"><Logo size={24} /> LockLens</a>
       <p class="mt-4 text-sm leading-relaxed text-fg-muted">
         Open-source PostgreSQL monitoring and incident investigation. Read-only by design. MIT licensed.
       </p>
-      <p class="mt-4 text-xs leading-relaxed text-fg-subtle">
-        LockLens is young: its test suites pass against PostgreSQL 14–18 in a local lab, but it has not yet been run in production environments.
-      </p>
+      <a href={SITE.repo} class="footer-source">Built in the open <span aria-hidden="true">↗</span></a>
     </div>
     {cols.map((c) => (
       <div>
@@ -55,7 +53,7 @@ const cols = [
     ))}
   </div>
   <div class="border-t border-line">
-    <div class="mx-auto flex max-w-[1320px] flex-col gap-2 px-4 py-5 text-xs text-fg-subtle sm:flex-row sm:items-center sm:justify-between sm:px-6">
+    <div class="mx-auto flex max-w-[1240px] flex-col gap-2 px-4 py-5 text-xs text-fg-subtle sm:flex-row sm:items-center sm:justify-between sm:px-6">
       <span>© The LockLens contributors · MIT License</span>
       <span>PostgreSQL is a trademark of the PostgreSQL Community Association. Illustrative diagrams are labelled as such.</span>
     </div>

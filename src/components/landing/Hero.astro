@@ -1,4 +1,5 @@
 ---
+import Logo from '../Logo.astro';
 import { SITE, url } from '../../lib/site';
 const technologies = ['PostgreSQL', 'Go', 'React', 'Docker', 'Prometheus', 'Grafana', 'OpenTelemetry'];
 ---
@@ -12,7 +13,7 @@ const technologies = ['PostgreSQL', 'Go', 'React', 'Docker', 'Prometheus', 'Graf
  <div class="signal-landscape hero-enter" role="img" aria-label="Illustration: PostgreSQL signals flow through LockLens into incident evidence">
   <svg class="signal-routes" viewBox="0 0 1200 240" preserveAspectRatio="none" aria-hidden="true"><path d="M0 25H170Q220 25 220 75V105Q220 120 260 120H940Q980 120 980 105V75Q980 25 1030 25H1200 M0 120H1200 M0 215H170Q220 215 220 165V135Q220 120 260 120H940Q980 120 980 135V165Q980 215 1030 215H1200"/><path class="signal-particles" d="M0 25H170Q220 25 220 75V105Q220 120 260 120H940Q980 120 980 105V75Q980 25 1030 25H1200 M0 120H1200 M0 215H170Q220 215 220 165V135Q220 120 260 120H940Q980 120 980 135V165Q980 215 1030 215H1200"/></svg>
   <div class="signal-label">FROM SCATTERED SIGNALS</div>
-  <div class="signal-core"><span class="core-mark" aria-hidden="true">◎</span><strong>LockLens</strong><span>Clarity, connected.</span></div>
+  <div class="signal-core"><span class="core-mark" aria-hidden="true"><Logo size={44} /></span><strong>LockLens</strong><span>Clarity, connected.</span></div>
   <div class="signal-label">TO A CLEARER PICTURE</div>
  </div>
  <div class="statement-bottom"><span>READ-ONLY BY DESIGN <i>·</i> MIT LICENSED <i>·</i> POSTGRESQL 14–18</span><button type="button" data-motion-toggle aria-pressed="false">Pause decorative motion <span aria-hidden="true">Ⅱ</span></button></div>
